@@ -1,0 +1,19 @@
+{
+  "_note": "Dữ liệu mẫu tự tạo, mô phỏng cấu trúc bảng tiến độ thi công (phân cấp bằng khoảng trắng đầu dòng, ngày dạng serial). Không phải dữ liệu dự án thật.",
+  "sheetName": "TDTC",
+  "address": "A1:C12",
+  "values": [
+    ["TÊN HẠNG MỤC/ CÔNG TÁC", "BẮT ĐẦU", "KẾT THÚC"],
+    ["HM - CÔNG TÁC CHUẨN BỊ", 46188.0, 46210.0],
+    ["   HM - CÔNG TÁC CHUẨN BỊ", 46188.0, 46195.0],
+    ["       Dọn dẹp mặt bằng, dựng lán trại", 46188.0, 46195.0],
+    ["   HM - THI CÔNG", 46196.0, 46210.0],
+    ["       Phần trồng cây xanh", 46200.0, 46210.0],
+    ["          Trồng cây bóng mát", 46200.0, 46210.0],
+    ["          Trồng cỏ lá gừng", 46205.0, 46210.0],
+    ["       Phần hệ thống tưới", 46196.0, 46204.0],
+    ["          Lắp đặt đường ống tưới", 46196.0, 46204.0],
+    ["   LẬP HỒ SƠ HOÀN CÔNG", 46188.0, 46210.0],
+    ["      Lập hồ sơ nghiệm thu, hoàn công", 46188.0, 46210.0]
+  ]
+}

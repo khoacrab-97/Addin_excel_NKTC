@@ -19,6 +19,11 @@ describe("detectColumns (R1.12)", () => {
     });
   });
 
+  it("nhận diện tiêu đề bảng tiến độ thi công (hạng mục / công tác)", () => {
+    expect(detectColumns(["TÊN HẠNG MỤC/ CÔNG TÁC", "BẮT ĐẦU", "KẾT THÚC"])).toEqual({ content: 0, start: 1, end: 2 });
+    expect(detectColumns(["STT", "Hạng mục", "Từ ngày", "Đến ngày"])).toEqual({ content: 1, start: 2, end: 3 });
+  });
+
   it("không nhầm cột nội dung phụ với cột nội dung công việc", () => {
     expect(detectColumns(["Nội dung nghiệm thu", "Nội dung công việc", "Ngày bắt đầu", "Ngày kết thúc"])).toEqual({
       content: 1,

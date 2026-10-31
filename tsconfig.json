@@ -17,7 +17,8 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["office-js"]
+    "types": ["office-js"],
+    "resolveJsonModule": true
   },
   "include": ["src"]
 }

@@ -21,9 +21,11 @@
 | P1.1 | `core/dates`: chuyển đổi Excel serial ↔ Date, parse `dd/mm/yyyy` (R1.7) | Tested |
 | P1.2 | `core/dailyLog`: nhận diện cột, kiểm tra dòng input, báo lỗi theo dòng (R1.5, R1.6, R1.11, R1.12) | Tested |
 | P1.3 | `core/dailyLog`: trải công việc theo ngày, gộp nội dung (R1.1–R1.4, R1.10) + unit test | Tested |
-| P1.4 | `excel`: đọc vùng input, tạo sheet mới không trùng tên, ghi kết quả (R1.8, R1.9, R1.13) | Implemented |
-| P1.5 | UI F1: chọn vùng, nhận diện/chỉnh cột, xem trước, xuất | Implemented |
+| P1.4 | `excel`: đọc vùng input, tạo sheet mới không trùng tên, ghi kết quả (R1.8, R1.9, R1.13) | Tested |
+| P1.5 | UI F1: chọn vùng, nhận diện/chỉnh cột, xem trước, xuất | Tested |
 | P1.6 | Kiểm thử F1 trên Excel Desktop Windows (Excel 2016 và Microsoft 365) | Not Started |
+
+> P1.4–P1.5 **Tested** = smoke test tự động (`npm run smoke:f1`) với Excel giả lập + file tiến độ mẫu của chủ dự án. Chưa phải **Verified** cho tới khi chạy trên Excel Desktop Windows (P1.6).
 
 ## Phase 2 — F2 Xuất theo form mẫu
 

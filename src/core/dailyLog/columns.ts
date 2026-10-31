@@ -18,8 +18,19 @@ interface ColumnRule {
 
 const COLUMN_RULES: Readonly<Record<ColumnKey, ColumnRule>> = {
   content: {
-    exact: ["noi dung cong viec", "ten cong viec", "cong viec", "noi dung"],
-    contains: ["cong viec"],
+    exact: [
+      "noi dung cong viec",
+      "ten cong viec",
+      "cong viec",
+      "ten hang muc cong tac",
+      "ten hang muc",
+      "hang muc",
+      "ten cong tac",
+      "cong tac",
+      "noi dung",
+    ],
+    // Tiến độ thi công thường đặt tên cột theo "hạng mục" / "công tác" thay vì "công việc".
+    contains: ["cong viec", "cong tac", "hang muc"],
   },
   start: { exact: ["ngay bat dau", "bat dau", "tu ngay"], contains: ["bat dau"] },
   end: { exact: ["ngay ket thuc", "ket thuc", "den ngay"], contains: ["ket thuc"] },

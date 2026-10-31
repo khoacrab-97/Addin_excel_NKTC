@@ -45,6 +45,15 @@ export default tseslint.config(
     languageOptions: { globals: globals.node, sourceType: "commonjs" },
   },
   {
+    // Excel giả lập: script trình duyệt viết theo ES5 (không qua bundler).
+    files: ["scripts/smoke/fake-excel.js"],
+    languageOptions: { globals: globals.browser, sourceType: "script" },
+  },
+  {
+    files: ["scripts/smoke/run-*.js"],
+    languageOptions: { globals: globals.node, sourceType: "commonjs" },
+  },
+  {
     files: ["*.mjs"],
     languageOptions: { sourceType: "module" },
   },

@@ -28,7 +28,7 @@
 | R1.9 | Tên sheet kết quả mặc định `NK_TheoNgay`; nếu đã tồn tại → `NK_TheoNgay_2`, `_3`… (không phân biệt hoa/thường). **Không ghi đè sheet có sẵn.** |
 | R1.10 | Khoảng thời gian xuất tối đa **3.660 ngày** (~10 năm); vượt quá → báo lỗi, không xuất (chặn lỗi nhập năm, ví dụ 2062 thay vì 2026). Nội dung một ngày vượt 32.767 ký tự (giới hạn ô Excel) → báo lỗi. |
 | R1.11 | Dòng trống ở cả 3 cột chính → bỏ qua, không tính là lỗi. |
-| R1.12 | Nhận diện cột (không phân biệt dấu, hoa/thường): **Nội dung** = `Nội dung công việc`, `Tên công việc`, `Công việc`, `Nội dung` hoặc tiêu đề chứa "công việc"; **Bắt đầu** = `Ngày bắt đầu`, `Bắt đầu`, `Từ ngày` hoặc chứa "bắt đầu"; **Kết thúc** = `Ngày kết thúc`, `Kết thúc`, `Đến ngày` hoặc chứa "kết thúc". |
+| R1.12 | Nhận diện cột (không phân biệt dấu, hoa/thường): **Nội dung** = `Nội dung công việc`, `Tên công việc`, `Công việc`, `Tên hạng mục/ công tác`, `Hạng mục`, `Công tác`, `Nội dung` hoặc tiêu đề chứa "công việc", "công tác", "hạng mục"; **Bắt đầu** = `Ngày bắt đầu`, `Bắt đầu`, `Từ ngày` hoặc chứa "bắt đầu"; **Kết thúc** = `Ngày kết thúc`, `Kết thúc`, `Đến ngày` hoặc chứa "kết thúc". |
 | R1.13 | Ngày được hiểu theo hệ ngày **1900** của Excel (mặc định trên Windows). Cột Nội dung được đặt định dạng Text trước khi ghi, để nội dung bắt đầu bằng `-`, `=`, `+` không bị Excel hiểu là công thức. |
 
 ### F1.3 Ví dụ
@@ -96,4 +96,5 @@ Output:
 | Q3 | Có xuất ngày không có công việc, ngày Chủ nhật/ngày lễ không? | Xuất tất cả ngày, kể cả ngày trống. |
 | Q4 | F2 có cần **xuất hàng loạt** (mỗi ngày một sheet, hoặc in/PDF tất cả ngày) không? | Ngoài phạm vi hiện tại; xem xét ở giai đoạn sau. |
 | Q5 | Cách phân phối add-in: Shared Folder Catalog (mạng nội bộ), Microsoft 365 Centralized Deployment, hay chỉ dùng cá nhân? Nơi hosting (GitHub Pages…)? | GitHub Pages + Shared Folder Catalog. |
+| Q7 | Bảng tiến độ có dòng hạng mục tổng và dòng công tác chi tiết (phân cấp bằng khoảng trắng đầu dòng). F1 lấy dòng nào? (chốt 31/10/2026, sau khi chạy thử file tiến độ mẫu) | **Giữ tất cả các dòng**, kể cả dòng hạng mục tổng. Khoảng trắng đầu dòng được bỏ khi gộp nội dung. |
 | Q6 | Phiên bản Excel tối thiểu? | **Microsoft 365 hoặc Excel 2016 trở về sau.** Hệ quả kỹ thuật: xem `MASTER_CONTEXT.md` §4. |
