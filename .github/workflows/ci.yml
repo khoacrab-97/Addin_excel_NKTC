@@ -27,3 +27,7 @@ jobs:
       - run: npm run check
       - name: Validate production manifest (Microsoft validation service)
         run: npx office-addin-manifest validate dist/manifest.xml
+      - name: Install NSIS (Windows installer compiler)
+        run: sudo apt-get update && sudo apt-get install -y nsis
+      - name: Build Windows installer (dist/NhatKyThiCong_Setup.exe)
+        run: npm run build:installer

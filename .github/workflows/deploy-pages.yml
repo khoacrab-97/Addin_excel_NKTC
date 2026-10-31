@@ -33,6 +33,10 @@ jobs:
       - run: npm audit --omit=dev
       - run: npm run check
       - run: npx office-addin-manifest validate dist/manifest.xml
+      - name: Install NSIS (Windows installer compiler)
+        run: sudo apt-get update && sudo apt-get install -y nsis
+      - name: Build Windows installer (dist/NhatKyThiCong_Setup.exe)
+        run: npm run build:installer
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:

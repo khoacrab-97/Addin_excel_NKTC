@@ -5,7 +5,7 @@ Tài liệu dự án: [`MASTER_CONTEXT.md`](MASTER_CONTEXT.md) · [`ROADMAP.md`]
 
 ## Cài đặt cho người dùng
 
-Xem [`docs/HUONG_DAN_CAI_DAT.md`](docs/HUONG_DAN_CAI_DAT.md). Bản phát hành: <https://khoacrab-97.github.io/Addin_excel_NKTC/>. Kiểm thử nghiệm thu: [`docs/KIEM_THU_NGHIEM_THU.md`](docs/KIEM_THU_NGHIEM_THU.md).
+Link gửi người dùng: <https://khoacrab-97.github.io/Addin_excel_NKTC/> → **Tải bộ cài (Windows)** (`NhatKyThiCong_Setup.exe`, không cần quyền quản trị). Add-in tự cập nhật mỗi lần mở; chỉ chạy lại bộ cài khi thông báo yêu cầu. Chi tiết: [`docs/HUONG_DAN_CAI_DAT.md`](docs/HUONG_DAN_CAI_DAT.md). Kiểm thử nghiệm thu: [`docs/KIEM_THU_NGHIEM_THU.md`](docs/KIEM_THU_NGHIEM_THU.md).
 
 ## Yêu cầu (môi trường phát triển)
 
@@ -45,6 +45,7 @@ npm run stop
 | `npm run build` | Build production vào `dist/` (manifest trỏ tới GitHub Pages) |
 | `npm run build:dev` | Build development (manifest trỏ tới `localhost`) |
 | `npm run validate` | Kiểm tra manifest bằng dịch vụ của Microsoft (cần Internet) |
+| `npm run build:installer` | Tạo bộ cài Windows `dist/NhatKyThiCong_Setup.exe` từ `dist/manifest.xml` (chạy sau `npm run build`; cần NSIS `makensis`) |
 
 ## Biểu mẫu
 
@@ -70,8 +71,8 @@ Skill [`security-audit`](.claude/skills/security-audit/) (Cloudflare, MIT) đư�
 
 | Workflow | Kích hoạt | Nội dung |
 |---|---|---|
-| `.github/workflows/ci.yml` | Push lên `main` / `claude/**`, pull request | `npm run check` + validate `dist/manifest.xml` bằng dịch vụ Microsoft |
-| `.github/workflows/deploy-pages.yml` | Push lên `main` hoặc chạy tay (Actions → Run workflow) | Build + đưa `dist/` lên GitHub Pages |
+| `.github/workflows/ci.yml` | Push lên `main` / `claude/**`, pull request | `npm run check` + validate `dist/manifest.xml` bằng dịch vụ Microsoft + build bộ cài |
+| `.github/workflows/deploy-pages.yml` | Push lên `main` hoặc chạy tay (Actions → Run workflow) | Build + bộ cài `NhatKyThiCong_Setup.exe` + đưa `dist/` lên GitHub Pages |
 
 Phiên bản phát hành lấy từ `package.json` (`version`) và tự đồng bộ vào manifest (`x.y.z.0`) và `version.json`.
 
@@ -79,6 +80,7 @@ Phiên bản phát hành lấy từ `package.json` (`version`) và tự đồng 
 
 ```
 manifest.xml          Manifest add-in (URL dev: https://localhost:3000)
+installer/            Bộ cài Windows (NSIS): đăng ký manifest cho người dùng hiện tại
 assets/               Icon add-in
 src/
   core/               Business logic thuần TypeScript (không phụ thuộc Office.js)

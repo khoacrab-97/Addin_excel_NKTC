@@ -59,8 +59,10 @@
 |---|---|---|
 | P4.1 | Hosting bản build trên GitHub Pages (workflow `deploy-pages.yml`, tên file có mã băm, `version.json`, trang giới thiệu) | Tested |
 | P4.2 | Kiểm thử tích hợp trên Excel Desktop Windows với dữ liệu dự án thực tế (`docs/KIEM_THU_NGHIEM_THU.md`) | Not Started |
-| P4.3 | Hướng dẫn cài đặt qua Shared Folder Catalog (`docs/HUONG_DAN_CAI_DAT.md`) | Implemented |
+| P4.3 | Hướng dẫn cài đặt: bộ cài + cách thay thế Shared Folder Catalog (`docs/HUONG_DAN_CAI_DAT.md`) | Implemented |
 | P4.4 | CI trên GitHub Actions: `npm run check` + validate manifest bằng dịch vụ Microsoft (`ci.yml`) | Tested |
+| P4.5 | Bộ cài Windows `NhatKyThiCong_Setup.exe` (NSIS, không cần quyền quản trị, đăng ký `HKCU\…\Wef\Developer`, gỡ qua Settings → Apps); link chia sẻ duy nhất = trang phát hành | Implemented |
+| P4.6 | Kiểm thử bộ cài trên Windows thật: cài, nút xuất hiện trên tab Home, cài đè, gỡ cài đặt (Microsoft 365 và Excel 2016) | Not Started |
 
 ## Phase 5 — Bảo mật
 
@@ -75,5 +77,7 @@
 | P5.7 | Xác nhận CSP không chặn Office.js / Fluent UI trên Excel Desktop Windows (WebView2) | Not Started |
 
 > P5.3–P5.5 **Tested** = unit test (149) + smoke F1/F2/F3 có bắt vi phạm CSP qua console; CSP được kiểm chứng chặn script inline chèn vào. P5.2 chỉ có hiệu lực khi workflow chạy trên `main`. P5.6 do chủ repo cấu hình ngày 31/10/2026; đã đối chiếu qua GitHub API: nhánh mặc định `main`, ruleset trên `main` gồm deletion, non_fast_forward, pull_request (0 approval), required_status_checks (`check`).
+
+> P4.5 **Implemented** = bộ cài build được bằng `makensis` (Linux/CI); đã giải nén kiểm tra nội dung (manifest trùng `dist/manifest.xml`). Chưa chạy trên Windows → chưa Tested/Verified (P4.6).
 
 > P4.1 **Tested** = workflow deploy chạy thành công trên GitHub Actions (build, validate manifest, đưa lên Pages). P4.4 **Tested** = CI xanh trên GitHub ("The manifest is valid.").

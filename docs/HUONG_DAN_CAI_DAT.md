@@ -1,7 +1,8 @@
 # Hướng dẫn cài đặt Add-in "Nhật ký thi công"
 
 > Áp dụng: Excel Desktop trên Windows — Microsoft 365 hoặc Excel 2016 trở về sau.
-> Địa chỉ phát hành: <https://khoacrab-97.github.io/Addin_excel_NKTC/>
+> Link gửi người dùng: <https://khoacrab-97.github.io/Addin_excel_NKTC/>
+> Tải trực tiếp bộ cài: <https://khoacrab-97.github.io/Addin_excel_NKTC/NhatKyThiCong_Setup.exe>
 
 ## 1. Điều kiện
 
@@ -9,38 +10,48 @@
 |---|---|
 | Excel Desktop Windows (Microsoft 365 / 2016 / 2019 / 2021 / 2024) | Excel 2016 bản mua một lần chạy được nhưng không tự đặt độ rộng cột (xem mục 6). |
 | Kết nối Internet khi mở add-in | Add-in tải giao diện từ `khoacrab-97.github.io` và thư viện Office từ `appsforoffice.microsoft.com`. |
-| Một thư mục chia sẻ (đường dẫn mạng dạng `\\TEN-MAY\TEN-THU-MUC`) | Excel chỉ nhận danh mục add-in từ **đường dẫn mạng**, không nhận đường dẫn ổ đĩa như `C:\...`. |
+| Tài khoản Windows thường | Bộ cài **không cần quyền Administrator**; chỉ cài cho tài khoản Windows đang đăng nhập. |
 
-## 2. Tạo thư mục chia sẻ và tải manifest
+## 2. Cài đặt bằng bộ cài (khuyến nghị)
 
-1. Tạo thư mục, ví dụ `C:\NKTC_Addin`.
-2. Chuột phải thư mục → **Properties** → thẻ **Sharing** → **Share…** → chọn tài khoản của mình (hoặc nhóm người dùng cần cài) → **Share**.
-3. Ghi lại **đường dẫn mạng** hiển thị, ví dụ `\\DESKTOP-ABC123\NKTC_Addin`.
-4. Mở <https://khoacrab-97.github.io/Addin_excel_NKTC/> → **Tải manifest.xml** → lưu file vào thư mục trên.
+1. **Đóng hẳn Excel** (bộ cài sẽ nhắc nếu Excel còn mở).
+2. Mở <https://khoacrab-97.github.io/Addin_excel_NKTC/> → **Tải bộ cài (Windows)** → chạy `NhatKyThiCong_Setup.exe`.
+3. Nếu Windows hiện **"Windows protected your PC"** (SmartScreen): bấm **More info** → **Run anyway**. Cảnh báo này xuất hiện vì bộ cài chưa có chữ ký số thương mại.
+4. Bấm **Cài đặt** → **Hoàn tất**.
+5. Mở Excel → tab **Home** xuất hiện nhóm **Nhật ký thi công** → bấm nút để mở khung làm việc.
+6. Kiểm tra: tab **Tiện ích** hiển thị phiên bản add-in, phiên bản Office và mức **ExcelApi tối đa**.
 
-> Dùng chung cho cả nhóm: đặt thư mục trên máy chủ / NAS nội bộ, mọi người dùng cùng một đường dẫn mạng.
+Nếu không thấy nút trên tab Home: **Insert** (Chèn) → **My Add-ins** → thẻ **Developer Add-ins** (hoặc **MY ADD-INS**) → chọn **Nhật ký thi công** → **Add**.
 
-## 3. Khai báo thư mục trong Excel (làm một lần trên mỗi máy)
+Bộ cài thực hiện (chỉ trong phạm vi tài khoản người dùng):
 
-1. Excel → **File** → **Options** → **Trust Center** → **Trust Center Settings…** → **Trusted Add-in Catalogs**.
-2. Ô **Catalog Url**: dán đường dẫn mạng ở bước 2.3 → **Add catalog**.
-3. Tích ô **Show in Menu** của dòng vừa thêm → **OK** → **OK**.
-4. **Đóng hẳn Excel và mở lại.**
+| Hạng mục | Vị trí |
+|---|---|
+| Chép `manifest.xml`, icon, trình gỡ cài đặt | `%LOCALAPPDATA%\NhatKyThiCong\` |
+| Đăng ký add-in với Office | `HKCU\Software\Microsoft\Office\16.0\Wef\Developer` (tên giá trị = ID add-in, dữ liệu = đường dẫn `manifest.xml`) |
+| Mục gỡ cài đặt trong Windows | `HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\NhatKyThiCong` |
 
-## 4. Thêm add-in vào Excel
-
-1. Mở file Excel cần dùng.
-2. **Insert** (Chèn) → **My Add-ins** / **Get Add-ins** (Excel 2016: **Insert → My Add-ins**).
-3. Chọn thẻ **SHARED FOLDER** → chọn **Nhật ký thi công** → **Add**.
-4. Trên tab **Home** xuất hiện nhóm **Nhật ký thi công** → bấm nút để mở khung làm việc.
-5. Kiểm tra: tab **Tiện ích** hiển thị phiên bản add-in, phiên bản Office và mức **ExcelApi tối đa**.
-
-## 5. Cập nhật
+## 3. Cập nhật
 
 | Loại cập nhật | Cách nhận |
 |---|---|
-| Sửa lỗi / thêm chức năng (không đổi manifest) | **Tự động**: đóng và mở lại khung add-in (hoặc mở lại Excel). Khi có bản mới, add-in hiện thông báo "Đã có phiên bản mới" đầu khung; tab **Tiện ích** → **Kiểm tra cập nhật** để kiểm tra bất cứ lúc nào. |
-| Có thay đổi manifest (thông báo kèm bản phát hành) | Tải lại `manifest.xml` (mục 2.4) ghi đè file cũ, rồi xóa cache (mục 7) và mở lại Excel. |
+| Sửa lỗi / thêm chức năng (thường gặp) | **Tự động**: mỗi lần mở khung add-in, Excel tải bản mới nhất từ máy chủ phát hành. Khi có bản mới, add-in hiện thông báo "Đã có phiên bản mới" đầu khung; tab **Tiện ích** → **Kiểm tra cập nhật** để kiểm tra bất cứ lúc nào. |
+| Có thay đổi manifest (thông báo ghi rõ "cần cài lại") | Đóng Excel → tải và chạy lại `NhatKyThiCong_Setup.exe` (cài đè, không cần gỡ trước) → mở lại Excel. |
+
+## 4. Gỡ cài đặt
+
+**Settings** (Cài đặt) → **Apps** → **Installed apps** (Ứng dụng đã cài) → **Nhật ký thi công (Excel add-in)** → **Uninstall**. Đóng Excel trước khi gỡ.
+
+## 5. Cách cài thay thế: thư mục chia sẻ (Shared Folder Catalog)
+
+Dùng khi máy không chạy được bộ cài (chính sách công ty chặn file `.exe`) hoặc Excel không nhận add-in sau khi cài.
+
+1. Tạo thư mục, ví dụ `C:\NKTC_Addin` → chuột phải → **Properties** → thẻ **Sharing** → **Share…** → chọn tài khoản của mình → **Share**. Ghi lại **đường dẫn mạng**, ví dụ `\\DESKTOP-ABC123\NKTC_Addin` (Excel chỉ nhận đường dẫn mạng, không nhận `C:\...`).
+2. Mở trang phát hành → mục **Cài cho cả nhóm qua thư mục chia sẻ (nâng cao)** → tải **manifest.xml** → lưu vào thư mục trên.
+3. Excel → **File** → **Options** → **Trust Center** → **Trust Center Settings…** → **Trusted Add-in Catalogs** → dán đường dẫn mạng vào **Catalog Url** → **Add catalog** → tích **Show in Menu** → **OK** → **OK**.
+4. Đóng hẳn Excel và mở lại → **Insert** → **My Add-ins** → thẻ **SHARED FOLDER** → **Nhật ký thi công** → **Add**.
+
+> Không dùng đồng thời hai cách cài trên cùng một máy — hai bản có cùng ID add-in.
 
 ## 6. Khác biệt theo phiên bản Excel
 
@@ -53,16 +64,15 @@
 
 | Hiện tượng | Cách xử lý |
 |---|---|
-| Không thấy thẻ **SHARED FOLDER** | Kiểm tra mục 3: đã tích **Show in Menu** và đã khởi động lại Excel; đường dẫn phải là đường dẫn mạng `\\...`. |
+| Bộ cài báo "Excel đang mở" | Đóng mọi cửa sổ Excel (kiểm tra cả biểu tượng Excel trên thanh tác vụ) → **Retry**. |
+| Cài xong không thấy nút trên tab Home | Đóng hẳn Excel và mở lại; nếu vẫn không thấy → **Insert → My Add-ins → Developer Add-ins** (mục 2). Vẫn không có → dùng cách cài mục 5 và báo lại cho người phát triển. |
+| Không thấy thẻ **SHARED FOLDER** (cách cài mục 5) | Đã tích **Show in Menu** và đã khởi động lại Excel; đường dẫn phải là đường dẫn mạng `\\...`. |
 | Khung add-in trắng / báo lỗi tải | Kiểm tra Internet; thử mở <https://khoacrab-97.github.io/Addin_excel_NKTC/taskpane.html> bằng trình duyệt. |
 | Đã cập nhật nhưng vẫn thấy bản cũ | Đóng Excel → xóa toàn bộ nội dung thư mục `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` → mở lại Excel. |
 | Nút trên giao diện không có biểu tượng | Mạng chặn CDN biểu tượng của Microsoft; chức năng vẫn dùng bình thường (các nút điều hướng ngày dùng ký tự « ‹ › »). |
 
-## 8. Gỡ add-in
+## 8. Dành cho người phát triển
 
-**Insert → My Add-ins** → chuột phải **Nhật ký thi công** → **Remove**; xóa đường dẫn ở **Trusted Add-in Catalogs** nếu không dùng nữa.
-
-## 9. Dành cho người phát triển
-
-- Chạy bản phát triển: `npm start` (sideload manifest `localhost`). **Không** dùng đồng thời với bản cài từ thư mục chia sẻ — hai bản có cùng ID add-in.
-- Phát hành: workflow `.github/workflows/deploy-pages.yml` chạy khi push lên `main` (hoặc chạy tay trong tab **Actions**). Yêu cầu một lần: **Settings → Pages → Source: GitHub Actions**.
+- Chạy bản phát triển: `npm start` (sideload manifest `localhost`). **Không** dùng đồng thời với bản đã cài bằng bộ cài — hai bản có cùng ID add-in; gỡ bản cài trước (mục 4).
+- Bộ cài: `installer/NhatKyThiCong.nsi` (NSIS 3). Build: `npm run build` rồi `npm run build:installer` → `dist/NhatKyThiCong_Setup.exe` (cần `makensis`). CI và workflow phát hành tự build.
+- Phát hành: workflow `.github/workflows/deploy-pages.yml` chạy khi merge vào `main` (hoặc chạy tay trong tab **Actions**). Yêu cầu một lần: **Settings → Pages → Source: GitHub Actions**.

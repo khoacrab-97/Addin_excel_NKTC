@@ -12,6 +12,13 @@ export function UpdateSteps(): JSX.Element {
         Nếu vẫn là bản cũ: đóng Excel, xóa nội dung thư mục <code>%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\</code>, mở
         lại Excel.
       </li>
+      <li>
+        Nếu bản mới có thay đổi cần cài lại:{" "}
+        <Link href={LINKS.installer} target="_blank" rel="noopener noreferrer">
+          tải và chạy lại bộ cài
+        </Link>{" "}
+        (đóng Excel trước).
+      </li>
     </ol>
   );
 }
