@@ -33,16 +33,29 @@ Danh sách nhật ký dạng bảng (có dòng tiêu đề), mỗi dòng là m�
 | Phụ | Số lượng thiết bị | Không |
 | Phụ | Nội dung nghiệm thu | Không |
 
-## 4. Kiến trúc kỹ thuật (đề xuất)
+## 4. Kiến trúc kỹ thuật
 
 | Thành phần | Lựa chọn | Ghi chú |
 |---|---|---|
-| Nền tảng | Office Add-in, Task Pane | Manifest XML (tương thích Excel Desktop Windows). |
-| UI | React + TypeScript (strict) + Fluent UI React v9 | Bộ UI chuẩn của Microsoft cho Office Add-in. |
-| Excel API | Office.js – `Excel.run`, ExcelApi requirement set ≥ 1.7 | Không dùng API ngoài requirement set đã khai báo. |
-| Build | Webpack (theo template Yeoman `generator-office`) | |
-| Test | Vitest (unit test cho tầng `core`) | |
-| Lint | ESLint + Prettier | |
+| Nền tảng | Office Add-in, Task Pane, manifest XML | Nút mở add-in trên tab **Home** (Trang đầu). |
+| Phiên bản Excel tối thiểu | **Microsoft 365 hoặc Excel 2016 trở về sau** (Q6) | |
+| Excel API | Office.js, requirement set **ExcelApi 1.1** làm mức tối thiểu | Excel 2016 bản mua một lần chỉ hỗ trợ ExcelApi 1.1. API cao hơn chỉ được dùng kèm kiểm tra `isSetSupported` và có phương án thay thế. |
+| Trình duyệt nhúng | Phải chạy được trên **Internet Explorer 11** | Excel 2016/2019 bản mua một lần dùng IE11 để hiển thị add-in. |
+| UI | **React 17** + **Fluent UI React v8** + TypeScript (strict) | React 18 và Fluent UI v9 không hỗ trợ IE11. |
+| Build | Webpack 5 + Babel (`preset-env`, core-js polyfill), output **ES5** | `tsc --noEmit` dùng để kiểm tra kiểu. |
+| Hosting | GitHub Pages: `https://khoacrab-97.github.io/Addin_excel_NKTC/` (Q5) | Build production tự thay URL `localhost` trong manifest. |
+| Phân phối | Shared Folder Catalog (thư mục chia sẻ mạng nội bộ) (Q5) | |
+| Test | Vitest (unit test tầng `core`) | Thiết lập ở P0.5. |
+| Lint | ESLint + Prettier | Thiết lập ở P0.5. |
+
+### Hệ quả của mức tối thiểu ExcelApi 1.1
+
+| Nhu cầu | API mới (không dùng trực tiếp) | Cách làm với 1.1 |
+|---|---|---|
+| Kiểm tra sheet tồn tại | `getItemOrNullObject` (1.4) | Load `worksheets.items/name` rồi so khớp tên. |
+| Xác định ô đầu của vùng merge (R2.2) | `getMergedAreasOrNullObject` (1.13) | Người dùng chọn ô → lấy `getSelectedRange().getCell(0, 0)`. |
+| Lưu cấu hình mapping (R2.8) | — | `Office.context.document.settings` (Common API). |
+| Gọi mạng (kiểm tra phiên bản) | `fetch` (không có trên IE11) | `XMLHttpRequest` hoặc polyfill. |
 
 ### Phân tầng mã nguồn
 

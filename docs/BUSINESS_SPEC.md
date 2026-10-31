@@ -1,6 +1,6 @@
 # BUSINESS_SPEC — ConstructionDailyLog
 
-> Trạng thái tài liệu: **Draft v0.1** — các mục đánh dấu `[GIẢ ĐỊNH]` là quy tắc mặc định đề xuất, cần chủ dự án xác nhận. Câu hỏi mở tại §5.
+> Trạng thái tài liệu: **v0.2** — các câu hỏi mở Q1–Q6 đã được chủ dự án chốt (31/10/2026), xem §5. Các quy tắc `[GIẢ ĐỊNH]` liên quan Q1–Q3 nay là quy tắc chính thức.
 
 ---
 
@@ -83,13 +83,13 @@ Output:
 
 ---
 
-## 5. Câu hỏi mở (cần chủ dự án xác nhận)
+## 5. Câu hỏi mở — đã chốt
 
-| # | Câu hỏi | Đề xuất mặc định |
+| # | Câu hỏi | Quyết định |
 |---|---|---|
-| Q1 | Các cột nội dung phụ có nằm trong danh sách input (theo từng công việc) không? Nếu có, F1 có cần tự gộp chúng theo ngày không, hay người dùng tự nhập vào sheet theo ngày? | F1 chỉ xuất 2 cột; người dùng tự bổ sung cột phụ (đúng mô tả hiện tại). |
+| Q1 | Các cột nội dung phụ có nằm trong danh sách input (theo từng công việc) không? Nếu có, F1 có cần tự gộp chúng theo ngày không, hay người dùng tự nhập vào sheet theo ngày? | F1 chỉ xuất 2 cột; người dùng tự bổ sung cột phụ. |
 | Q2 | Định dạng gộp nội dung trong một ngày (tiền tố `- `, đánh số 1., 2., …)? | `- ` mỗi dòng. |
 | Q3 | Có xuất ngày không có công việc, ngày Chủ nhật/ngày lễ không? | Xuất tất cả ngày, kể cả ngày trống. |
-| Q4 | F2 có cần **xuất hàng loạt** (mỗi ngày một sheet, hoặc in/PDF tất cả ngày) không? | Chưa đưa vào phạm vi; xem xét ở giai đoạn sau. |
+| Q4 | F2 có cần **xuất hàng loạt** (mỗi ngày một sheet, hoặc in/PDF tất cả ngày) không? | Ngoài phạm vi hiện tại; xem xét ở giai đoạn sau. |
 | Q5 | Cách phân phối add-in: Shared Folder Catalog (mạng nội bộ), Microsoft 365 Centralized Deployment, hay chỉ dùng cá nhân? Nơi hosting (GitHub Pages…)? | GitHub Pages + Shared Folder Catalog. |
-| Q6 | Phiên bản Excel tối thiểu (Microsoft 365 / Excel 2019 / 2021)? | Microsoft 365 hoặc Excel 2021. |
+| Q6 | Phiên bản Excel tối thiểu? | **Microsoft 365 hoặc Excel 2016 trở về sau.** Hệ quả kỹ thuật: xem `MASTER_CONTEXT.md` §4. |

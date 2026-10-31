@@ -9,8 +9,8 @@
 |---|---|---|
 | P0.1 | Governance (`CLAUDE.md`) | Implemented |
 | P0.2 | `MASTER_CONTEXT.md`, `ROADMAP.md`, `docs/BUSINESS_SPEC.md` (draft) | Implemented |
-| P0.3 | Chốt câu hỏi mở Q1–Q6 trong BUSINESS_SPEC | Not Started |
-| P0.4 | Khởi tạo project Office Add-in (React + TS strict, Webpack, manifest) | Not Started |
+| P0.3 | Chốt câu hỏi mở Q1–Q6 trong BUSINESS_SPEC | Implemented |
+| P0.4 | Khởi tạo project Office Add-in (React 17 + Fluent UI v8 + TS strict, Webpack/Babel ES5, manifest ExcelApi 1.1) | Implemented |
 | P0.5 | Thiết lập ESLint, Prettier, Vitest, script `lint` / `typecheck` / `test` / `build` | Not Started |
 | P0.6 | Sideload và chạy task pane rỗng trên Excel Desktop Windows | Not Started |
 
@@ -29,7 +29,7 @@
 | ID | Hạng mục | Trạng thái |
 |---|---|---|
 | P2.1 | `core/mapping`: mô hình mapping, kiểm tra hợp lệ (R2.1), điều hướng ngày + unit test | Not Started |
-| P2.2 | `excel`: đọc vùng nguồn, đếm cột, lấy ô đang chọn, xử lý ô merge (R2.2) | Not Started |
+| P2.2 | `excel`: đọc vùng nguồn, đếm cột, lấy ô đang chọn, xử lý ô merge theo cách tương thích ExcelApi 1.1 (R2.2) | Not Started |
 | P2.3 | `excel`: ghi giá trị an toàn vào ô đích — kiểm tra công thức/dữ liệu sẵn có (R2.3–R2.6) | Not Started |
 | P2.4 | Lưu/đọc cấu hình mapping trong workbook (R2.8) | Not Started |
 | P2.5 | UI Mapping 2 khu vực Input / Output | Not Started |
@@ -41,7 +41,7 @@
 | ID | Hạng mục | Trạng thái |
 |---|---|---|
 | P3.1 | Màn hình Hướng dẫn + file input mẫu | Not Started |
-| P3.2 | Hiển thị phiên bản, kiểm tra `version.json` | Not Started |
+| P3.2 | Hiển thị phiên bản (đã có bản cơ bản ở tab Tiện ích từ P0.4); kiểm tra `version.json` | In Progress |
 | P3.3 | Thông báo/hướng dẫn cập nhật | Not Started |
 
 ## Phase 4 — Phát hành & nghiệm thu
