@@ -108,9 +108,15 @@ Sinh lại biểu mẫu: `python3 -I scripts/fixtures/make_nktc_workbooks.py tes
 
 | Mã | Chức năng | Mô tả |
 |---|---|---|
-| F3.1 | Hướng dẫn | Màn hình hướng dẫn từng bước cho F1, F2, kèm file mẫu input. |
-| F3.2 | Kiểm tra phiên bản | Hiển thị phiên bản đang chạy; so sánh với phiên bản mới nhất công bố trên máy chủ (file `version.json`). |
-| F3.3 | Cập nhật | Web add-in tự cập nhật khi mã nguồn trên máy chủ hosting được cập nhật. Khi có thay đổi manifest, hiển thị hướng dẫn cài lại. |
+| F3.1 | Hướng dẫn | Tab **Tiện ích** → "Hướng dẫn sử dụng": các bước F1, F2; link tải `templates/Mau_NKTC.xlsx` (biểu mẫu), `templates/Mau_TienDo.xlsx` (danh sách công việc mẫu), bảng ô đích, hướng dẫn cài đặt. |
+| F3.2 | Kiểm tra phiên bản | Hiển thị phiên bản add-in, nền tảng, phiên bản Office, ExcelApi tối đa. Nút **Kiểm tra cập nhật** đọc `version.json` trên máy chủ phát hành (R3.1–R3.3). |
+| F3.3 | Cập nhật | Add-in tự kiểm tra một lần khi mở; có bản mới → thông báo đầu khung (ở tab khác) + nút "Xem hướng dẫn cập nhật" → tab Tiện ích hiển thị các bước cập nhật. |
+
+| Mã | Quy tắc |
+|---|---|
+| R3.1 | So sánh phiên bản `x.y.z` theo số (1.10.0 > 1.9.9). Bản đang chạy nhỏ hơn → "Đã có phiên bản mới"; bằng → "mới nhất"; lớn hơn → "bản phát triển". |
+| R3.2 | `version.json` được kiểm tra trước khi dùng; lỗi mạng, hết thời gian chờ (10 giây), HTTP lỗi hoặc nội dung sai → "Không kiểm tra được phiên bản mới", không chặn các chức năng khác. |
+| R3.3 | Yêu cầu tải `version.json` kèm tham số chống cache; dùng `XMLHttpRequest` (tương thích Internet Explorer 11). |
 
 ---
 

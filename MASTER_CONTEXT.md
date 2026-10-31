@@ -67,9 +67,10 @@ src/
     address/     Tiện ích thuần về địa chỉ Excel (chữ cột, địa chỉ ô, bỏ tên sheet)
     dailyLog/    F1: nhận diện cột, kiểm tra dòng, trải công việc theo ngày, tên sheet
     mapping/     F2: mapping cột → ô, cột Ngày, danh sách ngày điều hướng, kế hoạch ghi, cấu hình lưu
+    version/     F3: so sánh phiên bản, đọc/kiểm tra version.json
   excel/       Adapter Office.js: đọc/ghi range, tạo sheet, lưu settings
   taskpane/    React UI (các màn hình F1, F2, F3)
-  version/     Thông tin phiên bản, kiểm tra cập nhật
+  version/     Phiên bản đang chạy, tải version.json (XMLHttpRequest), đường dẫn tài liệu/file mẫu
 ```
 
 Nguyên tắc: `taskpane` → gọi `excel` (I/O) và `core` (xử lý); `core` không import `excel` hay `Office`.

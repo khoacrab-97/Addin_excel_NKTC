@@ -10,7 +10,9 @@ const DIST = path.join(__dirname, "..", "..", "dist");
 
 /**
  * @param {{ sheets: object[], selection: { sheet: string, address: string }, apiMinor?: number, settings?: object }} input
- * @param {{ browser?: import("playwright").Browser, viewport?: { width: number, height: number } }} [options]
+ * @param {{ browser?: import("playwright").Browser, viewport?: { width: number, height: number },
+ *   overrides?: Record<string, { status?: number, body: string } | "abort"> }} [options]
+ *   overrides: thay phản hồi cho đường dẫn trong dist (ví dụ "/version.json") — giả lập phiên bản mới / mất mạng.
  */
 async function openTaskpane(input, options = {}) {
   const browser = options.browser ?? (await chromium.launch());
@@ -26,6 +28,10 @@ async function openTaskpane(input, options = {}) {
       return route.fulfill({ contentType: "application/javascript", body: officeStub });
     }
     if (url.hostname === "local.test") {
+      const override = options.overrides?.[url.pathname];
+      if (override === "abort") return route.abort();
+      if (override)
+        return route.fulfill({ status: override.status ?? 200, contentType: "application/json", body: override.body });
       const file = path.join(DIST, decodeURIComponent(url.pathname));
       return route.fulfill({
         contentType: file.endsWith(".js") ? "application/javascript" : "text/html",

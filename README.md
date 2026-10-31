@@ -48,14 +48,14 @@ npm run stop
 
 ## Biểu mẫu
 
-`templates/Mau_NKTC.xlsx` — biểu mẫu "Tình hình thi công hàng ngày" (chuyển từ mẫu Word, A4, 2 trang). Ô đích cho từng mục: xem `docs/BUSINESS_SPEC.md` §F2.3. Cách dùng: chép sheet `Mẫu NKTC` vào file nhật ký, rồi ở tab **Form mẫu** gán các cột của sheet theo ngày vào các ô đích.
+`templates/Mau_TienDo.xlsx` — danh sách công việc mẫu (input của F1). `templates/Mau_NKTC.xlsx` — biểu mẫu "Tình hình thi công hàng ngày" (chuyển từ mẫu Word, A4, 2 trang). Ô đích cho từng mục: xem `docs/BUSINESS_SPEC.md` §F2.3. Cách dùng: chép sheet `Mẫu NKTC` vào file nhật ký, rồi ở tab **Form mẫu** gán các cột của sheet theo ngày vào các ô đích.
 
 ## Kiểm thử
 
 | Loại | Lệnh | Ghi chú |
 |---|---|---|
 | Unit test + hồi quy | `npm test` | Gồm hồi quy F1 trên `test/fixtures/tdtc-sample.json` (dữ liệu mẫu tự tạo, mô phỏng bảng tiến độ phân cấp). |
-| Smoke test F1 + F2 | `npm run smoke` (hoặc `smoke:f1`, `smoke:f2`) | Chạy bundle production trong Chromium với Excel giả lập (`scripts/smoke/fake-excel.js`). Cần Playwright + Chromium có sẵn trong môi trường (không phải dependency của dự án). |
+| Smoke test F1 + F2 + F3 | `npm run smoke` (hoặc `smoke:f1`, `smoke:f2`, `smoke:f3`) | Chạy bundle production trong Chromium với Excel giả lập (`scripts/smoke/fake-excel.js`). Cần Playwright + Chromium có sẵn trong môi trường (không phải dependency của dự án). |
 | Dữ liệu test | `test/fixtures/test_addin_xuat_nktc.xlsx` (tiến độ thật của chủ dự án), `test/fixtures/demo_f2.xlsx` (tiến độ thật + NK_TheoNgay có cột phụ mẫu + biểu mẫu `Mẫu NKTC`) | Sinh lại: `python3 -I scripts/fixtures/make_nktc_workbooks.py test/fixtures/test_addin_xuat_nktc.xlsx` rồi `python3 -I scripts/fixtures/xlsx_to_fixture.py test/fixtures/demo_f2.xlsx test/fixtures/demo_f2.json --all`. Dữ liệu riêng tư để trong `test/fixtures/local/` (git bỏ qua). |
 
 Kiểm thử trên Excel thật (Verified) vẫn phải chạy trên Excel Desktop Windows.

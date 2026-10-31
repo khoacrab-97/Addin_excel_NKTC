@@ -3,6 +3,7 @@ và workbook demo cho F2.
 
 Kết quả:
 - templates/Mau_NKTC.xlsx: biểu mẫu trống (sheet "Mẫu NKTC") để dùng thực tế.
+- templates/Mau_TienDo.xlsx: danh sách công việc mẫu (input của F1) — dữ liệu tự tạo.
 - test/fixtures/demo_f2.xlsx: TDTC (tiến độ thật) + NK_TheoNgay (kết quả F1 + cột phụ MẪU) + "Mẫu NKTC".
 - test/fixtures/demo_f2.targets.json: ô đích của từng cột nguồn (dùng cho smoke test F2).
 
@@ -280,8 +281,36 @@ def build_demo(source, form_targets):
     return wb, last - first + 1, targets
 
 
+SAMPLE_TASKS = [
+    ("Dọn dẹp mặt bằng, dựng lán trại", "15/06/2026", "20/06/2026"),
+    ("Đào đất hố ga, mương cáp", "18/06/2026", "30/06/2026"),
+    ("Lắp đặt đường ống tưới D50", "25/06/2026", "10/07/2026"),
+    ("Trồng cây bóng mát", "01/07/2026", "15/07/2026"),
+    ("Trồng cỏ lá gừng", "10/07/2026", "20/07/2026"),
+    ("Lập hồ sơ nghiệm thu, hoàn công", "15/06/2026", "20/07/2026"),
+]
+
+
+def build_sample_schedule():
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "TienDo"
+    ws.append(["Nội dung công việc", "Ngày bắt đầu", "Ngày kết thúc"])
+    for name, start, end in SAMPLE_TASKS:
+        ws.append([name, datetime.datetime.strptime(start, "%d/%m/%Y"), datetime.datetime.strptime(end, "%d/%m/%Y")])
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+    for cell in ws["B"][1:] + ws["C"][1:]:
+        cell.number_format = "dd/mm/yyyy"
+    ws.column_dimensions["A"].width = 45
+    ws.column_dimensions["B"].width = 14
+    ws.column_dimensions["C"].width = 14
+    return wb
+
+
 def main():
     source = sys.argv[1]
+    build_sample_schedule().save("templates/Mau_TienDo.xlsx")
     template = openpyxl.Workbook()
     targets = build_form(template.active)
     template.active.title = FORM_SHEET

@@ -39,7 +39,7 @@
 
 | Loại cập nhật | Cách nhận |
 |---|---|
-| Sửa lỗi / thêm chức năng (không đổi manifest) | **Tự động**: đóng và mở lại khung add-in (hoặc mở lại Excel). |
+| Sửa lỗi / thêm chức năng (không đổi manifest) | **Tự động**: đóng và mở lại khung add-in (hoặc mở lại Excel). Khi có bản mới, add-in hiện thông báo "Đã có phiên bản mới" đầu khung; tab **Tiện ích** → **Kiểm tra cập nhật** để kiểm tra bất cứ lúc nào. |
 | Có thay đổi manifest (thông báo kèm bản phát hành) | Tải lại `manifest.xml` (mục 2.4) ghi đè file cũ, rồi xóa cache (mục 7) và mở lại Excel. |
 
 ## 6. Khác biệt theo phiên bản Excel

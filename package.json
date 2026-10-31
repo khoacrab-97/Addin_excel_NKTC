@@ -1,6 +1,6 @@
 {
   "name": "construction-daily-log",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Excel Add-in lập nhật ký thi công theo ngày và xuất theo form mẫu.",
   "private": true,
   "license": "UNLICENSED",
@@ -26,7 +26,8 @@
     "check": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run build",
     "smoke:f1": "npm run build && node scripts/smoke/run-f1.js test/fixtures/tdtc-sample.json --existing NK_TheoNgay",
     "smoke:f2": "npm run build && node scripts/smoke/run-f2.js",
-    "smoke": "npm run build && node scripts/smoke/run-f1.js test/fixtures/tdtc-real.json --existing NK_TheoNgay && node scripts/smoke/run-f2.js"
+    "smoke": "npm run build && node scripts/smoke/run-f1.js test/fixtures/tdtc-real.json --existing NK_TheoNgay && node scripts/smoke/run-f2.js && node scripts/smoke/run-f3.js",
+    "smoke:f3": "npm run build && node scripts/smoke/run-f3.js"
   },
   "browserslist": [
     "ie 11",

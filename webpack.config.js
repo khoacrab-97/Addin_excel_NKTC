@@ -61,6 +61,8 @@ module.exports = async (env, argv) => {
       new CopyWebpackPlugin({
         patterns: [
           { from: "assets/*.png", to: "assets/[name][ext]" },
+          // Biểu mẫu và file mẫu tải về từ tab Tiện ích (P3.1).
+          { from: "templates/*.xlsx", to: "templates/[name][ext]" },
           {
             from: "manifest.xml",
             to: "manifest.xml",

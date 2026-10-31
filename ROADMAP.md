@@ -47,15 +47,19 @@
 
 | ID | Hạng mục | Trạng thái |
 |---|---|---|
-| P3.1 | Màn hình Hướng dẫn + file input mẫu | Not Started |
-| P3.2 | Hiển thị phiên bản (đã có bản cơ bản ở tab Tiện ích từ P0.4); kiểm tra `version.json` | In Progress |
-| P3.3 | Thông báo/hướng dẫn cập nhật | Not Started |
+| P3.1 | Màn hình Hướng dẫn + file input mẫu (`templates/Mau_TienDo.xlsx`, `templates/Mau_NKTC.xlsx` phát hành kèm add-in) | Tested |
+| P3.2 | Hiển thị phiên bản; kiểm tra `version.json` (R3.1–R3.3) | Tested |
+| P3.3 | Thông báo bản mới đầu khung + hướng dẫn cập nhật | Tested |
+
+> P3.x **Tested** = unit test `core/version` + smoke test tự động 7 bước (`npm run smoke:f3`): bản mới nhất, có bản mới (thông báo), bản phát triển, mất mạng / HTTP 404 / nội dung hỏng.
 
 ## Phase 4 — Phát hành & nghiệm thu
 
 | ID | Hạng mục | Trạng thái |
 |---|---|---|
-| P4.1 | Hosting bản build trên GitHub Pages (workflow `deploy-pages.yml`, tên file có mã băm, `version.json`, trang giới thiệu) | Implemented |
+| P4.1 | Hosting bản build trên GitHub Pages (workflow `deploy-pages.yml`, tên file có mã băm, `version.json`, trang giới thiệu) | Tested |
 | P4.2 | Kiểm thử tích hợp trên Excel Desktop Windows với dữ liệu dự án thực tế (`docs/KIEM_THU_NGHIEM_THU.md`) | Not Started |
 | P4.3 | Hướng dẫn cài đặt qua Shared Folder Catalog (`docs/HUONG_DAN_CAI_DAT.md`) | Implemented |
-| P4.4 | CI trên GitHub Actions: `npm run check` + validate manifest bằng dịch vụ Microsoft (`ci.yml`) | Implemented |
+| P4.4 | CI trên GitHub Actions: `npm run check` + validate manifest bằng dịch vụ Microsoft (`ci.yml`) | Tested |
+
+> P4.1 **Tested** = workflow deploy chạy thành công trên GitHub Actions (build, validate manifest, đưa lên Pages). P4.4 **Tested** = CI xanh trên GitHub ("The manifest is valid.").
