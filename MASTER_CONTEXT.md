@@ -62,10 +62,11 @@ Danh sách nhật ký dạng bảng (có dòng tiêu đề), mỗi dòng là m�
 ```
 src/
   core/        Business logic thuần TypeScript, KHÔNG phụ thuộc Office.js (unit test được)
-    dates/       Chuyển đổi Excel serial date ↔ Date, kiểm tra hợp lệ
-    dailyLog/    F1: trải công việc theo ngày, gộp nội dung
+    dates/       Chuyển đổi Excel serial date ↔ ngày, đọc text ngày
+    text/        Chuẩn hóa text tiếng Việt (bỏ dấu, không dùng String.normalize vì IE11)
+    excel/       Tiện ích thuần về địa chỉ Excel (chữ cột, bỏ tên sheet)
+    dailyLog/    F1: nhận diện cột, kiểm tra dòng, trải công việc theo ngày, tên sheet
     mapping/     F2: mô hình mapping cột → ô, điều hướng ngày
-    validation/  Kiểm tra dữ liệu nhập
   excel/       Adapter Office.js: đọc/ghi range, tạo sheet, lưu settings
   taskpane/    React UI (các màn hình F1, F2, F3)
   version/     Thông tin phiên bản, kiểm tra cập nhật

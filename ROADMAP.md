@@ -18,11 +18,12 @@
 
 | ID | Hạng mục | Trạng thái |
 |---|---|---|
-| P1.1 | `core/dates`: chuyển đổi Excel serial ↔ Date, parse `dd/mm/yyyy` (R1.7) | Not Started |
-| P1.2 | `core/validation`: kiểm tra dòng input, báo lỗi theo dòng (R1.5, R1.6) | Not Started |
-| P1.3 | `core/dailyLog`: trải công việc theo ngày, gộp nội dung (R1.1–R1.4) + unit test | Not Started |
-| P1.4 | `excel`: đọc vùng input, tạo sheet mới không trùng tên, ghi kết quả (R1.8, R1.9) | Not Started |
-| P1.5 | UI F1: chọn vùng, nhận diện/chỉnh cột, xem trước, xuất | Not Started |
+| P1.1 | `core/dates`: chuyển đổi Excel serial ↔ Date, parse `dd/mm/yyyy` (R1.7) | Tested |
+| P1.2 | `core/dailyLog`: nhận diện cột, kiểm tra dòng input, báo lỗi theo dòng (R1.5, R1.6, R1.11, R1.12) | Tested |
+| P1.3 | `core/dailyLog`: trải công việc theo ngày, gộp nội dung (R1.1–R1.4, R1.10) + unit test | Tested |
+| P1.4 | `excel`: đọc vùng input, tạo sheet mới không trùng tên, ghi kết quả (R1.8, R1.9, R1.13) | Implemented |
+| P1.5 | UI F1: chọn vùng, nhận diện/chỉnh cột, xem trước, xuất | Implemented |
+| P1.6 | Kiểm thử F1 trên Excel Desktop Windows (Excel 2016 và Microsoft 365) | Not Started |
 
 ## Phase 2 — F2 Xuất theo form mẫu
 

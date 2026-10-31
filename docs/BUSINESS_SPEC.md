@@ -8,10 +8,10 @@
 
 ### F1.1 Luồng sử dụng
 
-1. Người dùng chọn sheet và vùng dữ liệu input (có dòng tiêu đề).
-2. Add-in tự nhận diện cột theo tiêu đề (`Nội dung công việc`, `Ngày bắt đầu`, `Ngày kết thúc`); người dùng có thể chỉnh lại cột tương ứng.
-3. Add-in kiểm tra dữ liệu, hiển thị số dòng hợp lệ / lỗi.
-4. Nhấn **Xuất** → tạo sheet mới gồm 2 cột: **Ngày** | **Nội dung**.
+1. Người dùng bôi chọn vùng danh sách công việc trên sheet (dòng đầu là tiêu đề; được phép chọn nguyên cột), nhấn **Lấy vùng đang chọn**.
+2. Add-in tự nhận diện cột theo tiêu đề (R1.12); người dùng có thể chỉnh lại cột tương ứng trong 3 ô chọn.
+3. Add-in kiểm tra dữ liệu, hiển thị số công việc hợp lệ, khoảng ngày, danh sách dòng lỗi và xem trước 5 ngày đầu.
+4. Nhấn **Xuất nhật ký theo ngày** → add-in đọc lại dữ liệu mới nhất của vùng; nếu dòng tiêu đề đã thay đổi thì dừng và yêu cầu kiểm tra lại cột; nếu không, tạo sheet mới gồm 2 cột: **Ngày** | **Nội dung**.
 
 ### F1.2 Quy tắc nghiệp vụ
 
@@ -25,7 +25,11 @@
 | R1.6 | Ngày bắt đầu không hợp lệ, hoặc Ngày kết thúc < Ngày bắt đầu, hoặc Nội dung trống → dòng lỗi: **bỏ qua và báo cáo** (số dòng, lý do). |
 | R1.7 | Chấp nhận ngày dạng Excel date (serial) và dạng text `dd/mm/yyyy`. |
 | R1.8 | Cột Ngày ghi dưới dạng Excel date, định dạng `dd/mm/yyyy`; cột Nội dung bật Wrap Text. |
-| R1.9 | Tên sheet kết quả mặc định `NK_TheoNgay`; nếu đã tồn tại → `NK_TheoNgay_2`, `_3`… **Không ghi đè sheet có sẵn.** |
+| R1.9 | Tên sheet kết quả mặc định `NK_TheoNgay`; nếu đã tồn tại → `NK_TheoNgay_2`, `_3`… (không phân biệt hoa/thường). **Không ghi đè sheet có sẵn.** |
+| R1.10 | Khoảng thời gian xuất tối đa **3.660 ngày** (~10 năm); vượt quá → báo lỗi, không xuất (chặn lỗi nhập năm, ví dụ 2062 thay vì 2026). Nội dung một ngày vượt 32.767 ký tự (giới hạn ô Excel) → báo lỗi. |
+| R1.11 | Dòng trống ở cả 3 cột chính → bỏ qua, không tính là lỗi. |
+| R1.12 | Nhận diện cột (không phân biệt dấu, hoa/thường): **Nội dung** = `Nội dung công việc`, `Tên công việc`, `Công việc`, `Nội dung` hoặc tiêu đề chứa "công việc"; **Bắt đầu** = `Ngày bắt đầu`, `Bắt đầu`, `Từ ngày` hoặc chứa "bắt đầu"; **Kết thúc** = `Ngày kết thúc`, `Kết thúc`, `Đến ngày` hoặc chứa "kết thúc". |
+| R1.13 | Ngày được hiểu theo hệ ngày **1900** của Excel (mặc định trên Windows). Cột Nội dung được đặt định dạng Text trước khi ghi, để nội dung bắt đầu bằng `-`, `=`, `+` không bị Excel hiểu là công thức. |
 
 ### F1.3 Ví dụ
 

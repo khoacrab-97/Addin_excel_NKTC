@@ -97,6 +97,7 @@ Never mark a feature **Verified** based only on successful compilation.
 - Never force push.
 - Never commit secrets.
 - Never push without user approval.
+  - Standing approval (granted by the project owner on 2026-10-31): commits on the working feature branch may be pushed without asking each time. Pushing to `main`, force pushing and history rewrites still require explicit approval.
 - Inspect `git diff` before committing.
 - Use meaningful commit messages.
 - Keep `main` stable.
