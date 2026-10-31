@@ -24,6 +24,8 @@ export function TemplatePanel(): JSX.Element {
   const { config, snapshot, headers, dayIndex, mappingErrors, currentDay, position, pending, busy, status } = state;
   const firstColumnIndex = snapshot?.firstColumnIndex ?? 0;
   const issues = dayIndex.issues;
+  // Khóa chỉnh sửa nguồn/gán cột trong lúc chờ xác nhận ghi đè: xác nhận chỉ áp dụng cho bộ ô đích đã hiển thị.
+  const editLocked = busy || pending !== undefined;
   const canExport =
     config !== undefined && snapshot !== undefined && dayIndex.days.length > 0 && mappingErrors.length === 0;
 
@@ -41,7 +43,7 @@ export function TemplatePanel(): JSX.Element {
             text="Lấy vùng đang chọn"
             iconProps={{ iconName: "SelectAll" }}
             onClick={state.pickSource}
-            disabled={busy}
+            disabled={editLocked}
           />
           {busy && <Spinner size={SpinnerSize.small} />}
         </Stack>
@@ -62,7 +64,7 @@ export function TemplatePanel(): JSX.Element {
             onChange={(_event, option) => {
               if (option) state.setDateColumn(Number(option.key));
             }}
-            disabled={busy}
+            disabled={editLocked}
           />
         )}
         {issues.length > 0 && (
@@ -88,7 +90,7 @@ export function TemplatePanel(): JSX.Element {
             firstColumnIndex={firstColumnIndex}
             dateColumn={config.dateColumn}
             mappings={config.mappings}
-            disabled={busy}
+            disabled={editLocked}
             onAssign={state.assignSelectedCell}
             onRemove={state.removeTarget}
           />

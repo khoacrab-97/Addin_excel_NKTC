@@ -2,15 +2,15 @@ name: Deploy GitHub Pages
 
 # Phát hành add-in lên https://khoacrab-97.github.io/Addin_excel_NKTC/
 # Yêu cầu một lần: Settings → Pages → Build and deployment → Source: "GitHub Actions".
+# Action được cố định theo commit SHA (chú thích ghi phiên bản tương ứng).
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
+# Mặc định chỉ quyền đọc; quyền ghi Pages / OIDC chỉ cấp cho job deploy.
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -18,27 +18,36 @@ concurrency:
 
 jobs:
   build:
+    # Chỉ phát hành từ main, kể cả khi chạy tay (workflow_dispatch) trên nhánh khác.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm audit --omit=dev
       - run: npm run check
       - run: npx office-addin-manifest validate dist/manifest.xml
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
           path: dist
 
   deploy:
     needs: build
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

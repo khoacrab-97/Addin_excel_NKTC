@@ -62,6 +62,8 @@ Kiểm thử trên Excel thật (Verified) vẫn phải chạy trên Excel Deskt
 
 ## Kiểm tra bảo mật
 
+Kết quả kiểm tra, biện pháp đã áp dụng và hướng dẫn cấu hình GitHub (bảo vệ nhánh `main`, môi trường `github-pages`): [`docs/BAO_MAT.md`](docs/BAO_MAT.md).
+
 Skill [`security-audit`](.claude/skills/security-audit/) (Cloudflare, MIT) được cài sẵn cho Claude Code trong `.claude/skills/`. Yêu cầu "security audit this codebase" để chạy kiểm tra toàn diện; báo cáo ghi ra `~/security-audit-skill/<repo>/run-<N>` (ngoài repo). Nguồn và cách cập nhật: [`SOURCE.md`](.claude/skills/security-audit/SOURCE.md).
 
 ## Phát hành

@@ -19,6 +19,11 @@ async function openTaskpane(input, options = {}) {
   const page = await browser.newPage({ viewport: options.viewport ?? { width: 380, height: 1100 } });
   const pageErrors = [];
   page.on("pageerror", (error) => pageErrors.push(error.message));
+  // Vi phạm Content-Security-Policy được trình duyệt báo qua console → coi là lỗi.
+  page.on("console", (message) => {
+    if (/Content Security Policy|Refused to (load|execute|apply)/i.test(message.text()))
+      pageErrors.push(message.text());
+  });
   const officeStub =
     `window.__SMOKE_INPUT = ${JSON.stringify({ apiMinor: 1, ...input })};\n` +
     fs.readFileSync(path.join(__dirname, "fake-excel.js"), "utf8");

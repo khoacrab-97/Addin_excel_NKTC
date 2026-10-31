@@ -69,7 +69,7 @@ Output:
 | R2.2 | Ô đích nằm trong vùng merge → ghi vào ô đầu (top-left) của vùng merge. Chọn nhiều ô → lấy ô trên-trái. Chọn nhiều vùng rời → báo lỗi. |
 | R2.3 | Chỉ ghi **giá trị**; giữ nguyên định dạng, merge, viền của form mẫu. |
 | R2.4 | Ô đích đang chứa **công thức** → cảnh báo, không ghi trừ khi người dùng xác nhận. |
-| R2.5 | Lần ghi đầu tiên (mỗi lần mở task pane, hoặc khi đổi bộ ô đích) vào ô đích đang có dữ liệu → yêu cầu xác nhận, liệt kê các ô; **Hủy** thì không ghi ô nào. Sau khi xác nhận, chuyển ngày không hỏi lại. |
+| R2.5 | Lần ghi đầu tiên (mỗi lần mở task pane, hoặc khi đổi bộ ô đích) vào ô đích đang có dữ liệu → yêu cầu xác nhận, liệt kê các ô; **Hủy** thì không ghi ô nào. Sau khi xác nhận, chuyển ngày không hỏi lại. Trong lúc chờ xác nhận, chọn vùng nguồn / cột Ngày / gán cột bị khóa; xác nhận chỉ có hiệu lực cho đúng bộ ô đích đã liệt kê — nếu bộ ô đích khác thì kiểm tra lại. |
 | R2.6 | Không ghi bất kỳ ô nào ngoài danh sách ô đích đã cấu hình. |
 | R2.7 | Mỗi lần xuất/chuyển ngày: đọc lại vùng nguồn mới nhất (không dùng dữ liệu cache). |
 | R2.8 | Cấu hình mapping được lưu trong workbook để dùng lại ở lần mở sau. |
@@ -77,6 +77,7 @@ Output:
 | R2.10 | Danh sách ngày điều hướng: dòng có ô Ngày trống → bỏ qua; ngày không hợp lệ → báo lỗi theo dòng; ngày trùng → báo lỗi, giữ dòng xuất hiện trước. |
 | R2.11 | Giá trị văn bản được ghi kèm dấu `'` đầu chuỗi (ký tự đánh dấu văn bản của Excel, không hiển thị) để Excel không hiểu nhầm `- …`, `= …`, `01/11` thành công thức/ngày mà không phải đổi định dạng ô của form. Số (kể cả ngày dạng serial) giữ nguyên → hiển thị theo định dạng sẵn có của ô đích. |
 | R2.12 | Ô đích chỉ nhận **một** ô; một ô đích không được gán cho 2 cột (cảnh báo khi gán). |
+| R2.14 | Cấu hình đọc từ workbook vượt giới hạn → bỏ toàn bộ cấu hình (fail closed): tên sheet ≤ 31 ký tự; địa chỉ vùng nguồn phải là một vùng liên tục không kèm tên sheet (`A1:I201`, `A:C`, `3:5`); ≤ 16.384 tiêu đề, mỗi tiêu đề ≤ 32.767 ký tự; ≤ 500 ô đích; chỉ số cột < 16.384. |
 | R2.13 | Nhận diện cột Ngày: tiêu đề `Ngày` → tiêu đề chứa từ "ngày" → cột đầu tiên có toàn bộ ô không trống là ngày hợp lệ. |
 
 ### F2.3 Biểu mẫu Excel "Tình hình thi công hàng ngày" (`templates/Mau_NKTC.xlsx`)
