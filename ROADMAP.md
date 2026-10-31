@@ -31,13 +31,16 @@
 
 | ID | Hạng mục | Trạng thái |
 |---|---|---|
-| P2.1 | `core/mapping`: mô hình mapping, kiểm tra hợp lệ (R2.1), điều hướng ngày + unit test | Not Started |
-| P2.2 | `excel`: đọc vùng nguồn, đếm cột, lấy ô đang chọn, xử lý ô merge theo cách tương thích ExcelApi 1.1 (R2.2) | Not Started |
-| P2.3 | `excel`: ghi giá trị an toàn vào ô đích — kiểm tra công thức/dữ liệu sẵn có (R2.3–R2.6) | Not Started |
-| P2.4 | Lưu/đọc cấu hình mapping trong workbook (R2.8) | Not Started |
-| P2.5 | UI Mapping 2 khu vực Input / Output | Not Started |
-| P2.6 | UI điều hướng ngày ◀ ▶, Đầu/Cuối, nhảy tới ngày; đọc lại nguồn mỗi lần (R2.7) | Not Started |
-| P2.7 | Xử lý lỗi sheet/vùng không còn tồn tại (R2.9) | Not Started |
+| P2.1 | `core/mapping`: mô hình mapping, kiểm tra hợp lệ (R2.1), điều hướng ngày + unit test | Tested |
+| P2.2 | `excel`: đọc vùng nguồn, đếm cột, lấy ô đang chọn, xử lý ô merge theo cách tương thích ExcelApi 1.1 (R2.2) | Tested |
+| P2.3 | `excel`: ghi giá trị an toàn vào ô đích — kiểm tra công thức/dữ liệu sẵn có (R2.3–R2.6) | Tested |
+| P2.4 | Lưu/đọc cấu hình mapping trong workbook (R2.8) | Tested |
+| P2.5 | UI Mapping 2 khu vực Input / Output | Tested |
+| P2.6 | UI điều hướng ngày ◀ ▶, Đầu/Cuối, nhảy tới ngày; đọc lại nguồn mỗi lần (R2.7) | Tested |
+| P2.7 | Xử lý lỗi sheet/vùng không còn tồn tại (R2.9) | Tested |
+| P2.8 | Kiểm thử F2 trên Excel Desktop Windows với biểu mẫu NKTC thật (xác nhận R2.11: dấu `'` không hiển thị) | Not Started |
+
+> P2.1 **Tested** = unit test. P2.2–P2.7 **Tested** = smoke test tự động 11 bước (`npm run smoke:f2`) với Excel giả lập + `test/fixtures/demo_f2.xlsx` (dữ liệu tiến độ thật + biểu mẫu MẪU).
 
 ## Phase 3 — F3 Tiện ích
 

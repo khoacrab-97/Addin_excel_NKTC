@@ -1,0 +1,37 @@
+{
+  "sheetName": "TDTC",
+  "address": "A1:C23",
+  "values": [
+    ["TÊN HẠNG MỤC/ CÔNG TÁC", "BẮT ĐẦU", "KẾT THÚC"],
+    ["HM - CÔNG TÁC CHUẨN BỊ", 46188.0, 46387.0],
+    ["   HM - CÔNG TÁC CHUẨN BỊ", 46188.0, 46203.0],
+    [
+      "       Tập kết máy móc thiết bị, vật tư đến công trường, xây dựng lán trại, nhận mặt bằng, khảo sát, bố trí thí nghiệm,…",
+      46188.0,
+      46203.0
+    ],
+    ["   HM - THI CÔNG", 46204.0, 46386.0],
+    ["       Phần trồng cây xanh", 46266.0, 46386.0],
+    ["          Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)", 46266.0, 46386.0],
+    ["          Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)", 46326.0, 46386.0],
+    ["          Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)", 46326.0, 46386.0],
+    ["          Xây dựng bó bồn gốc cây và gạch bê tông tự chèn", 46266.0, 46386.0],
+    ["       Phần hệ thống tưới tự động", 46204.0, 46265.0],
+    ["          Cung cấp và lắp đặt thiết bị tưới tự động", 46218.0, 46265.0],
+    [
+      "          Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)",
+      46204.0,
+      46251.0
+    ],
+    ["          Cung cấp và lặp đặt máy bơm, dây điện và phụ kiện bảo vệ", 46239.0, 46259.0],
+    ["          Cung cấp và lắp đặt tủ điện, tủ điều khiển (bao gồm móng tủ)", 46239.0, 46259.0],
+    ["          Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)", 46204.0, 46244.0],
+    ["          Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)", 46204.0, 46251.0],
+    ["          Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)", 46204.0, 46251.0],
+    ["          Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)", 46213.0, 46241.0],
+    ["   DỌN DẸP, VỆ SINH CÔNG TRÌNH SAU THI CÔNG", 46367.0, 46387.0],
+    ["      Dọn dẹp, vệ sinh công trình sau khi thi công", 46367.0, 46387.0],
+    ["   LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …", 46188.0, 46387.0],
+    ["      Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …", 46188.0, 46387.0]
+  ]
+}

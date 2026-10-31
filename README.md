@@ -47,8 +47,8 @@ npm run stop
 | Loại | Lệnh | Ghi chú |
 |---|---|---|
 | Unit test + hồi quy | `npm test` | Gồm hồi quy F1 trên `test/fixtures/tdtc-sample.json` (dữ liệu mẫu tự tạo, mô phỏng bảng tiến độ phân cấp). |
-| Smoke test F1 | `npm run smoke:f1` | Chạy bundle production trong Chromium với Excel giả lập (`scripts/smoke/fake-excel.js`). Cần Playwright + Chromium có sẵn trong môi trường (không phải dependency của dự án). |
-| Dữ liệu thật | `python3 -I scripts/fixtures/xlsx_to_fixture.py <file.xlsx> test/fixtures/local/<tên>.json` rồi `node scripts/smoke/run-f1.js test/fixtures/local/<tên>.json` | Thư mục `test/fixtures/local/` bị git bỏ qua — dữ liệu dự án thật không được đưa lên repo public. |
+| Smoke test F1 + F2 | `npm run smoke` (hoặc `smoke:f1`, `smoke:f2`) | Chạy bundle production trong Chromium với Excel giả lập (`scripts/smoke/fake-excel.js`). Cần Playwright + Chromium có sẵn trong môi trường (không phải dependency của dự án). |
+| Dữ liệu test | `test/fixtures/test_addin_xuat_nktc.xlsx` (tiến độ thật của chủ dự án), `test/fixtures/demo_f2.xlsx` (tiến độ thật + NK_TheoNgay + biểu mẫu MẪU) | Sinh lại: `python3 -I scripts/fixtures/make_demo_f2.py …` và `python3 -I scripts/fixtures/xlsx_to_fixture.py <file.xlsx> <out.json> [--all]`. Dữ liệu riêng tư để trong `test/fixtures/local/` (git bỏ qua). |
 
 Kiểm thử trên Excel thật (Verified) vẫn phải chạy trên Excel Desktop Windows.
 

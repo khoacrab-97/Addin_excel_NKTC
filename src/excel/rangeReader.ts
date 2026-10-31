@@ -1,5 +1,7 @@
-import { stripSheetName } from "../core/excel/address";
+import { normalizeCellAddress, stripSheetName } from "../core/address/address";
+import type { TargetCell } from "../core/mapping/types";
 import { UserFacingError } from "./errors";
+import { assertSheetsExist } from "./worksheets";
 
 /** Tham chiếu tới một vùng dữ liệu để đọc lại về sau. */
 export interface RangeRef {
@@ -39,16 +41,8 @@ export async function getSelectedRangeRef(): Promise<RangeRef> {
  */
 export async function readRange(ref: RangeRef): Promise<RangeSnapshot> {
   return Excel.run(async (context) => {
-    const worksheets = context.workbook.worksheets;
-    worksheets.load("items/name");
-    await context.sync();
-
-    // ExcelApi 1.1 không có getItemOrNullObject → kiểm tra tên sheet thủ công.
-    if (!worksheets.items.some((sheet) => sheet.name === ref.sheetName)) {
-      throw new UserFacingError(`Không tìm thấy sheet "${ref.sheetName}". Sheet có thể đã bị xóa hoặc đổi tên.`);
-    }
-
-    const sheet = worksheets.getItem(ref.sheetName);
+    await assertSheetsExist(context, [ref.sheetName]);
+    const sheet = context.workbook.worksheets.getItem(ref.sheetName);
     const target = sheet.getRange(ref.address).getIntersection(sheet.getUsedRange());
     target.load(["address", "values", "rowIndex", "columnIndex"]);
     try {
@@ -66,5 +60,26 @@ export async function readRange(ref: RangeRef): Promise<RangeSnapshot> {
       firstRowNumber: target.rowIndex + 1,
       firstColumnIndex: target.columnIndex,
     };
+  });
+}
+
+/**
+ * Lấy ô đang chọn làm ô đích (R2.2): nếu chọn ô merge (hoặc nhiều ô), lấy ô đầu tiên (trên-trái).
+ * Dùng `getCell(0, 0)` vì `getMergedAreas` cần ExcelApi 1.13.
+ */
+export async function getSelectedCell(): Promise<TargetCell> {
+  return Excel.run(async (context) => {
+    const selection = context.workbook.getSelectedRange();
+    const topLeft = selection.getCell(0, 0);
+    selection.load("address");
+    topLeft.load("address");
+    topLeft.worksheet.load("name");
+    await context.sync();
+    if (selection.address.includes(",")) {
+      throw new UserFacingError("Vui lòng chỉ chọn một ô (hoặc một ô merge) trên form mẫu.");
+    }
+    const address = normalizeCellAddress(stripSheetName(topLeft.address));
+    if (address === undefined) throw new UserFacingError("Không xác định được địa chỉ ô đang chọn.");
+    return { sheetName: topLeft.worksheet.name, address };
   });
 }

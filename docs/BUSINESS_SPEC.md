@@ -55,25 +55,29 @@ Output:
 ### F2.1 Luồng sử dụng
 
 1. Người dùng (tùy nhu cầu) bổ sung các cột nội dung phụ vào sheet theo ngày (Thời tiết, Ban chỉ huy – CBKT, Số công nhân, Số thiết bị, Nội dung nghiệm thu…).
-2. Mở màn hình **Mapping** (2 khu vực):
-   - **Bên Input:** chọn sheet → chọn vùng dữ liệu → add-in hiển thị **số lượng cột** và danh sách cột (tên tiêu đề + chữ cột). Người dùng chỉ định **cột Ngày** (khóa điều hướng).
-   - **Bên Output:** với mỗi cột được chọn, người dùng chọn **ô đích** trên form mẫu (chọn ô trên sheet rồi nhấn "Lấy ô đang chọn").
-3. Nhấn **Xuất** → giá trị của ngày đầu tiên được điền vào các ô đích.
-4. Thanh điều hướng: **◀ Ngày trước | [dd/mm/yyyy] | Ngày sau ▶** (thêm Đầu / Cuối / nhập ngày nhảy tới). Phạm vi điều hướng = các ngày có trong vùng input. Mỗi lần chuyển ngày, các ô đích được cập nhật theo dòng của ngày đó.
+2. Tab **Form mẫu** gồm 3 khu vực:
+   - **1. Nguồn dữ liệu (Input):** bôi chọn vùng dữ liệu (gồm dòng tiêu đề) → **Lấy vùng đang chọn** → add-in hiển thị vùng, **số lượng cột**, số ngày. **Cột Ngày** được tự nhận diện (R2.13), có thể chọn lại.
+   - **2. Gán cột vào ô (Output):** mỗi cột nguồn một dòng (chữ cột + tiêu đề). Người dùng chọn ô (hoặc ô merge) trên form → nhấn **Ô đang chọn** ở cột tương ứng. Có thể gán một cột vào nhiều ô; **× Bỏ gán** để xóa.
+   - **3. Xuất và chuyển ngày:** **Xuất lên form** → điền dữ liệu ngày đầu tiên (hoặc ngày đang mở lần trước) vào các ô đích.
+3. Thanh điều hướng: **« Đầu | ‹ Trước | [dd/mm/yyyy · Ngày i/n] | Sau › | Cuối »** và ô **Nhảy tới ngày**. Phạm vi điều hướng = các ngày hợp lệ trong vùng nguồn, tăng dần. Mỗi lần chuyển ngày, add-in đọc lại vùng nguồn và cập nhật các ô đích.
 
 ### F2.2 Quy tắc nghiệp vụ
 
 | Mã | Quy tắc |
 |---|---|
 | R2.1 | Mỗi mapping = (cột nguồn → 1 ô đích). Một cột có thể map tới nhiều ô; một ô đích chỉ nhận một cột. |
-| R2.2 | Ô đích nằm trong vùng merge → ghi vào ô đầu (top-left) của vùng merge. |
+| R2.2 | Ô đích nằm trong vùng merge → ghi vào ô đầu (top-left) của vùng merge. Chọn nhiều ô → lấy ô trên-trái. Chọn nhiều vùng rời → báo lỗi. |
 | R2.3 | Chỉ ghi **giá trị**; giữ nguyên định dạng, merge, viền của form mẫu. |
 | R2.4 | Ô đích đang chứa **công thức** → cảnh báo, không ghi trừ khi người dùng xác nhận. |
-| R2.5 | Lần ghi đầu tiên vào ô đích đang có dữ liệu → yêu cầu xác nhận. |
+| R2.5 | Lần ghi đầu tiên (mỗi lần mở task pane, hoặc khi đổi bộ ô đích) vào ô đích đang có dữ liệu → yêu cầu xác nhận, liệt kê các ô; **Hủy** thì không ghi ô nào. Sau khi xác nhận, chuyển ngày không hỏi lại. |
 | R2.6 | Không ghi bất kỳ ô nào ngoài danh sách ô đích đã cấu hình. |
 | R2.7 | Mỗi lần xuất/chuyển ngày: đọc lại vùng nguồn mới nhất (không dùng dữ liệu cache). |
 | R2.8 | Cấu hình mapping được lưu trong workbook để dùng lại ở lần mở sau. |
-| R2.9 | Vùng nguồn/ô đích bị xóa, đổi tên sheet hoặc không hợp lệ → báo lỗi rõ ràng, không ghi. |
+| R2.9 | Vùng nguồn/ô đích bị xóa, đổi tên sheet hoặc không hợp lệ → báo lỗi rõ ràng, không ghi ô nào. Dòng tiêu đề vùng nguồn thay đổi so với cấu hình → dừng, yêu cầu kiểm tra lại gán cột. |
+| R2.10 | Danh sách ngày điều hướng: dòng có ô Ngày trống → bỏ qua; ngày không hợp lệ → báo lỗi theo dòng; ngày trùng → báo lỗi, giữ dòng xuất hiện trước. |
+| R2.11 | Giá trị văn bản được ghi kèm dấu `'` đầu chuỗi (ký tự đánh dấu văn bản của Excel, không hiển thị) để Excel không hiểu nhầm `- …`, `= …`, `01/11` thành công thức/ngày mà không phải đổi định dạng ô của form. Số (kể cả ngày dạng serial) giữ nguyên → hiển thị theo định dạng sẵn có của ô đích. |
+| R2.12 | Ô đích chỉ nhận **một** ô; một ô đích không được gán cho 2 cột (cảnh báo khi gán). |
+| R2.13 | Nhận diện cột Ngày: tiêu đề `Ngày` → tiêu đề chứa từ "ngày" → cột đầu tiên có toàn bộ ô không trống là ngày hợp lệ. |
 
 ---
 
@@ -96,5 +100,6 @@ Output:
 | Q3 | Có xuất ngày không có công việc, ngày Chủ nhật/ngày lễ không? | Xuất tất cả ngày, kể cả ngày trống. |
 | Q4 | F2 có cần **xuất hàng loạt** (mỗi ngày một sheet, hoặc in/PDF tất cả ngày) không? | Ngoài phạm vi hiện tại; xem xét ở giai đoạn sau. |
 | Q5 | Cách phân phối add-in: Shared Folder Catalog (mạng nội bộ), Microsoft 365 Centralized Deployment, hay chỉ dùng cá nhân? Nơi hosting (GitHub Pages…)? | GitHub Pages + Shared Folder Catalog. |
-| Q7 | Bảng tiến độ có dòng hạng mục tổng và dòng công tác chi tiết (phân cấp bằng khoảng trắng đầu dòng). F1 lấy dòng nào? (chốt 31/10/2026, sau khi chạy thử file tiến độ mẫu) | **Giữ tất cả các dòng**, kể cả dòng hạng mục tổng. Khoảng trắng đầu dòng được bỏ khi gộp nội dung. |
+| Q7 | Bảng tiến độ có dòng hạng mục tổng và dòng công tác chi tiết (phân cấp bằng khoảng trắng đầu dòng). F1 lấy dòng nào? (chốt 31/10/2026, sau khi chạy thử file tiến độ mẫu) | **Giữ tất cả các dòng**, kể cả dòng hạng mục tổng. Khoảng trắng đầu dòng được bỏ khi gộp nội dung. Dữ liệu thực tế sẽ không có thụt lề phân cấp. |
+| Q8 | Biểu mẫu nhật ký thi công dùng cho F2? | Chưa có biểu mẫu thật; dùng biểu mẫu MẪU trong `test/fixtures/demo_f2.xlsx` để phát triển và chạy thử. Chạy lại khi có biểu mẫu thật. |
 | Q6 | Phiên bản Excel tối thiểu? | **Microsoft 365 hoặc Excel 2016 trở về sau.** Hệ quả kỹ thuật: xem `MASTER_CONTEXT.md` §4. |

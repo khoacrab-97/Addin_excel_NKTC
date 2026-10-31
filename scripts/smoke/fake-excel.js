@@ -3,7 +3,9 @@
  * Mô phỏng một phần Office.js ExcelApi 1.1 đủ cho các luồng của add-in:
  * workbook trong bộ nhớ, getRange/getUsedRange/getIntersection/getSelectedRange,
  * ghi values/numberFormat/format, lỗi ItemNotFound được trả về lúc context.sync().
- * Đầu vào: window.__SMOKE_INPUT = { sheets: [{ name, values }], selection: { sheet, address }, apiMinor }.
+ * Đầu vào: window.__SMOKE_INPUT = {
+ *   sheets: [{ name, values, formulas?: { "A26": "=..." } }], selection: { sheet, address }, apiMinor, settings? }.
+ * Ghi chuỗi bắt đầu bằng "'" → lưu phần sau dấu "'" (giống Excel: dấu "'" là ký tự đánh dấu văn bản).
  */
 (function () {
   "use strict";
@@ -11,6 +13,8 @@
   var input = window.__SMOKE_INPUT;
   var log = [];
   var sheets = [];
+  var selection = { sheet: input.selection.sheet, address: input.selection.address };
+  var settingsStore = JSON.parse(JSON.stringify(input.settings || {}));
 
   function colIndex(letters) {
     var n = 0;
@@ -53,7 +57,7 @@
   }
   Sheet.prototype.cell = function (r, c) {
     var key = r + "," + c;
-    if (!this.cells[key]) this.cells[key] = { value: "", numberFormat: "General", format: {} };
+    if (!this.cells[key]) this.cells[key] = { value: "", formula: null, numberFormat: "General", format: {} };
     return this.cells[key];
   };
   Sheet.prototype.peek = function (r, c) {
@@ -62,7 +66,7 @@
   Sheet.prototype.usedBox = function () {
     var box = null;
     for (var key in this.cells) {
-      if (this.cells[key].value === "") continue;
+      if (this.cells[key].value === "" && !this.cells[key].formula) continue;
       var rc = key.split(",").map(Number);
       if (!box) box = { r1: rc[0], c1: rc[1], r2: rc[0], c2: rc[1] };
       box.r1 = Math.min(box.r1, rc[0]);
@@ -72,6 +76,12 @@
     }
     return box || { r1: 0, c1: 0, r2: 0, c2: 0 };
   };
+
+  function findSheet(name) {
+    return sheets.filter(function (s) {
+      return s.name === name;
+    })[0];
+  }
 
   function makeContext() {
     var context = { pendingError: null };
@@ -128,10 +138,26 @@
         },
         set: function (v) {
           checkShape(v);
-          log.push({ op: "values", range: label });
+          var single = Array.isArray(v) && v.length === 1 && v[0].length === 1 ? v[0][0] : undefined;
+          log.push({ op: "values", range: label, value: single });
           forEachCell(v, function (cell, value) {
-            cell.value = value;
+            cell.formula = null;
+            cell.value = typeof value === "string" && value.charAt(0) === "'" ? value.slice(1) : value;
           });
+        },
+      });
+      Object.defineProperty(range, "formulas", {
+        get: function () {
+          var out = [];
+          for (var r = box.r1; r <= box.r2; r++) {
+            var row = [];
+            for (var c = box.c1; c <= box.c2; c++) {
+              var cell = sheet.peek(r, c);
+              row.push(cell ? cell.formula || cell.value : "");
+            }
+            out.push(row);
+          }
+          return out;
         },
       });
       Object.defineProperty(range, "numberFormat", {
@@ -235,7 +261,7 @@
     context.workbook = {
       worksheets: worksheets,
       getSelectedRange: function () {
-        return worksheets.getItem(input.selection.sheet).getRange(input.selection.address);
+        return worksheets.getItem(selection.sheet).getRange(selection.address);
       },
     };
     return context;
@@ -247,6 +273,10 @@
       row.forEach(function (value, c) {
         if (value !== "") sheet.cell(r, c).value = value;
       });
+    });
+    Object.keys(spec.formulas || {}).forEach(function (address) {
+      var box = parseAddress(address);
+      sheet.cell(box.r1, box.c1).formula = spec.formulas[address];
     });
     sheets.push(sheet);
   });
@@ -270,6 +300,42 @@
       }
       return rows;
     },
+    select: function (sheetName, address) {
+      selection = { sheet: sheetName, address: address };
+    },
+    setValue: function (sheetName, address, value) {
+      var box = parseAddress(address);
+      findSheet(sheetName).cell(box.r1, box.c1).value = value;
+    },
+    cell: function (sheetName, address) {
+      var sheet = findSheet(sheetName);
+      var box = parseAddress(address);
+      var cell = sheet && sheet.peek(box.r1, box.c1);
+      return cell ? { value: cell.value, formula: cell.formula } : null;
+    },
+    renameSheet: function (from, to) {
+      findSheet(from).name = to;
+    },
+    settings: function () {
+      return JSON.parse(JSON.stringify(settingsStore));
+    },
+    exportSheets: function () {
+      return sheets.map(function (s) {
+        var box = s.usedBox();
+        var values = [];
+        var formulas = {};
+        for (var r = 0; r <= box.r2; r++) {
+          var row = [];
+          for (var c = 0; c <= box.c2; c++) {
+            var cell = s.peek(r, c);
+            row.push(cell ? cell.value : "");
+            if (cell && cell.formula) formulas[colLetters(c) + (r + 1)] = cell.formula;
+          }
+          values.push(row);
+        }
+        return { name: s.name, values: values, formulas: formulas };
+      });
+    },
     deleteSheet: function (name) {
       sheets = sheets.filter(function (s) {
         return s.name !== name;
@@ -288,10 +354,29 @@
     },
   };
   window.Office = {
+    AsyncResultStatus: { Succeeded: "succeeded", Failed: "failed" },
     onReady: function () {
       return Promise.resolve({ host: "Excel", platform: "PC" });
     },
     context: {
+      document: {
+        settings: {
+          get: function (key) {
+            return key in settingsStore ? JSON.parse(JSON.stringify(settingsStore[key])) : null;
+          },
+          set: function (key, value) {
+            settingsStore[key] = JSON.parse(JSON.stringify(value));
+          },
+          saveAsync: function (callback) {
+            log.push({ op: "settings.saveAsync" });
+            if (callback) {
+              setTimeout(function () {
+                callback({ status: "succeeded" });
+              }, 0);
+            }
+          },
+        },
+      },
       diagnostics: { platform: "PC", version: "16.0 (giả lập)" },
       requirements: {
         isSetSupported: function (name, version) {

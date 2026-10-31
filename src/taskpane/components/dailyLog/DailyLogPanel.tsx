@@ -13,7 +13,7 @@ import {
 import { type JSX, useMemo, useState } from "react";
 import { type ColumnKey, type DailyLogColumns, detectColumns } from "../../../core/dailyLog/columns";
 import { prepareDailyLog, sameHeaders } from "../../../core/dailyLog/prepareDailyLog";
-import { columnLetter } from "../../../core/excel/address";
+import { columnLetter } from "../../../core/address/address";
 import { writeDailyLogSheet } from "../../../excel/dailyLogWriter";
 import { toUserMessage } from "../../../excel/errors";
 import { type RangeSnapshot, getSelectedRangeRef, readRange } from "../../../excel/rangeReader";

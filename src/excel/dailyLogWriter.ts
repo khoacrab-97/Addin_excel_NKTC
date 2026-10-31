@@ -1,7 +1,7 @@
 import type { DailyEntry } from "../core/dailyLog/buildDailyLog";
 import { uniqueSheetName } from "../core/dailyLog/sheetName";
 import { type DateSystem, toWorkbookSerial } from "../core/dates/excelDate";
-import { columnLetter } from "../core/excel/address";
+import { columnLetter } from "../core/address/address";
 
 const HEADER = ["Ngày", "Nội dung"] as const;
 const DATE_FORMAT = "dd/mm/yyyy";

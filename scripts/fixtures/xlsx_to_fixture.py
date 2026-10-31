@@ -6,6 +6,7 @@
 
 Cách dùng (chạy với -I để cô lập môi trường Python):
     python3 -I scripts/fixtures/xlsx_to_fixture.py <file.xlsx> <output.json> [tên sheet]
+    python3 -I scripts/fixtures/xlsx_to_fixture.py <file.xlsx> <output.json> --all   # mọi sheet + công thức
 """
 import datetime
 import json
@@ -32,8 +33,36 @@ def to_office_value(value):
     return str(value)
 
 
+def sheet_fixture(sheet, formula_sheet):
+    values = [[to_office_value(cell.value) for cell in row] for row in sheet.iter_rows()]
+    formulas = {
+        cell.coordinate: cell.value
+        for row in formula_sheet.iter_rows()
+        for cell in row
+        if isinstance(cell.value, str) and cell.value.startswith("=")
+    }
+    return {
+        "name": sheet.title,
+        "address": f"A1:{get_column_letter(sheet.max_column)}{sheet.max_row}",
+        "values": values,
+        "formulas": formulas,
+    }
+
+
+def main_all(source, output):
+    values_wb = openpyxl.load_workbook(source, data_only=True)
+    formulas_wb = openpyxl.load_workbook(source)
+    fixture = {"sheets": [sheet_fixture(s, formulas_wb[s.title]) for s in values_wb.worksheets]}
+    with open(output, "w", encoding="utf-8") as handle:
+        json.dump(fixture, handle, ensure_ascii=False, indent=1)
+    print(f"Đã ghi {output}: {', '.join(s['name'] for s in fixture['sheets'])}")
+
+
 def main():
     source, output = sys.argv[1], sys.argv[2]
+    if len(sys.argv) > 3 and sys.argv[3] == "--all":
+        main_all(source, output)
+        return
     workbook = openpyxl.load_workbook(source, data_only=True)
     if workbook.epoch != openpyxl.utils.datetime.CALENDAR_WINDOWS_1900:
         raise SystemExit("Chỉ hỗ trợ workbook hệ ngày 1900.")

@@ -1,7 +1,7 @@
 import type { JSX } from "react";
 import { Pivot, PivotItem, Stack } from "@fluentui/react";
-import { PlaceholderPanel } from "./components/PlaceholderPanel";
 import { DailyLogPanel } from "./components/dailyLog/DailyLogPanel";
+import { TemplatePanel } from "./components/template/TemplatePanel";
 import { UtilitiesPanel } from "./components/UtilitiesPanel";
 
 const containerTokens = { padding: 12 };
@@ -14,7 +14,7 @@ export function App(): JSX.Element {
           <DailyLogPanel />
         </PivotItem>
         <PivotItem headerText="Form mẫu" itemKey="template">
-          <PlaceholderPanel title="Xuất theo form mẫu" phase="Phase 2" />
+          <TemplatePanel />
         </PivotItem>
         <PivotItem headerText="Tiện ích" itemKey="utilities">
           <UtilitiesPanel />
