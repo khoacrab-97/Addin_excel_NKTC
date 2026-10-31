@@ -3,7 +3,11 @@
 Excel Add-in lập nhật ký thi công theo ngày và xuất theo form mẫu.
 Tài liệu dự án: [`MASTER_CONTEXT.md`](MASTER_CONTEXT.md) · [`ROADMAP.md`](ROADMAP.md) · [`docs/BUSINESS_SPEC.md`](docs/BUSINESS_SPEC.md) · Quy tắc phát triển: [`CLAUDE.md`](CLAUDE.md).
 
-## Yêu cầu
+## Cài đặt cho người dùng
+
+Xem [`docs/HUONG_DAN_CAI_DAT.md`](docs/HUONG_DAN_CAI_DAT.md). Bản phát hành: <https://khoacrab-97.github.io/Addin_excel_NKTC/>. Kiểm thử nghiệm thu: [`docs/KIEM_THU_NGHIEM_THU.md`](docs/KIEM_THU_NGHIEM_THU.md).
+
+## Yêu cầu (môi trường phát triển)
 
 - Windows, Microsoft Excel Desktop (Microsoft 365 hoặc Excel 2016 trở về sau)
 - Node.js 22 LTS (22.12 trở lên)
@@ -55,6 +59,15 @@ npm run stop
 | Dữ liệu test | `test/fixtures/test_addin_xuat_nktc.xlsx` (tiến độ thật của chủ dự án), `test/fixtures/demo_f2.xlsx` (tiến độ thật + NK_TheoNgay có cột phụ mẫu + biểu mẫu `Mẫu NKTC`) | Sinh lại: `python3 -I scripts/fixtures/make_nktc_workbooks.py test/fixtures/test_addin_xuat_nktc.xlsx` rồi `python3 -I scripts/fixtures/xlsx_to_fixture.py test/fixtures/demo_f2.xlsx test/fixtures/demo_f2.json --all`. Dữ liệu riêng tư để trong `test/fixtures/local/` (git bỏ qua). |
 
 Kiểm thử trên Excel thật (Verified) vẫn phải chạy trên Excel Desktop Windows.
+
+## Phát hành
+
+| Workflow | Kích hoạt | Nội dung |
+|---|---|---|
+| `.github/workflows/ci.yml` | Push lên `main` / `claude/**`, pull request | `npm run check` + validate `dist/manifest.xml` bằng dịch vụ Microsoft |
+| `.github/workflows/deploy-pages.yml` | Push lên `main` hoặc chạy tay (Actions → Run workflow) | Build + đưa `dist/` lên GitHub Pages |
+
+Phiên bản phát hành lấy từ `package.json` (`version`) và tự đồng bộ vào manifest (`x.y.z.0`) và `version.json`.
 
 ## Cấu trúc thư mục
 

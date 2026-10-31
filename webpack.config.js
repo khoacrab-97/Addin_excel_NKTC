@@ -28,7 +28,8 @@ module.exports = async (env, argv) => {
     },
     output: {
       path: path.resolve(__dirname, "dist"),
-      filename: "[name].js",
+      // Production: tên file có mã băm nội dung → Excel không dùng bản cũ trong cache sau khi cập nhật.
+      filename: isDev ? "[name].js" : "[name].[contenthash:8].js",
       clean: true,
     },
     resolve: {
@@ -64,9 +65,30 @@ module.exports = async (env, argv) => {
             from: "manifest.xml",
             to: "manifest.xml",
             transform(content) {
-              return isDev ? content : content.toString().split(URL_DEV).join(URL_PROD);
+              // Phiên bản manifest luôn khớp package.json (x.y.z → x.y.z.0).
+              const versioned = content
+                .toString()
+                .replace(/<Version>[^<]*<\/Version>/, `<Version>${pkg.version}.0</Version>`);
+              return isDev ? versioned : versioned.split(URL_DEV).join(URL_PROD);
             },
           },
+          {
+            // Thông tin phiên bản đang phát hành (dùng cho kiểm tra cập nhật — Phase 3).
+            from: "package.json",
+            to: "version.json",
+            transform() {
+              return JSON.stringify({ version: pkg.version, builtAt: new Date().toISOString() }, null, 2);
+            },
+          },
+          {
+            from: "src/site/index.html",
+            to: "index.html",
+            transform(content) {
+              return content.toString().split("__APP_VERSION__").join(pkg.version);
+            },
+          },
+          // GitHub Pages: tắt Jekyll để phục vụ nguyên trạng mọi file.
+          { from: "src/site/.nojekyll", to: ".nojekyll", toType: "file" },
         ],
       }),
     ],

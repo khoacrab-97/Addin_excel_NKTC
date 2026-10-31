@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nhật ký thi công – Excel Add-in</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 24px 16px;
+        font-family:
+          "Segoe UI",
+          -apple-system,
+          sans-serif;
+        color: #201f1e;
+        background: #ffffff;
+        line-height: 1.5;
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 24px;
+        margin: 0 0 4px;
+      }
+      .version {
+        color: #605e5c;
+        margin: 0 0 24px;
+      }
+      a.button {
+        display: inline-block;
+        padding: 8px 16px;
+        background: #217346;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 2px;
+      }
+      ol li {
+        margin-bottom: 6px;
+      }
+      code {
+        background: #f3f2f1;
+        padding: 1px 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Nhật ký thi công – Excel Add-in</h1>
+      <p class="version">Phiên bản __APP_VERSION__</p>
+      <p>Add-in lập nhật ký thi công theo ngày từ bảng tiến độ và xuất lên biểu mẫu "Tình hình thi công hàng ngày".</p>
+      <p><a class="button" href="manifest.xml" download="manifest.xml">Tải manifest.xml</a></p>
+      <h2>Cài đặt nhanh (Excel Desktop Windows)</h2>
+      <ol>
+        <li>
+          Tạo một thư mục chia sẻ trong mạng nội bộ (ví dụ <code>\\TEN-MAY\NKTC_Addin</code>) và lưu file
+          <code>manifest.xml</code> vào đó.
+        </li>
+        <li>
+          Excel → <b>File</b> → <b>Options</b> → <b>Trust Center</b> → <b>Trust Center Settings</b> →
+          <b>Trusted Add-in Catalogs</b>: nhập đường dẫn thư mục chia sẻ → <b>Add catalog</b> → tích
+          <b>Show in Menu</b> → OK.
+        </li>
+        <li>Đóng và mở lại Excel.</li>
+        <li>
+          <b>Insert</b> → <b>My Add-ins</b> (hoặc <b>Get Add-ins</b>) → thẻ <b>SHARED FOLDER</b> → chọn
+          <b>Nhật ký thi công</b> → <b>Add</b>.
+        </li>
+      </ol>
+      <p>
+        Hướng dẫn chi tiết:
+        <a href="https://github.com/khoacrab-97/Addin_excel_NKTC/blob/HEAD/docs/HUONG_DAN_CAI_DAT.md"
+          >docs/HUONG_DAN_CAI_DAT.md</a
+        >
+      </p>
+    </main>
+  </body>
+</html>
