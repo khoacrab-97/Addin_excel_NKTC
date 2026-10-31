@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { columnIndexFromLetter, columnLetter, normalizeCellAddress, stripSheetName } from "./address";
+import { columnIndexFromLetter, columnLetter, isRangeAddress, normalizeCellAddress, stripSheetName } from "./address";
 
 describe("stripSheetName", () => {
   it.each([
@@ -53,4 +53,17 @@ describe("normalizeCellAddress", () => {
   it.each(["B5:C6", "B", "5", "XFE1", "A0", "A1048577", "Form!B5", ""])("từ chối %j", (address) => {
     expect(normalizeCellAddress(address)).toBeUndefined();
   });
+});
+
+describe("isRangeAddress", () => {
+  it.each(["B2", "A1:I201", "$A$1:$C$23", "A:C", "$A:$C", "3:5", "XFD1048576"])("chấp nhận %j", (address) => {
+    expect(isRangeAddress(address)).toBe(true);
+  });
+
+  it.each(["", "Sheet1!A1:C3", "A1:B2,D1:D5", "A1:", ":B2", "A1:B2:C3", "TenVung", "=A1", "A1 B2", "A".repeat(40)])(
+    "từ chối %j",
+    (address) => {
+      expect(isRangeAddress(address)).toBe(false);
+    },
+  );
 });

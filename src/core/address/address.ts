@@ -41,3 +41,16 @@ export function normalizeCellAddress(address: string): string | undefined {
   if (columnIndexFromLetter(letters) > MAX_COLUMN_INDEX || row < 1 || row > MAX_ROW) return undefined;
   return `${letters}${row}`;
 }
+
+const RANGE_CELL = String.raw`\$?[A-Za-z]{1,3}\$?\d{1,7}`;
+const RANGE_PATTERN = new RegExp(
+  String.raw`^(?:${RANGE_CELL}(?::${RANGE_CELL})?|\$?[A-Za-z]{1,3}:\$?[A-Za-z]{1,3}|\$?\d{1,7}:\$?\d{1,7})$`,
+);
+
+/**
+ * Địa chỉ một vùng liên tục không gồm tên sheet: `B2`, `A1:I201`, `A:C` (nguyên cột), `3:5` (nguyên dòng).
+ * Dùng để kiểm tra địa chỉ đọc từ dữ liệu bên ngoài (cấu hình lưu trong workbook).
+ */
+export function isRangeAddress(address: string): boolean {
+  return address.length <= 32 && RANGE_PATTERN.test(address);
+}

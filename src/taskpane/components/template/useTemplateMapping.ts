@@ -21,6 +21,8 @@ export interface StatusMessage {
 export interface PendingConfirmation {
   risky: TargetState[];
   day: number;
+  /** Bộ ô đích tại thời điểm hỏi; xác nhận chỉ có hiệu lực cho đúng bộ ô này. */
+  key: string;
 }
 
 const EMPTY_INDEX: DayIndex = { days: [], issues: [] };
@@ -90,6 +92,7 @@ export function useTemplateMapping() {
   }, [saved]);
 
   const pickSource = (): void => {
+    if (pending) return;
     void run(async () => {
       const fresh = await readRange(await getSelectedRangeRef());
       const nextHeaders = headerTexts(fresh.values[0] ?? []);
@@ -107,12 +110,12 @@ export function useTemplateMapping() {
   };
 
   const setDateColumn = (column: number): void => {
-    if (!config) return;
+    if (!config || pending) return;
     void run(() => persist({ ...config, dateColumn: column }));
   };
 
   const assignSelectedCell = (column: number): void => {
-    if (!config) return;
+    if (!config || pending) return;
     void run(async () => {
       const target = await getSelectedCell();
       const owner = config.mappings.find((mapping) => targetKey(mapping.target) === targetKey(target));
@@ -128,7 +131,7 @@ export function useTemplateMapping() {
   };
 
   const removeTarget = (target: TargetCell): void => {
-    if (!config) return;
+    if (!config || pending) return;
     void run(() =>
       persist({
         ...config,
@@ -137,8 +140,12 @@ export function useTemplateMapping() {
     );
   };
 
-  /** Ghi dữ liệu của `day` (hoặc ngày gần nhất còn tồn tại) lên form; đọc lại vùng nguồn trước (R2.7). */
-  const showDay = (day: number | undefined, confirmed = false): void => {
+  /**
+   * Ghi dữ liệu của `day` (hoặc ngày gần nhất còn tồn tại) lên form; đọc lại vùng nguồn trước (R2.7).
+   * `approvedKey`: bộ ô đích người dùng vừa đồng ý ghi đè. Nếu bộ ô đích hiện tại khác (đã sửa gán cột
+   * trong lúc chờ xác nhận), các ô đích được kiểm tra lại thay vì ghi thẳng (R2.4, R2.5).
+   */
+  const showDay = (day: number | undefined, approvedKey?: string): void => {
     if (!config) return;
     void run(async () => {
       const fresh = await readRange(config.source);
@@ -165,11 +172,11 @@ export function useTemplateMapping() {
       if (!target) return;
 
       const key = mappingKey(config);
-      if (!confirmed && confirmedKey.current !== key) {
+      if (approvedKey !== key && confirmedKey.current !== key) {
         const states = await inspectTargets(config.mappings.map((mapping) => mapping.target));
         const risky = states.filter((state) => state.hasFormula || state.hasValue);
         if (risky.length > 0) {
-          setPending({ risky, day: target.day });
+          setPending({ risky, day: target.day, key });
           return;
         }
       }
@@ -227,7 +234,7 @@ export function useTemplateMapping() {
       showDay(currentDay);
     },
     confirmPending: () => {
-      if (pending) showDay(pending.day, true);
+      if (pending) showDay(pending.day, pending.key);
     },
     cancelPending: () => {
       setPending(undefined);

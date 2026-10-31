@@ -13,12 +13,16 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      # Action được cố định theo commit SHA (chú thích ghi phiên bản tương ứng).
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Lỗ hổng đã công bố trong thư viện đi kèm bản phát hành → CI đỏ.
+      - name: Audit runtime dependencies
+        run: npm audit --omit=dev
       # typecheck → lint → format:check → unit test → build production
       - run: npm run check
       - name: Validate production manifest (Microsoft validation service)

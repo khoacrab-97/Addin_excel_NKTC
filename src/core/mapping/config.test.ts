@@ -22,6 +22,22 @@ describe("parseMappingConfig (R2.8)", () => {
     expect(parseMappingConfig({ ...valid, currentDay: "x" })).not.toHaveProperty("currentDay");
   });
 
+  it("chấp nhận cấu hình đúng giới hạn (500 mapping, tên sheet 31 ký tự, vùng nguyên cột)", () => {
+    const atLimit = {
+      ...valid,
+      source: { sheetName: "S".repeat(31), address: "A:I" },
+      mappings: Array.from({ length: 500 }, (_, i) => ({
+        column: 1,
+        target: { sheetName: "F".repeat(31), address: `A${String(i + 1)}` },
+      })),
+    };
+    expect(parseMappingConfig(atLimit)?.mappings).toHaveLength(500);
+  });
+
+  it("bỏ currentDay vượt ngày lớn nhất Excel", () => {
+    expect(parseMappingConfig({ ...valid, currentDay: 3_000_000 })).not.toHaveProperty("currentDay");
+  });
+
   it.each([
     ["không phải object", "abc"],
     ["sai version", { ...valid, version: 2 }],
@@ -33,6 +49,30 @@ describe("parseMappingConfig (R2.8)", () => {
       { ...valid, mappings: [{ column: 1, target: { sheetName: "Form", address: "A9:B10" } }] },
     ],
     ["mapping thiếu sheet", { ...valid, mappings: [{ column: 1, target: { address: "A9" } }] }],
+    ["địa chỉ vùng nguồn không hợp lệ", { ...valid, source: { sheetName: "NK_TheoNgay", address: "=HYPERLINK(1)" } }],
+    ["địa chỉ vùng nguồn gồm tên sheet", { ...valid, source: { sheetName: "NK_TheoNgay", address: "Khac!A1:B2" } }],
+    ["tên sheet nguồn dài hơn 31 ký tự", { ...valid, source: { sheetName: "S".repeat(32), address: "A1:B2" } }],
+    [
+      "tên sheet đích dài hơn 31 ký tự",
+      { ...valid, mappings: [{ column: 1, target: { sheetName: "F".repeat(32), address: "A9" } }] },
+    ],
+    [
+      "quá nhiều mapping",
+      {
+        ...valid,
+        mappings: Array.from({ length: 501 }, (_, i) => ({
+          column: 1,
+          target: { sheetName: "Form", address: `A${String(i + 1)}` },
+        })),
+      },
+    ],
+    ["quá nhiều tiêu đề", { ...valid, headers: Array.from({ length: 16_385 }, () => "x") }],
+    ["tiêu đề dài hơn giới hạn ô", { ...valid, headers: ["x".repeat(32_768)] }],
+    [
+      "cột vượt số cột Excel",
+      { ...valid, mappings: [{ column: 16_384, target: { sheetName: "Form", address: "A9" } }] },
+    ],
+    ["cột Ngày vượt số cột Excel", { ...valid, dateColumn: 16_384 }],
   ])("từ chối khi %s", (_label, raw) => {
     expect(parseMappingConfig(raw)).toBeUndefined();
   });

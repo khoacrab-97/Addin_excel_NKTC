@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      CSP: chỉ chạy script của add-in (cùng origin) và Office.js (CDN Microsoft); cấm plugin, đổi base URL, gửi form.
+      Không giới hạn style/font/kết nối vì Fluent UI chèn style và tải font icon từ CDN Office.
+      IE11 (Excel 2016/2019) bỏ qua thẻ này; WebView2 (Microsoft 365) áp dụng.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="script-src 'self' https://appsforoffice.microsoft.com; object-src 'none'; base-uri 'self'; form-action 'none'"
+    />
     <title>Nhật ký thi công</title>
     <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   </head>

@@ -166,6 +166,12 @@ async function main() {
   await page.waitForSelector(`text=→ ${SHEET}!${MAPPINGS[MAPPINGS.length - 1].cell}`);
   await page.getByRole("button", { name: "Xuất lại ngày đang chọn" }).click();
   await page.waitForSelector("text=sẽ bị ghi đè");
+  // Trong lúc chờ xác nhận: khóa chỉnh sửa nguồn/gán cột (xác nhận chỉ áp dụng cho bộ ô đích đang hiển thị).
+  for (const m of MAPPINGS) {
+    assert.ok(await page.getByRole("button", { name: `Gán ô đang chọn cho cột ${m.column}` }).isDisabled());
+  }
+  assert.ok(await page.getByRole("button", { name: "Lấy vùng đang chọn" }).isDisabled());
+  assert.ok(await page.getByRole("button", { name: `Bỏ gán ô ${SHEET}!${MAPPINGS[0].cell}` }).isDisabled());
   start = await logLength();
   await page.getByRole("button", { name: "Hủy" }).click();
   await settle();
@@ -176,7 +182,7 @@ async function main() {
   await assertDayOnForm("05/08/2026");
   pass(
     "Khôi phục cấu hình khi mở lại",
-    `${MAPPINGS.length} gán cột + ngày 05/08/2026; xác nhận ghi đè: Hủy không ghi, Ghi đè thì ghi`,
+    `${MAPPINGS.length} gán cột + ngày 05/08/2026; chờ xác nhận thì khóa gán cột; Hủy không ghi, Ghi đè thì ghi`,
   );
 
   // 10. Ô đích chứa công thức → cảnh báo CÔNG THỨC; Hủy giữ nguyên công thức (R2.4).
