@@ -1,11 +1,11 @@
 import { Stack, Text } from "@fluentui/react";
-import { useMemo } from "react";
+import { type JSX, useMemo } from "react";
 import { getHostEnvironment } from "../../excel/environment";
 import { APP_VERSION } from "../../version/version";
 
 /** Tab Tiện ích: hiện tại hiển thị phiên bản và môi trường (phục vụ kiểm tra P0.6). */
 export function UtilitiesPanel(): JSX.Element {
-  const environment = useMemo(getHostEnvironment, []);
+  const environment = useMemo(() => getHostEnvironment(), []);
 
   const rows: ReadonlyArray<[string, string]> = [
     ["Phiên bản add-in", APP_VERSION],

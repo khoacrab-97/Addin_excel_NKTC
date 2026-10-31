@@ -6,7 +6,7 @@ Tài liệu dự án: [`MASTER_CONTEXT.md`](MASTER_CONTEXT.md) · [`ROADMAP.md`]
 ## Yêu cầu
 
 - Windows, Microsoft Excel Desktop (Microsoft 365 hoặc Excel 2016 trở về sau)
-- Node.js 20 LTS trở lên
+- Node.js 22 LTS (22.12 trở lên)
 
 ## Chạy thử trên Excel Desktop (môi trường dev)
 
@@ -33,7 +33,11 @@ npm run stop
 
 | Lệnh | Mục đích |
 |---|---|
+| `npm run check` | Chạy toàn bộ: typecheck → lint → format:check → test → build |
 | `npm run typecheck` | Kiểm tra kiểu TypeScript (strict) |
+| `npm run lint` / `npm run lint:fix` | ESLint (kiểm tra / tự sửa) |
+| `npm run format` / `npm run format:check` | Prettier (định dạng / kiểm tra định dạng) |
+| `npm test` / `npm run test:watch` | Unit test bằng Vitest (file `src/**/*.test.ts`) |
 | `npm run build` | Build production vào `dist/` (manifest trỏ tới GitHub Pages) |
 | `npm run build:dev` | Build development (manifest trỏ tới `localhost`) |
 | `npm run validate` | Kiểm tra manifest bằng dịch vụ của Microsoft (cần Internet) |

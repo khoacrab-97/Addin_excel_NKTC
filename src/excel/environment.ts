@@ -21,8 +21,8 @@ export function detectMaxExcelApi(): string {
 
 /** Đọc thông tin môi trường. Gọi sau khi `Office.onReady` hoàn tất. */
 export function getHostEnvironment(): HostEnvironment {
-  // `diagnostics` có thể không có trên bản Office cũ → kiểm tra trước khi đọc.
-  const diagnostics: Office.ContextInformation | undefined = Office.context.diagnostics;
+  // Type definitions khai báo `diagnostics` luôn có, nhưng bản Office cũ có thể thiếu → coi là optional.
+  const { diagnostics } = Office.context as Partial<Office.Context>;
   return {
     platform: diagnostics ? String(diagnostics.platform) : "Không xác định",
     officeVersion: diagnostics ? diagnostics.version : "Không xác định",

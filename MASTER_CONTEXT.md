@@ -42,11 +42,11 @@ Danh sách nhật ký dạng bảng (có dòng tiêu đề), mỗi dòng là m�
 | Excel API | Office.js, requirement set **ExcelApi 1.1** làm mức tối thiểu | Excel 2016 bản mua một lần chỉ hỗ trợ ExcelApi 1.1. API cao hơn chỉ được dùng kèm kiểm tra `isSetSupported` và có phương án thay thế. |
 | Trình duyệt nhúng | Phải chạy được trên **Internet Explorer 11** | Excel 2016/2019 bản mua một lần dùng IE11 để hiển thị add-in. |
 | UI | **React 17** + **Fluent UI React v8** + TypeScript (strict) | React 18 và Fluent UI v9 không hỗ trợ IE11. |
-| Build | Webpack 5 + Babel (`preset-env`, core-js polyfill), output **ES5** | `tsc --noEmit` dùng để kiểm tra kiểu. |
+| Build | Webpack 5 + Babel (`preset-env`, core-js polyfill), output **ES5** | `tsc --noEmit` dùng để kiểm tra kiểu. Môi trường dev: Node.js ≥ 22.12. |
 | Hosting | GitHub Pages: `https://khoacrab-97.github.io/Addin_excel_NKTC/` (Q5) | Build production tự thay URL `localhost` trong manifest. |
 | Phân phối | Shared Folder Catalog (thư mục chia sẻ mạng nội bộ) (Q5) | |
-| Test | Vitest (unit test tầng `core`) | Thiết lập ở P0.5. |
-| Lint | ESLint + Prettier | Thiết lập ở P0.5. |
+| Test | Vitest (`src/**/*.test.ts`, môi trường Node) | Bắt buộc cho business logic tầng `core`. |
+| Lint | ESLint (typescript-eslint `strictTypeChecked`, react-hooks) + Prettier | ESLint chặn tầng `core` dùng `Office`/`Excel` hoặc import `excel`/`taskpane`. |
 
 ### Hệ quả của mức tối thiểu ExcelApi 1.1
 

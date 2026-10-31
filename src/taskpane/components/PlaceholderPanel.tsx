@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { MessageBar, MessageBarType, Stack, Text } from "@fluentui/react";
 
 interface PlaceholderPanelProps {

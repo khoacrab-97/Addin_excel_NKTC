@@ -1,3 +1,4 @@
+import type { JSX } from "react";
 import { Pivot, PivotItem, Stack } from "@fluentui/react";
 import { PlaceholderPanel } from "./components/PlaceholderPanel";
 import { UtilitiesPanel } from "./components/UtilitiesPanel";
