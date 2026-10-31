@@ -39,8 +39,9 @@
 | P2.6 | UI điều hướng ngày ◀ ▶, Đầu/Cuối, nhảy tới ngày; đọc lại nguồn mỗi lần (R2.7) | Tested |
 | P2.7 | Xử lý lỗi sheet/vùng không còn tồn tại (R2.9) | Tested |
 | P2.8 | Kiểm thử F2 trên Excel Desktop Windows với biểu mẫu NKTC thật (xác nhận R2.11: dấu `'` không hiển thị) | Not Started |
+| P2.9 | Biểu mẫu Excel "Tình hình thi công hàng ngày" chuyển từ mẫu Word (`templates/Mau_NKTC.xlsx`, BUSINESS_SPEC §F2.3) | Tested |
 
-> P2.1 **Tested** = unit test. P2.2–P2.7 **Tested** = smoke test tự động 11 bước (`npm run smoke:f2`) với Excel giả lập + `test/fixtures/demo_f2.xlsx` (dữ liệu tiến độ thật + biểu mẫu MẪU).
+> P2.1 **Tested** = unit test. P2.2–P2.7 **Tested** = smoke test tự động 11 bước (`npm run smoke:f2`) với Excel giả lập + `test/fixtures/demo_f2.xlsx` (dữ liệu tiến độ thật + biểu mẫu `Mẫu NKTC` chuyển từ mẫu Word). P2.9 **Tested** = smoke F2 trên biểu mẫu này + kiểm tra bản in A4 (LibreOffice → PDF, 2 trang).
 
 ## Phase 3 — F3 Tiện ích
 

@@ -124,7 +124,7 @@
   },
   {
    "name": "NK_TheoNgay",
-   "address": "A1:G201",
+   "address": "A1:I201",
    "values": [
     [
      "Ngày",
@@ -133,7 +133,9 @@
      "Ban chỉ huy - CBKT",
      "Số công nhân",
      "Số thiết bị",
-     "Nội dung nghiệm thu"
+     "Nội dung nghiệm thu",
+     "Sự cố, phát sinh",
+     "Kiến nghị"
     ],
     [
      46188.0,
@@ -142,6 +144,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
@@ -151,6 +155,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
@@ -160,24 +166,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
      46191.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - CÔNG TÁC CHUẨN BỊ\n- Tập kết máy móc thiết bị, vật tư đến công trường, xây dựng lán trại, nhận mặt bằng, khảo sát, bố trí thí nghiệm,…\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
      46192.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - CÔNG TÁC CHUẨN BỊ\n- Tập kết máy móc thiết bị, vật tư đến công trường, xây dựng lán trại, nhận mặt bằng, khảo sát, bố trí thí nghiệm,…\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
@@ -187,6 +199,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
@@ -196,6 +210,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
@@ -205,24 +221,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
      46196.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - CÔNG TÁC CHUẨN BỊ\n- Tập kết máy móc thiết bị, vật tư đến công trường, xây dựng lán trại, nhận mặt bằng, khảo sát, bố trí thí nghiệm,…\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
      46197.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - CÔNG TÁC CHUẨN BỊ\n- Tập kết máy móc thiết bị, vật tư đến công trường, xây dựng lán trại, nhận mặt bằng, khảo sát, bố trí thí nghiệm,…\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
@@ -232,6 +254,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
@@ -241,6 +265,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
@@ -250,24 +276,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
      46201.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - CÔNG TÁC CHUẨN BỊ\n- Tập kết máy móc thiết bị, vật tư đến công trường, xây dựng lán trại, nhận mặt bằng, khảo sát, bố trí thí nghiệm,…\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
      46202.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - CÔNG TÁC CHUẨN BỊ\n- Tập kết máy móc thiết bị, vật tư đến công trường, xây dựng lán trại, nhận mặt bằng, khảo sát, bố trí thí nghiệm,…\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ],
     [
@@ -277,7 +309,9 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
-     "Nghiệm thu công tác chuẩn bị mặt bằng, lán trại"
+     "Nghiệm thu công tác chuẩn bị mặt bằng, lán trại",
+     "",
+     ""
     ],
     [
      46204.0,
@@ -286,6 +320,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -295,24 +331,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46206.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46207.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -322,6 +364,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -331,6 +375,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -340,24 +386,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46211.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46212.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -367,6 +419,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      28,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -376,6 +430,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      28,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -385,24 +441,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      28,
      5,
+     "",
+     "",
      ""
     ],
     [
      46216.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      28,
      5,
+     "",
+     "",
      ""
     ],
     [
      46217.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      28,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -412,6 +474,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -421,6 +485,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -430,24 +496,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46221.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46222.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -457,6 +529,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -466,6 +540,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -475,24 +551,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46226.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46227.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -502,6 +584,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -511,6 +595,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -520,24 +606,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46231.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46232.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -547,6 +639,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -556,6 +650,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -565,24 +661,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46236.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46237.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -592,6 +694,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -601,7 +705,9 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      34,
      6,
-     ""
+     "",
+     "Mưa lớn chiều, tạm dừng đào mương cáp 2 giờ.",
+     "Đề nghị TVGS kiểm tra lại cao độ đáy mương cáp đoạn băng đường."
     ],
     [
      46240.0,
@@ -610,24 +716,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      34,
      6,
+     "",
+     "",
      ""
     ],
     [
      46241.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Cung cấp và lặp đặt máy bơm, dây điện và phụ kiện bảo vệ\n- Cung cấp và lắp đặt tủ điện, tủ điều khiển (bao gồm móng tủ)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- Thi công xây dựng và lắp đặt bồn nước Composite (5 m3, 10 m3)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      34,
      6,
+     "",
+     "",
      ""
     ],
     [
      46242.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Cung cấp và lặp đặt máy bơm, dây điện và phụ kiện bảo vệ\n- Cung cấp và lắp đặt tủ điện, tủ điều khiển (bao gồm móng tủ)\n- Đào và đắp đất đường ống, mương cáp điện băng đường (bao gồm vận chuyển)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      32,
      6,
+     "",
+     "",
      ""
     ],
     [
@@ -637,6 +749,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      32,
      6,
+     "",
+     "",
      ""
     ],
     [
@@ -646,6 +760,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      32,
      6,
+     "",
+     "",
      ""
     ],
     [
@@ -655,24 +771,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46246.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Cung cấp và lặp đặt máy bơm, dây điện và phụ kiện bảo vệ\n- Cung cấp và lắp đặt tủ điện, tủ điều khiển (bao gồm móng tủ)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46247.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Cung cấp và lặp đặt máy bơm, dây điện và phụ kiện bảo vệ\n- Cung cấp và lắp đặt tủ điện, tủ điều khiển (bao gồm móng tủ)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -682,6 +804,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -691,6 +815,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -700,24 +826,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46251.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lắp đặt đường ống và phụ kiện ống (bao gồm công tác thử áp lực đường ống)\n- Cung cấp và lặp đặt máy bơm, dây điện và phụ kiện bảo vệ\n- Cung cấp và lắp đặt tủ điện, tủ điều khiển (bao gồm móng tủ)\n- Đào và đắp đất đường ống, mương cáp điện đi trong mảng xanh (bao gồm vận chuyển)\n- Cung cấp lắp đặt đồng hồ nước thủy cục (bao gồm công tác xây dựng bảo vệ hố bơm)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
-     "Nghiệm thu lắp đặt đường ống tưới, thử áp lực đường ống"
+     "Nghiệm thu lắp đặt đường ống tưới, thử áp lực đường ống",
+     "",
+     ""
     ],
     [
      46252.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lặp đặt máy bơm, dây điện và phụ kiện bảo vệ\n- Cung cấp và lắp đặt tủ điện, tủ điều khiển (bao gồm móng tủ)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      24,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -727,6 +859,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      24,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -736,6 +870,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      24,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -745,24 +881,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      24,
      4,
+     "",
+     "",
      ""
     ],
     [
      46256.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lặp đặt máy bơm, dây điện và phụ kiện bảo vệ\n- Cung cấp và lắp đặt tủ điện, tủ điều khiển (bao gồm móng tủ)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      24,
      4,
+     "",
+     "",
      ""
     ],
     [
      46257.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- Cung cấp và lặp đặt máy bơm, dây điện và phụ kiện bảo vệ\n- Cung cấp và lắp đặt tủ điện, tủ điều khiển (bao gồm móng tủ)\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      24,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -772,6 +914,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      24,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -781,6 +925,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      24,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -790,24 +936,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      20,
      4,
+     "",
+     "",
      ""
     ],
     [
      46261.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      20,
      4,
+     "",
+     "",
      ""
     ],
     [
      46262.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần hệ thống tưới tự động\n- Cung cấp và lắp đặt thiết bị tưới tự động\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      20,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -817,6 +969,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      20,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -826,6 +980,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      20,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -835,24 +991,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      20,
      4,
-     "Nghiệm thu lắp đặt thiết bị tưới tự động"
+     "Nghiệm thu lắp đặt thiết bị tưới tự động",
+     "",
+     ""
     ],
     [
      46266.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46267.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -862,6 +1024,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -871,6 +1035,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -880,24 +1046,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46271.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46272.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -907,6 +1079,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -916,6 +1090,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -925,24 +1101,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46276.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46277.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -952,6 +1134,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -961,6 +1145,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -970,24 +1156,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46281.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46282.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -997,6 +1189,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1006,6 +1200,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1015,24 +1211,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46286.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46287.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1042,6 +1244,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1051,6 +1255,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1060,24 +1266,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46291.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46292.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1087,6 +1299,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1096,6 +1310,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1105,24 +1321,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46296.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46297.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1132,6 +1354,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1141,6 +1365,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1150,24 +1376,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46301.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46302.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1177,6 +1409,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1186,6 +1420,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1195,24 +1431,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46306.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46307.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1222,6 +1464,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1231,6 +1475,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1240,24 +1486,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46311.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46312.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1267,6 +1519,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1276,6 +1530,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1285,24 +1541,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46316.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46317.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1312,6 +1574,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1321,6 +1585,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1330,24 +1596,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46321.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46322.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1357,6 +1629,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1366,6 +1640,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
@@ -1375,24 +1651,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      22,
      4,
+     "",
+     "",
      ""
     ],
     [
      46326.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46327.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1402,6 +1684,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1411,6 +1695,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1420,24 +1706,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46331.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46332.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1447,6 +1739,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1456,6 +1750,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1465,24 +1761,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46336.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46337.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1492,6 +1794,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1501,6 +1805,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1510,24 +1816,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46341.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46342.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1537,6 +1849,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1546,6 +1860,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1555,24 +1871,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46346.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46347.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1582,6 +1904,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1591,6 +1915,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1600,24 +1926,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46351.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46352.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1627,6 +1959,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1636,6 +1970,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1645,24 +1981,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46356.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46357.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1672,6 +2014,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1681,6 +2025,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1690,24 +2036,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46361.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46362.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1717,6 +2069,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1726,6 +2080,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1735,24 +2091,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46366.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      26,
      5,
+     "",
+     "",
      ""
     ],
     [
      46367.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- DỌN DẸP, VỆ SINH CÔNG TRÌNH SAU THI CÔNG\n- Dọn dẹp, vệ sinh công trình sau khi thi công\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1762,6 +2124,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1771,6 +2135,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1780,24 +2146,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46371.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- DỌN DẸP, VỆ SINH CÔNG TRÌNH SAU THI CÔNG\n- Dọn dẹp, vệ sinh công trình sau khi thi công\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46372.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- DỌN DẸP, VỆ SINH CÔNG TRÌNH SAU THI CÔNG\n- Dọn dẹp, vệ sinh công trình sau khi thi công\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1807,6 +2179,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1816,6 +2190,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1825,24 +2201,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46376.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- DỌN DẸP, VỆ SINH CÔNG TRÌNH SAU THI CÔNG\n- Dọn dẹp, vệ sinh công trình sau khi thi công\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46377.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- DỌN DẸP, VỆ SINH CÔNG TRÌNH SAU THI CÔNG\n- Dọn dẹp, vệ sinh công trình sau khi thi công\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1852,6 +2234,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1861,6 +2245,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1870,24 +2256,30 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46381.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- DỌN DẸP, VỆ SINH CÔNG TRÌNH SAU THI CÔNG\n- Dọn dẹp, vệ sinh công trình sau khi thi công\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46382.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- DỌN DẸP, VỆ SINH CÔNG TRÌNH SAU THI CÔNG\n- Dọn dẹp, vệ sinh công trình sau khi thi công\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1897,6 +2289,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1906,6 +2300,8 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
@@ -1915,43 +2311,44 @@
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
+     "",
+     "",
      ""
     ],
     [
      46386.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- HM - THI CÔNG\n- Phần trồng cây xanh\n- Trồng cây lớn, cây bóng mát, cây bứng di dời (bao gồm chăm sóc bảo dưỡng sau trồng)\n- Trồng cây bụi, bồn kiểng (bao gồm bảo dưỡng sau trồng)\n- Trồng cúc xuyến chi (bao gồm bảo dưỡng sau trồng)\n- Xây dựng bó bồn gốc cây và gạch bê tông tự chèn\n- DỌN DẸP, VỆ SINH CÔNG TRÌNH SAU THI CÔNG\n- Dọn dẹp, vệ sinh công trình sau khi thi công\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Mưa rào chiều",
+     "Nắng, chiều mưa rào",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      30,
      5,
-     "Nghiệm thu trồng cây xanh, bó bồn gốc cây"
+     "Nghiệm thu trồng cây xanh, bó bồn gốc cây",
+     "",
+     ""
     ],
     [
      46387.0,
      "- HM - CÔNG TÁC CHUẨN BỊ\n- DỌN DẸP, VỆ SINH CÔNG TRÌNH SAU THI CÔNG\n- Dọn dẹp, vệ sinh công trình sau khi thi công\n- LẬP HỒ SƠ THIẾT KẾ BẢN VẼ THI CÔNG, NGHIỆM THU, HOÀN CÔNG, HỒ SƠ THANH QUYẾT TOÁN, …\n- Lập hồ sơ thiết kế bản vẽ thi công, nghiệm thu, hoàn công, thanh quyết toán, …",
-     "Nắng",
+     "Bình thường",
      "Nguyễn Văn A (CHT); Trần Văn B (CBKT)",
      18,
      3,
+     "",
+     "",
      ""
     ]
    ],
    "formulas": {}
   },
   {
-   "name": "Form",
-   "address": "A1:F26",
+   "name": "Mẫu NKTC",
+   "address": "A1:I70",
    "values": [
     [
-     "NHẬT KÝ THI CÔNG",
+     "TÌNH HÌNH THI CÔNG HÀNG NGÀY",
      "",
      "",
      "",
-     "",
-     ""
-    ],
-    [
-     "Công trình: Cảnh quan – Hạ tầng (biểu mẫu MẪU để chạy thử)",
      "",
      "",
      "",
@@ -1964,13 +2361,96 @@
      "",
      "",
      "",
+     "",
+     "",
+     "",
      ""
     ],
     [
-     "Ngày:",
      "",
      "",
-     "Thời tiết:",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "1. Thời tiết",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Ghi chú thời tiết:",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "Nhiệt độ:",
+     "Sáng",
+     "",
+     "Trưa",
+     "",
+     "Chiều",
+     "",
+     "Tối",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "2. Tình hình nhân lực, thiết bị thi công:",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "2.1. Nhân lực:",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
      "",
      ""
     ],
@@ -1980,33 +2460,26 @@
      "",
      "",
      "",
-     ""
-    ],
-    [
-     "Số công nhân:",
-     "",
-     "",
-     "Số thiết bị:",
-     "",
-     ""
-    ],
-    [
-     "",
-     "",
      "",
      "",
      "",
      ""
     ],
     [
-     "1. NỘI DUNG CÔNG VIỆC THỰC HIỆN",
+     "Số lượng công nhân:",
      "",
+     "",
+     "",
+     "người",
      "",
      "",
      "",
      ""
     ],
     [
+     "",
+     "",
+     "",
      "",
      "",
      "",
@@ -2020,25 +2493,15 @@
      "",
      "",
      "",
-     ""
-    ],
-    [
-     "",
-     "",
      "",
      "",
      "",
      ""
     ],
     [
+     "2.2. Thiết bị:",
      "",
      "",
-     "",
-     "",
-     "",
-     ""
-    ],
-    [
      "",
      "",
      "",
@@ -2047,8 +2510,11 @@
      ""
     ],
     [
+     "Số lượng thiết bị:",
      "",
      "",
+     "",
+     "chiếc",
      "",
      "",
      "",
@@ -2058,11 +2524,6 @@
      "",
      "",
      "",
-     "",
-     "",
-     ""
-    ],
-    [
      "",
      "",
      "",
@@ -2076,33 +2537,15 @@
      "",
      "",
      "",
-     ""
-    ],
-    [
-     "",
-     "",
      "",
      "",
      "",
      ""
     ],
     [
+     "3. Tình hình thi công:",
      "",
      "",
-     "",
-     "",
-     "",
-     ""
-    ],
-    [
-     "2. NỘI DUNG NGHIỆM THU",
-     "",
-     "",
-     "",
-     "",
-     ""
-    ],
-    [
      "",
      "",
      "",
@@ -2111,6 +2554,9 @@
      ""
     ],
     [
+     "3.1. Nội dung, khối lượng công việc và tiến độ thực hiện:",
+     "",
+     "",
      "",
      "",
      "",
@@ -2124,11 +2570,6 @@
      "",
      "",
      "",
-     ""
-    ],
-    [
-     "",
-     "",
      "",
      "",
      "",
@@ -2140,9 +2581,532 @@
      "",
      "",
      "",
+     "",
+     "",
+     "",
      ""
     ],
     [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "3.2. Nghiệm thu công việc xây dựng hàng ngày:",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "4. Mô tả chi tiết các sự cố, hư hỏng và các vấn đề phát sinh khác trong quá trình thi công xây dựng công trình:",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "5. Các kiến nghị và những ý kiến chỉ đạo giải quyết các vấn đề phát sinh của các bên có liên quan (Chủ đầu tư, Người giám sát thi công, Người giám sát tác giả)",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "6. Nhận xét của kỹ sư giám sát thi công xây dựng về tình hình và chất lượng công việc xây dựng (ghi rõ họ và tên, chức vụ và chữ ký)",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "7. Chỉ huy trưởng công trường tiếp thu các kiến nghị và nhận xét (họ tên, chữ ký)",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     "",
+     ""
+    ],
+    [
+     "",
+     "",
+     "",
      "",
      "",
      "",
@@ -2152,7 +3116,9 @@
     ]
    ],
    "formulas": {
-    "A26": "=\"Xác nhận nhật ký ngày \"&TEXT(B4,\"dd/mm/yyyy\")"
+    "B5": "=IF(AND($C$6<>\"\",NOT(ISNUMBER(SEARCH(\"mưa\",$C$6))),NOT(ISNUMBER(SEARCH(\"nắng\",$C$6)))),\"☒\",\"☐\")&\" Bình thường\"",
+    "E5": "=IF(ISNUMBER(SEARCH(\"mưa\",$C$6)),\"☒\",\"☐\")&\" Mưa\"",
+    "H5": "=IF(ISNUMBER(SEARCH(\"nắng\",$C$6)),\"☒\",\"☐\")&\" Nắng\""
    }
   }
  ]

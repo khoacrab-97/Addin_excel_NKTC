@@ -1,6 +1,7 @@
 /*
  * Smoke test F2 (xuất theo form mẫu) trên bundle production với Excel giả lập.
- * Dữ liệu: test/fixtures/demo_f2.json (sinh từ demo_f2.xlsx). Mỗi bước có kiểm tra; sai → exit code 1.
+ * Dữ liệu: test/fixtures/demo_f2.json (sinh từ demo_f2.xlsx) + demo_f2.targets.json (ô đích của từng cột).
+ * Mỗi bước có kiểm tra; sai → exit code 1.
  *
  *   node scripts/smoke/run-f2.js [fixture.json] [--api 1]
  */
@@ -14,19 +15,16 @@ const fixturePath =
 const apiIndex = process.argv.indexOf("--api");
 const apiMinor = apiIndex === -1 ? 1 : Number(process.argv[apiIndex + 1]);
 const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
+/** Ô đích của từng cột nguồn: { column, header, cell, select } — `select` là vùng merge Excel trả về khi chọn ô. */
+const meta = JSON.parse(fs.readFileSync(fixturePath.replace(/\.json$/, ".targets.json"), "utf8"));
+const SHEET = meta.sheet;
+const MAPPINGS = meta.mappings;
+const COLUMN_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const daily = fixture.sheets.find((sheet) => sheet.name === "NK_TheoNgay");
-
-/** Cột nguồn → vùng chọn trên Form (vùng merge, như Excel trả về khi chọn ô merge) → ô ghi kỳ vọng. */
-const MAPPINGS = [
-  { column: "A", select: "B4:C4", cell: "B4" },
-  { column: "B", select: "A9:F18", cell: "A9" },
-  { column: "C", select: "E4:F4", cell: "E4" },
-  { column: "D", select: "B5:F5", cell: "B5" },
-  { column: "E", select: "B6", cell: "B6" },
-  { column: "F", select: "E6", cell: "E6" },
-  { column: "G", select: "A21:F24", cell: "A21" },
-];
-const TARGET_CELLS = new Set(MAPPINGS.map((m) => `Form!${m.cell}`));
+const formSheet = fixture.sheets.find((sheet) => sheet.name === SHEET);
+const lastColumn = COLUMN_LETTERS[daily.values[0].length - 1];
+const sourceAddress = `A1:${lastColumn}${daily.values.length}`;
+const TARGET_CELLS = new Set(MAPPINGS.map((m) => `${SHEET}!${m.cell}`));
 
 function sourceRowForDate(label) {
   const [d, m, y] = label.split("/").map(Number);
@@ -44,12 +42,13 @@ function pass(name, detail = "") {
 async function main() {
   let session = await openTaskpane({
     sheets: fixture.sheets,
-    selection: { sheet: "NK_TheoNgay", address: "A1:G201" },
+    selection: { sheet: "NK_TheoNgay", address: sourceAddress },
     apiMinor,
   });
   let { page } = session;
-  const smoke = (fn, ...args) => page.evaluate(fn, ...args);
-  const cell = (address) => smoke((a) => globalThis.__smoke.cell("Form", a), address);
+  const smoke = (fn, arg) => page.evaluate(fn, arg);
+  const cell = (address) => smoke(([s, a]) => globalThis.__smoke.cell(s, a), [SHEET, address]);
+  const select = (address) => smoke(([s, a]) => globalThis.__smoke.select(s, a), [SHEET, address]);
   const logLength = () => smoke(() => globalThis.__smoke.log.length);
   const writesSince = (start) => smoke((s) => globalThis.__smoke.log.slice(s).filter((e) => e.op === "values"), start);
   const lastMessage = () => page.locator(".ms-MessageBar").last().innerText();
@@ -60,14 +59,15 @@ async function main() {
       (l) => globalThis.document.querySelector('[data-testid="current-day"]')?.textContent === l,
       label,
     );
+  const assign = (column) => page.getByRole("button", { name: `Gán ô đang chọn cho cột ${column}` }).click();
 
   async function assertDayOnForm(label) {
     const row = sourceRowForDate(label);
     assert.equal((await currentDay()).trim(), label);
     for (const m of MAPPINGS) {
-      const expected = row["ABCDEFG".indexOf(m.column)];
+      const expected = row[COLUMN_LETTERS.indexOf(m.column)];
       const actual = (await cell(m.cell))?.value ?? "";
-      assert.deepEqual(actual, expected, `Form!${m.cell} (cột ${m.column}) ngày ${label}`);
+      assert.deepEqual(actual, expected, `${SHEET}!${m.cell} (cột ${m.column} – ${m.header}) ngày ${label}`);
     }
   }
 
@@ -76,43 +76,43 @@ async function main() {
   await page.getByRole("button", { name: "Lấy vùng đang chọn" }).click();
   await page.waitForSelector("text=Vùng nguồn:");
   const sourceText = /Vùng nguồn:[^\n]*/.exec(await page.locator("#root").innerText())?.[0] ?? "";
-  assert.match(sourceText, /NK_TheoNgay!A1:G201 · 7 cột · 200 ngày/);
+  assert.ok(sourceText.includes(`NK_TheoNgay!${sourceAddress} · ${MAPPINGS.length} cột · 200 ngày`), sourceText);
   pass("Chọn vùng nguồn", sourceText.trim());
 
-  // 2. Gán cột → ô (chọn ô merge → lấy ô trên-trái, R2.2).
+  // 2. Gán cột → ô (chọn ô merge → lấy ô trên-trái, R2.2). Tên sheet có dấu và khoảng trắng.
   for (const m of MAPPINGS) {
-    await smoke(([s, a]) => globalThis.__smoke.select(s, a), ["Form", m.select]);
-    await page.getByRole("button", { name: `Gán ô đang chọn cho cột ${m.column}` }).click();
-    await page.waitForSelector(`text=→ Form!${m.cell}`);
+    await select(m.select);
+    await assign(m.column);
+    await page.waitForSelector(`text=→ ${SHEET}!${m.cell}`);
   }
-  pass("Gán 7 cột vào ô form", MAPPINGS.map((m) => `${m.column}→${m.cell}`).join(", "));
+  pass(`Gán ${MAPPINGS.length} cột vào "${SHEET}"`, MAPPINGS.map((m) => `${m.column}→${m.cell}`).join(", "));
 
-  // 3. Ô đích đã gán cho cột khác → cảnh báo, không gán (R2.1).
-  await smoke(() => globalThis.__smoke.select("Form", "B6"));
-  await page.getByRole("button", { name: "Gán ô đang chọn cho cột C" }).click();
+  // 3. Ô đích đã gán cho cột khác → cảnh báo, không gán (R2.12).
+  await select(MAPPINGS[4].select);
+  await assign(MAPPINGS[2].column);
   await settle();
   assert.match(await lastMessage(), /đã được gán cho cột/);
   pass("Chặn gán trùng ô đích", (await lastMessage()).trim());
 
-  // 4. Xuất ngày đầu: chỉ ghi vào ô đích, giữ công thức ở A26 (R2.3, R2.6).
+  // 4. Xuất ngày đầu: chỉ ghi vào ô đích; công thức và tiêu đề giữ nguyên (R2.3, R2.6).
   let start = await logLength();
   await page.getByRole("button", { name: "Xuất lên form" }).click();
   await page.getByTestId("current-day").waitFor();
   await assertDayOnForm("15/06/2026");
   const writes = await writesSince(start);
-  // Nhãn ghi của Excel giả lập có dạng "Form!B4:B4" → chuẩn hóa thành "Form!B4".
+  // Nhãn ghi của Excel giả lập có dạng "Sheet!B4:B4" → chuẩn hóa thành "Sheet!B4".
   const written = writes.map((w) => w.range.replace(/^(.+!)([A-Z]+\d+):\2$/, "$1$2"));
   for (const range of written) assert.ok(TARGET_CELLS.has(range), `Ghi ngoài ô đích: ${range}`);
   assert.equal(writes.length, MAPPINGS.length);
-  assert.equal((await cell("A26")).formula, fixture.sheets.find((s) => s.name === "Form").formulas.A26);
-  assert.equal((await cell("A4")).value, "Ngày:");
+  assert.equal((await cell(meta.formulaCell)).formula, formSheet.formulas[meta.formulaCell]);
+  assert.equal((await cell("A1")).value, "TÌNH HÌNH THI CÔNG HÀNG NGÀY");
   pass(
     "Xuất ngày đầu 15/06/2026",
-    `${writes.length} lệnh ghi, đúng ${MAPPINGS.length} ô đích; công thức A26 và nhãn A4 giữ nguyên`,
+    `${writes.length} lệnh ghi, đúng ${MAPPINGS.length} ô đích; công thức ${meta.formulaCell} và tiêu đề A1 giữ nguyên`,
   );
 
   // 5. Văn bản bắt đầu bằng "- " được ghi nguyên văn (R2.11).
-  const content = (await cell("A9")).value;
+  const content = (await cell(MAPPINGS[1].cell)).value;
   assert.ok(content.startsWith("- HM - CÔNG TÁC CHUẨN BỊ"));
   pass("Nội dung nhiều dòng ghi nguyên văn", JSON.stringify(content.split("\n")[0]));
 
@@ -133,8 +133,8 @@ async function main() {
   await smoke(() => globalThis.__smoke.setValue("NK_TheoNgay", "C3", "Mưa to (sửa sau khi xuất)"));
   await page.getByRole("button", { name: "Ngày sau" }).click();
   await waitDay("16/06/2026");
-  assert.equal((await cell("E4")).value, "Mưa to (sửa sau khi xuất)");
-  pass("Đọc lại vùng nguồn mới nhất", "sửa NK_TheoNgay!C3 → Form!E4 cập nhật");
+  assert.equal((await cell(MAPPINGS[2].cell)).value, "Mưa to (sửa sau khi xuất)");
+  pass("Đọc lại vùng nguồn mới nhất", `sửa NK_TheoNgay!C3 → ${SHEET}!${MAPPINGS[2].cell} cập nhật`);
 
   // 8. Nhảy tới ngày; ngày sai; ngày ngoài phạm vi.
   const jump = async (text) => {
@@ -142,15 +142,15 @@ async function main() {
     await page.getByRole("button", { name: "Đi tới" }).click();
     await settle();
   };
-  await jump("06/08/2026");
-  await waitDay("06/08/2026");
-  await assertDayOnForm("06/08/2026");
-  assert.equal((await cell("A9")).value.split("\n").length, 13);
+  await jump("05/08/2026");
+  await waitDay("05/08/2026");
+  await assertDayOnForm("05/08/2026");
+  assert.equal((await cell(MAPPINGS[1].cell)).value.split("\n").length, 13);
   await jump("31/02/2026");
   assert.match(await lastMessage(), /không hợp lệ/);
   await jump("01/01/2027");
   assert.match(await lastMessage(), /không có trong vùng nguồn/);
-  pass("Nhảy tới ngày", "06/08/2026 (13 dòng nội dung); báo lỗi 31/02/2026 và 01/01/2027");
+  pass("Nhảy tới ngày", "05/08/2026 (13 dòng nội dung, có sự cố + kiến nghị); báo lỗi 31/02/2026 và 01/01/2027");
 
   // 9. Mở lại task pane: cấu hình được khôi phục (R2.8); ô đích đã có dữ liệu → xin xác nhận (R2.5).
   const settings = await smoke(() => globalThis.__smoke.settings());
@@ -158,12 +158,12 @@ async function main() {
   const browser = session.browser;
   await page.close();
   session = await openTaskpane(
-    { sheets: sheetsNow, selection: { sheet: "Form", address: "A1" }, apiMinor, settings },
+    { sheets: sheetsNow, selection: { sheet: SHEET, address: "A1" }, apiMinor, settings },
     { browser },
   );
   page = session.page;
   await page.getByRole("tab", { name: "Form mẫu" }).click();
-  await page.waitForSelector("text=→ Form!A21");
+  await page.waitForSelector(`text=→ ${SHEET}!${MAPPINGS[MAPPINGS.length - 1].cell}`);
   await page.getByRole("button", { name: "Xuất lại ngày đang chọn" }).click();
   await page.waitForSelector("text=sẽ bị ghi đè");
   start = await logLength();
@@ -173,30 +173,33 @@ async function main() {
   await page.getByRole("button", { name: "Xuất lại ngày đang chọn" }).click();
   await page.getByRole("button", { name: "Ghi đè" }).click();
   await page.getByTestId("current-day").waitFor();
-  await assertDayOnForm("06/08/2026");
-  pass("Khôi phục cấu hình khi mở lại", "7 gán cột + ngày 06/08/2026; xác nhận ghi đè: Hủy không ghi, Ghi đè thì ghi");
+  await assertDayOnForm("05/08/2026");
+  pass(
+    "Khôi phục cấu hình khi mở lại",
+    `${MAPPINGS.length} gán cột + ngày 05/08/2026; xác nhận ghi đè: Hủy không ghi, Ghi đè thì ghi`,
+  );
 
   // 10. Ô đích chứa công thức → cảnh báo CÔNG THỨC; Hủy giữ nguyên công thức (R2.4).
-  await smoke(() => globalThis.__smoke.select("Form", "A26:F26"));
-  await page.getByRole("button", { name: "Gán ô đang chọn cho cột A" }).click();
-  await page.waitForSelector("text=→ Form!A26");
+  await select(meta.formulaCell);
+  await assign("A");
+  await page.waitForSelector(`text=→ ${SHEET}!${meta.formulaCell}`);
   await page.getByRole("button", { name: "Xuất lại ngày đang chọn" }).click();
   await page.waitForSelector("text=CÔNG THỨC");
   await page.getByRole("button", { name: "Hủy" }).click();
   await settle();
-  assert.equal((await cell("A26")).formula, fixture.sheets.find((s) => s.name === "Form").formulas.A26);
-  await page.getByRole("button", { name: "Bỏ gán ô Form!A26" }).click();
+  assert.equal((await cell(meta.formulaCell)).formula, formSheet.formulas[meta.formulaCell]);
+  await page.getByRole("button", { name: `Bỏ gán ô ${SHEET}!${meta.formulaCell}` }).click();
   await settle();
-  pass("Cảnh báo ô đích chứa công thức", "Hủy → công thức A26 giữ nguyên; bỏ gán A26");
+  pass("Cảnh báo ô đích chứa công thức", `Hủy → công thức ${meta.formulaCell} (ô tích thời tiết) giữ nguyên; bỏ gán`);
 
-  // 11. Sheet form bị đổi tên → báo lỗi, không ghi ô nào (R2.9).
-  await smoke(() => globalThis.__smoke.renameSheet("Form", "Form_cu"));
+  // 11. Sheet biểu mẫu bị đổi tên → báo lỗi, không ghi ô nào (R2.9).
+  await smoke((s) => globalThis.__smoke.renameSheet(s, `${s} cũ`), SHEET);
   start = await logLength();
   await page.getByRole("button", { name: "Ngày sau" }).click();
   await settle();
-  assert.match(await lastMessage(), /Không tìm thấy sheet: "Form"/);
+  assert.ok((await lastMessage()).includes(`Không tìm thấy sheet: "${SHEET}"`), await lastMessage());
   assert.equal((await writesSince(start)).length, 0);
-  pass("Sheet form bị đổi tên", (await lastMessage()).trim());
+  pass("Sheet biểu mẫu bị đổi tên", (await lastMessage()).trim());
 
   await page.screenshot({ path: path.join("smoke-output", "f2-panel.png"), fullPage: true });
   const errors = session.pageErrors;

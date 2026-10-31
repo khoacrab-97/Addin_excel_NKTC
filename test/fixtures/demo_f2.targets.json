@@ -1,0 +1,60 @@
+{
+ "sheet": "Mẫu NKTC",
+ "mappings": [
+  {
+   "column": "A",
+   "header": "Ngày",
+   "cell": "E2",
+   "select": "E2:I2"
+  },
+  {
+   "column": "B",
+   "header": "Nội dung",
+   "cell": "A21",
+   "select": "A21:I38"
+  },
+  {
+   "column": "C",
+   "header": "Thời tiết",
+   "cell": "C6",
+   "select": "C6:I6"
+  },
+  {
+   "column": "D",
+   "header": "Ban chỉ huy - CBKT",
+   "cell": "C11",
+   "select": "C11:I11"
+  },
+  {
+   "column": "E",
+   "header": "Số công nhân",
+   "cell": "C12",
+   "select": "C12:D12"
+  },
+  {
+   "column": "F",
+   "header": "Số thiết bị",
+   "cell": "C16",
+   "select": "C16:D16"
+  },
+  {
+   "column": "G",
+   "header": "Nội dung nghiệm thu",
+   "cell": "A40",
+   "select": "A40:I47"
+  },
+  {
+   "column": "H",
+   "header": "Sự cố, phát sinh",
+   "cell": "A50",
+   "select": "A50:I53"
+  },
+  {
+   "column": "I",
+   "header": "Kiến nghị",
+   "cell": "A56",
+   "select": "A56:I59"
+  }
+ ],
+ "formulaCell": "B5"
+}

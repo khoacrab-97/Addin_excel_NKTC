@@ -79,6 +79,29 @@ Output:
 | R2.12 | Ô đích chỉ nhận **một** ô; một ô đích không được gán cho 2 cột (cảnh báo khi gán). |
 | R2.13 | Nhận diện cột Ngày: tiêu đề `Ngày` → tiêu đề chứa từ "ngày" → cột đầu tiên có toàn bộ ô không trống là ngày hợp lệ. |
 
+### F2.3 Biểu mẫu Excel "Tình hình thi công hàng ngày" (`templates/Mau_NKTC.xlsx`)
+
+Chuyển từ mẫu Word, sheet **Mẫu NKTC**, khổ A4 đứng, lề trái 2,5 cm / phải, trên, dưới 2 cm, Times New Roman 12, in 2 trang (ngắt trang trước mục 4).
+
+| Mục (theo mẫu Word) | Ô đích (gán bằng F2) | Ghi chú |
+|---|---|---|
+| Ngày… tháng… năm… | `E2` (merge E2:I2) | Nhận ngày dạng số; định dạng hiển thị `Ngày dd tháng mm năm yyyy`. |
+| 1. Thời tiết – ô tích Bình thường / Mưa / Nắng | — (công thức `B5`, `E5`, `H5`) | Tự tích theo "Ghi chú thời tiết": chứa "mưa" → Mưa; chứa "nắng" → Nắng; có nội dung khác → Bình thường. |
+| 1. Ghi chú thời tiết | `C6` (merge C6:I6) | |
+| 1. Nhiệt độ Sáng / Trưa / Chiều / Tối | `C7`, `E7`, `G7`, `I7` | Định dạng `0"°C"`. |
+| 2.1. Nhân lực – Ban chỉ huy, CBKT | `C11` (merge C11:I11) | |
+| 2.1. Số lượng công nhân | `C12` (merge C12:D12) | Kèm đơn vị "người". |
+| 2.1. Nhân lực – chi tiết | `A13` (merge A13:I14) | |
+| 2.2. Số lượng thiết bị | `C16` (merge C16:D16) | Kèm đơn vị "chiếc". |
+| 2.2. Thiết bị – chi tiết | `A17` (merge A17:I18) | |
+| 3.1. Nội dung, khối lượng công việc và tiến độ | `A21` (merge A21:I38, 18 dòng) | Nhận cột Nội dung của F1. |
+| 3.2. Nghiệm thu công việc xây dựng hàng ngày | `A40` (merge A40:I47) | |
+| 4. Sự cố, hư hỏng, vấn đề phát sinh | `A50` (merge A50:I53) | |
+| 5. Kiến nghị, ý kiến chỉ đạo | `A56` (merge A56:I59) | |
+| 6. Nhận xét của kỹ sư giám sát; 7. Chỉ huy trưởng tiếp thu | — | Dòng gạch chấm để ghi tay, ký tên. |
+
+Sinh lại biểu mẫu: `python3 -I scripts/fixtures/make_nktc_workbooks.py test/fixtures/test_addin_xuat_nktc.xlsx`.
+
 ---
 
 ## F3. Tiện ích
@@ -101,5 +124,5 @@ Output:
 | Q4 | F2 có cần **xuất hàng loạt** (mỗi ngày một sheet, hoặc in/PDF tất cả ngày) không? | Ngoài phạm vi hiện tại; xem xét ở giai đoạn sau. |
 | Q5 | Cách phân phối add-in: Shared Folder Catalog (mạng nội bộ), Microsoft 365 Centralized Deployment, hay chỉ dùng cá nhân? Nơi hosting (GitHub Pages…)? | GitHub Pages + Shared Folder Catalog. |
 | Q7 | Bảng tiến độ có dòng hạng mục tổng và dòng công tác chi tiết (phân cấp bằng khoảng trắng đầu dòng). F1 lấy dòng nào? (chốt 31/10/2026, sau khi chạy thử file tiến độ mẫu) | **Giữ tất cả các dòng**, kể cả dòng hạng mục tổng. Khoảng trắng đầu dòng được bỏ khi gộp nội dung. Dữ liệu thực tế sẽ không có thụt lề phân cấp. |
-| Q8 | Biểu mẫu nhật ký thi công dùng cho F2? | Chưa có biểu mẫu thật; dùng biểu mẫu MẪU trong `test/fixtures/demo_f2.xlsx` để phát triển và chạy thử. Chạy lại khi có biểu mẫu thật. |
+| Q8 | Biểu mẫu nhật ký thi công dùng cho F2? | Mẫu Word "ND_Nhật ký thi công" (Tình hình thi công hàng ngày, mục 1–7) do chủ dự án cung cấp ngày 31/10/2026, đã chuyển sang Excel: `templates/Mau_NKTC.xlsx` (xem §F2.3). |
 | Q6 | Phiên bản Excel tối thiểu? | **Microsoft 365 hoặc Excel 2016 trở về sau.** Hệ quả kỹ thuật: xem `MASTER_CONTEXT.md` §4. |
