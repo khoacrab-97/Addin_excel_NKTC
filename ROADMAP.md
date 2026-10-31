@@ -59,4 +59,3 @@
 | P4.2 | Kiểm thử tích hợp trên Excel Desktop Windows với dữ liệu dự án thực tế (`docs/KIEM_THU_NGHIEM_THU.md`) | Not Started |
 | P4.3 | Hướng dẫn cài đặt qua Shared Folder Catalog (`docs/HUONG_DAN_CAI_DAT.md`) | Implemented |
 | P4.4 | CI trên GitHub Actions: `npm run check` + validate manifest bằng dịch vụ Microsoft (`ci.yml`) | Implemented |
-| P4.3 | Tài liệu cài đặt cho người dùng | Not Started |
