@@ -41,13 +41,16 @@ Hệ quả: mọi thay đổi vào `main` (cũng là phát hành) phải đi qua
 ### 2.3. Môi trường `github-pages` chỉ nhận `main`
 
 1. **Settings → Environments → github-pages**.
-2. Mục **Deployment branches and tags** → chọn **Selected branches and tags** → **Add deployment branch or tag rule** → **Ref type: Branch**, **Name pattern:** `main` → **Add rule**.
+2. Mục **Deployment branches and tags** → chọn **Selected branches and tags**.
+3. Danh sách quy tắc chỉ được còn **`main`** ("1 branch and 0 tags allowed"). GitHub thường đã tự tạo quy tắc `main` khi bật Pages (thêm lại sẽ báo *"Name branch pattern already exists: main"* — bỏ qua). Nếu còn nhánh khác (ví dụ nhánh mặc định cũ `claude/…`) → **Remove**.
 
 ### 2.4. Quyền mặc định của GitHub Actions
 
 1. **Settings → Actions → General**.
-2. **Fork pull request workflows from outside collaborators:** chọn **Require approval for all outside collaborators**.
+2. **Approval for running fork pull request workflows from contributors:** chọn **Require approval for all external contributors** → **Save**.
 3. **Workflow permissions:** chọn **Read repository contents and packages permissions**; **bỏ tích** *Allow GitHub Actions to create and approve pull requests* → **Save**.
+
+> **Lưu ý thứ tự:** phải làm bước 2.1 (nhánh mặc định = `main`) trước. Nếu nhánh mặc định vẫn là nhánh khác, ruleset "Include default branch" sẽ khóa nhầm nhánh đó và `main` không được bảo vệ.
 
 ### 2.5. Kiểm tra sau khi cấu hình
 

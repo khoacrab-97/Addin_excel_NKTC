@@ -71,9 +71,9 @@
 | P5.3 | F2: khóa chỉnh sửa khi chờ xác nhận ghi đè; xác nhận gắn với đúng bộ ô đích (R2.5) | Tested |
 | P5.4 | Giới hạn cấu hình đọc từ workbook (R2.14) | Tested |
 | P5.5 | Content-Security-Policy cho task pane (`script-src 'self' https://appsforoffice.microsoft.com`) | Tested |
-| P5.6 | Cấu hình GitHub: ruleset bảo vệ `main`, môi trường `github-pages` chỉ nhận `main`, nhánh mặc định `main`, quyền token mặc định chỉ đọc (`docs/BAO_MAT.md` §2) | Not Started |
+| P5.6 | Cấu hình GitHub: ruleset bảo vệ `main`, môi trường `github-pages` chỉ nhận `main`, nhánh mặc định `main`, quyền token mặc định chỉ đọc (`docs/BAO_MAT.md` §2) | Implemented |
 | P5.7 | Xác nhận CSP không chặn Office.js / Fluent UI trên Excel Desktop Windows (WebView2) | Not Started |
 
-> P5.3–P5.5 **Tested** = unit test (149) + smoke F1/F2/F3 có bắt vi phạm CSP qua console; CSP được kiểm chứng chặn script inline chèn vào. P5.2 chỉ có hiệu lực khi workflow chạy trên `main`.
+> P5.3–P5.5 **Tested** = unit test (149) + smoke F1/F2/F3 có bắt vi phạm CSP qua console; CSP được kiểm chứng chặn script inline chèn vào. P5.2 chỉ có hiệu lực khi workflow chạy trên `main`. P5.6 do chủ repo cấu hình ngày 31/10/2026; đã đối chiếu qua GitHub API: nhánh mặc định `main`, ruleset trên `main` gồm deletion, non_fast_forward, pull_request (0 approval), required_status_checks (`check`).
 
 > P4.1 **Tested** = workflow deploy chạy thành công trên GitHub Actions (build, validate manifest, đưa lên Pages). P4.4 **Tested** = CI xanh trên GitHub ("The manifest is valid.").
