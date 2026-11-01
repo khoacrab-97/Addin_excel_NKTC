@@ -3,6 +3,7 @@
 > Áp dụng: Excel Desktop trên Windows — Microsoft 365 hoặc Excel 2016 trở về sau.
 > Link gửi người dùng: <https://khoacrab-97.github.io/Addin_excel_NKTC/>
 > Tải trực tiếp bộ cài: <https://khoacrab-97.github.io/Addin_excel_NKTC/NhatKyThiCong_Setup.exe>
+> GitHub Releases (bộ cài theo từng phiên bản, `NhatKyThiCong_Setup_<phiên bản>.exe`): <https://github.com/khoacrab-97/Addin_excel_NKTC/releases/latest>
 
 ## 1. Điều kiện
 
@@ -75,4 +76,4 @@ Dùng khi máy không chạy được bộ cài (chính sách công ty chặn fi
 
 - Chạy bản phát triển: `npm start` (sideload manifest `localhost`). **Không** dùng đồng thời với bản đã cài bằng bộ cài — hai bản có cùng ID add-in; gỡ bản cài trước (mục 4).
 - Bộ cài: `installer/NhatKyThiCong.nsi` (NSIS 3). Build: `npm run build` rồi `npm run build:installer` → `dist/NhatKyThiCong_Setup.exe` (cần `makensis`). CI và workflow phát hành tự build.
-- Phát hành: workflow `.github/workflows/deploy-pages.yml` chạy khi merge vào `main` (hoặc chạy tay trong tab **Actions**). Yêu cầu một lần: **Settings → Pages → Source: GitHub Actions**.
+- Phát hành: workflow `.github/workflows/deploy-pages.yml` chạy khi merge vào `main` (hoặc chạy tay trong tab **Actions**): đưa add-in + bộ cài lên GitHub Pages, rồi tạo GitHub Release `v<phiên bản>` kèm `NhatKyThiCong_Setup_<phiên bản>.exe` (bỏ qua nếu phiên bản đã có Release — muốn phát hành Release mới phải tăng `version` trong `package.json`). Yêu cầu một lần: **Settings → Pages → Source: GitHub Actions**.

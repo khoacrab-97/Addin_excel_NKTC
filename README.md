@@ -5,7 +5,7 @@ Tài liệu dự án: [`MASTER_CONTEXT.md`](MASTER_CONTEXT.md) · [`ROADMAP.md`]
 
 ## Cài đặt cho người dùng
 
-Link gửi người dùng: <https://khoacrab-97.github.io/Addin_excel_NKTC/> → **Tải bộ cài (Windows)** (`NhatKyThiCong_Setup.exe`, không cần quyền quản trị). Add-in tự cập nhật mỗi lần mở; chỉ chạy lại bộ cài khi thông báo yêu cầu. Chi tiết: [`docs/HUONG_DAN_CAI_DAT.md`](docs/HUONG_DAN_CAI_DAT.md). Kiểm thử nghiệm thu: [`docs/KIEM_THU_NGHIEM_THU.md`](docs/KIEM_THU_NGHIEM_THU.md).
+Link gửi người dùng: <https://khoacrab-97.github.io/Addin_excel_NKTC/> → **Tải bộ cài (Windows)** (`NhatKyThiCong_Setup.exe`, không cần quyền quản trị), hoặc [**Releases mới nhất**](https://github.com/khoacrab-97/Addin_excel_NKTC/releases/latest) → `NhatKyThiCong_Setup_<phiên bản>.exe`. Add-in tự cập nhật mỗi lần mở; chỉ chạy lại bộ cài khi thông báo yêu cầu. Chi tiết: [`docs/HUONG_DAN_CAI_DAT.md`](docs/HUONG_DAN_CAI_DAT.md). Kiểm thử nghiệm thu: [`docs/KIEM_THU_NGHIEM_THU.md`](docs/KIEM_THU_NGHIEM_THU.md).
 
 ## Yêu cầu (môi trường phát triển)
 
@@ -72,7 +72,7 @@ Skill [`security-audit`](.claude/skills/security-audit/) (Cloudflare, MIT) đư�
 | Workflow | Kích hoạt | Nội dung |
 |---|---|---|
 | `.github/workflows/ci.yml` | Push lên `main` / `claude/**`, pull request | `npm run check` + validate `dist/manifest.xml` bằng dịch vụ Microsoft + build bộ cài |
-| `.github/workflows/deploy-pages.yml` | Push lên `main` hoặc chạy tay (Actions → Run workflow) | Build + bộ cài `NhatKyThiCong_Setup.exe` + đưa `dist/` lên GitHub Pages |
+| `.github/workflows/deploy-pages.yml` | Push lên `main` hoặc chạy tay (Actions → Run workflow) | Build + bộ cài `NhatKyThiCong_Setup.exe` + đưa `dist/` lên GitHub Pages + tạo GitHub Release `v<phiên bản>` kèm bộ cài |
 
 Phiên bản phát hành lấy từ `package.json` (`version`) và tự đồng bộ vào manifest (`x.y.z.0`) và `version.json`.
 

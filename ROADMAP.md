@@ -61,7 +61,7 @@
 | P4.2 | Kiểm thử tích hợp trên Excel Desktop Windows với dữ liệu dự án thực tế (`docs/KIEM_THU_NGHIEM_THU.md`) | Not Started |
 | P4.3 | Hướng dẫn cài đặt: bộ cài + cách thay thế Shared Folder Catalog (`docs/HUONG_DAN_CAI_DAT.md`) | Implemented |
 | P4.4 | CI trên GitHub Actions: `npm run check` + validate manifest bằng dịch vụ Microsoft (`ci.yml`) | Tested |
-| P4.5 | Bộ cài Windows `NhatKyThiCong_Setup.exe` (NSIS, không cần quyền quản trị, đăng ký `HKCU\…\Wef\Developer`, gỡ qua Settings → Apps); link chia sẻ duy nhất = trang phát hành | Implemented |
+| P4.5 | Bộ cài Windows `NhatKyThiCong_Setup.exe` (NSIS, không cần quyền quản trị, đăng ký `HKCU\…\Wef\Developer`, gỡ qua Settings → Apps); link chia sẻ = trang phát hành (GitHub Pages) hoặc GitHub Releases `v<phiên bản>` tự tạo khi merge vào `main` | Implemented |
 | P4.6 | Kiểm thử bộ cài trên Windows thật: cài, nút xuất hiện trên tab Home, cài đè, gỡ cài đặt (Microsoft 365 và Excel 2016) | Not Started |
 
 ## Phase 5 — Bảo mật
