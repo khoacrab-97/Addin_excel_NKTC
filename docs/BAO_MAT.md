@@ -13,7 +13,7 @@ Kiểm tra toàn diện bằng skill `security-audit` (mức `quick`, commit `3b
 | F2: khóa chọn vùng nguồn / cột Ngày / gán cột khi đang chờ xác nhận ghi đè; xác nhận chỉ áp dụng cho đúng bộ ô đích đã liệt kê | `src/taskpane/components/template/` (R2.5) |
 | Giới hạn cấu hình đọc từ file Excel (tên sheet, địa chỉ vùng, số tiêu đề, số ô đích…) — vượt giới hạn thì bỏ cấu hình | `src/core/mapping/config.ts` (R2.14) |
 | Content-Security-Policy: task pane chỉ chạy script của add-in và Office.js | `src/taskpane/taskpane.html` |
-| Bộ cài (1.2.0): chạy quyền người dùng thường, chỉ ghi `%LOCALAPPDATA%\NhatKyThiCong` và `HKCU` (đăng ký manifest + mục gỡ cài đặt); không chứa mã chạy nền; bộ cài được build trong CI từ mã nguồn, không đưa file `.exe` vào repo | `installer/NhatKyThiCong.nsi` |
+| Bộ cài (1.2.0): chạy quyền người dùng thường, chỉ ghi `%LOCALAPPDATA%\NhatKyThiCong` và `HKCU` (đăng ký manifest + mục gỡ cài đặt); không chứa mã chạy nền; bộ cài được build trong CI từ mã nguồn, không đưa file `.exe` vào repo; script build gọi `makensis` bằng đường dẫn tuyệt đối cố định, không tìm theo `PATH` (Sonar S4036) | `installer/NhatKyThiCong.nsi`, `scripts/build-installer.js` |
 
 ## 2. Cấu hình GitHub (chủ repo tự thực hiện)
 
