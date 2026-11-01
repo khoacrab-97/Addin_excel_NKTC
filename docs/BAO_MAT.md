@@ -8,11 +8,13 @@ Kiểm tra toàn diện bằng skill `security-audit` (mức `quick`, commit `3b
 |---|---|
 | Quyền ghi GitHub Pages / OIDC chỉ cấp cho job deploy; job build chỉ có quyền đọc | `.github/workflows/deploy-pages.yml` |
 | Chỉ phát hành từ nhánh `main` (kể cả khi chạy workflow bằng tay) | `.github/workflows/deploy-pages.yml` |
+| GitHub Release: job `release` riêng có quyền `contents: write`, chỉ chạy trên `main`, không cài/chạy npm — chỉ tải bộ cài đã build từ job build (quyền đọc) và gọi `gh release create` | `.github/workflows/deploy-pages.yml` |
 | GitHub Actions cố định theo mã commit (SHA) | `.github/workflows/*.yml` |
 | `npm audit --omit=dev` trong CI và trước khi phát hành — thư viện đi kèm add-in có lỗ hổng đã công bố thì dừng | `.github/workflows/*.yml` |
 | F2: khóa chọn vùng nguồn / cột Ngày / gán cột khi đang chờ xác nhận ghi đè; xác nhận chỉ áp dụng cho đúng bộ ô đích đã liệt kê | `src/taskpane/components/template/` (R2.5) |
 | Giới hạn cấu hình đọc từ file Excel (tên sheet, địa chỉ vùng, số tiêu đề, số ô đích…) — vượt giới hạn thì bỏ cấu hình | `src/core/mapping/config.ts` (R2.14) |
 | Content-Security-Policy: task pane chỉ chạy script của add-in và Office.js | `src/taskpane/taskpane.html` |
+| Bộ cài (1.2.0): chạy quyền người dùng thường, chỉ ghi `%LOCALAPPDATA%\NhatKyThiCong` và `HKCU` (đăng ký manifest + mục gỡ cài đặt); không chứa mã chạy nền; bộ cài được build trong CI từ mã nguồn, không đưa file `.exe` vào repo; script build gọi `makensis` bằng đường dẫn tuyệt đối cố định, không tìm theo `PATH` (Sonar S4036) | `installer/NhatKyThiCong.nsi`, `scripts/build-installer.js` |
 
 ## 2. Cấu hình GitHub (chủ repo tự thực hiện)
 
@@ -63,4 +65,5 @@ Hệ quả: mọi thay đổi vào `main` (cũng là phát hành) phải đi qua
 |---|---|
 | Xác nhận CSP trên Excel Desktop Windows (WebView2) | Sau khi cập nhật 1.1.1: mở add-in, dùng thử 3 tab. Nếu khung add-in trắng hoặc mất icon → báo Claude để nới policy. Excel 2016/2019 (IE11) không áp dụng CSP. |
 | `npm audit` toàn bộ (gồm công cụ phát triển) | Còn cảnh báo trong công cụ `office-addin-*` của Microsoft và `minimatch` (ESLint); không nằm trong bản phát hành. Theo dõi bản cập nhật. |
+| Bộ cài chưa ký số (code signing) | Windows SmartScreen cảnh báo khi chạy lần đầu (More info → Run anyway). Chỉ tải bộ cài từ trang phát hành chính thức. Có thể mua chứng chỉ ký mã nếu phát hành rộng. |
 | Kiểm tra lại định kỳ | Chạy skill `security-audit` (mức `standard`) khi có thay đổi lớn. |

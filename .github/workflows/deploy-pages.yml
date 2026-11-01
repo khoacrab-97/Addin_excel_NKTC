@@ -23,6 +23,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
@@ -33,6 +35,23 @@ jobs:
       - run: npm audit --omit=dev
       - run: npm run check
       - run: npx office-addin-manifest validate dist/manifest.xml
+      - name: Install NSIS (Windows installer compiler)
+        run: sudo apt-get update && sudo apt-get install -y nsis
+      - name: Build Windows installer (dist/NhatKyThiCong_Setup.exe)
+        run: npm run build:installer
+      - name: Read version from package.json
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          cp dist/NhatKyThiCong_Setup.exe "NhatKyThiCong_Setup_$VERSION.exe"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: installer
+          path: NhatKyThiCong_Setup_${{ steps.version.outputs.version }}.exe
+          if-no-files-found: error
+          retention-days: 7
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:
@@ -51,3 +70,45 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+
+  # GitHub Release v<phiên bản> kèm bộ cài NhatKyThiCong_Setup_<phiên bản>.exe (link: /releases/latest).
+  # Chạy sau khi Pages đã cập nhật; không cài npm — quyền ghi repo (contents) chỉ ở job này.
+  release:
+    needs: [build, deploy]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: installer
+      - name: Create GitHub Release (skip if this version already exists)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          if gh release view "v$VERSION" > /dev/null 2>&1; then
+            echo "Release v$VERSION đã tồn tại — bỏ qua (tăng version trong package.json để phát hành bản mới)."
+            exit 0
+          fi
+          cat > notes.md << 'NOTES'
+          ## Cài đặt
+
+          1. Lưu và **đóng Excel**.
+          2. Tải file `.exe` bên dưới và chạy. Không cần quyền quản trị. Nếu Windows hiện *"Windows protected your PC"*: bấm **More info → Run anyway**.
+          3. Mở Excel → tab **Home** → nút **Nhật ký thi công**.
+
+          ## Cập nhật
+
+          Add-in tự cập nhật mỗi lần mở (cần Internet). Chỉ chạy lại bộ cài khi add-in thông báo yêu cầu.
+
+          ## Gỡ cài đặt
+
+          Đóng Excel → **Settings → Apps → Installed apps** → **Nhật ký thi công (Excel add-in)** → **Uninstall**.
+
+          Hướng dẫn chi tiết: https://github.com/khoacrab-97/Addin_excel_NKTC/blob/main/docs/HUONG_DAN_CAI_DAT.md
+          NOTES
+          gh release create "v$VERSION" "NhatKyThiCong_Setup_$VERSION.exe" \
+            --target "$GITHUB_SHA" --title "Nhật ký thi công $VERSION" --notes-file notes.md --latest

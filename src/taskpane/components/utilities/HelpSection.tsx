@@ -54,6 +54,11 @@ export function HelpSection(): JSX.Element {
           </Link>
         </li>
         <li>
+          <Link href={LINKS.installer} target="_blank" rel="noopener noreferrer">
+            Bộ cài cho máy khác (NhatKyThiCong_Setup.exe)
+          </Link>
+        </li>
+        <li>
           <Link href={LINKS.installGuide} target="_blank" rel="noopener noreferrer">
             Hướng dẫn cài đặt, cập nhật, xử lý sự cố
           </Link>
