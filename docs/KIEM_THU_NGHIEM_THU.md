@@ -8,41 +8,43 @@
 
 | Mục | Giá trị |
 |---|---|
-| Phiên bản Office (tab Tiện ích) | |
-| ExcelApi tối đa (tab Tiện ích) | |
+| Phiên bản Office (nút **Phiên bản**) | |
+| ExcelApi tối đa (nút **Phiên bản**) | |
 | Windows | |
 | Ngày kiểm thử / người kiểm thử | |
 
-## A. Cài đặt (P0.6, P4.1)
+## A. Cài đặt (P0.6, P4.6)
 
 | # | Bước | Kết quả mong đợi | Kết quả |
 |---|---|---|---|
-| A1 | Cài theo hướng dẫn mục 2–4 | Nút **Nhật ký thi công** trên tab Home | |
-| A2 | Mở khung add-in | 3 tab: Theo ngày / Form mẫu / Tiện ích; không báo lỗi | |
-| A3 | Tab Tiện ích | Hiển thị phiên bản add-in = phiên bản trên trang phát hành | |
+| A1 | Đóng Excel → chạy `NhatKyThiCong_Setup_<phiên bản>.exe` → giữ tích "Mở Excel và kích hoạt add-in" → Hoàn tất | Excel mở, khung chào mừng hiện một lần; Ribbon có tab **Nhật ký thi công** | |
+| A2 | Đóng khung chào mừng; đóng Excel, mở một file bất kỳ | Tab **Nhật ký thi công** vẫn còn, có 4 nhóm: Xuất nhật ký / Form mẫu / Chuyển ngày / Tiện ích; **không** có khung bên phải | |
+| A3 | Nút **Phiên bản** | Hộp thoại: phiên bản add-in = phiên bản trên trang phát hành; "Bạn đang dùng phiên bản mới nhất" | |
+| A4 | Nút **Hướng dẫn** | Hộp thoại hướng dẫn; link tải biểu mẫu mở được | |
+| A5 | Cài đè bản mới; gỡ qua Settings → Apps | Cài đè không lỗi; gỡ xong tab Ribbon biến mất sau khi mở lại Excel | |
 
 ## B. F1 – Xuất nhật ký theo ngày (P1.6) — file `test_addin_xuat_nktc.xlsx`
 
 | # | Bước | Kết quả mong đợi | Kết quả |
 |---|---|---|---|
-| B1 | Sheet TDTC: chọn `A1:C23` → **Lấy vùng đang chọn** | Nhận 3 cột (A, B, C); "22 công việc hợp lệ · từ 15/06/2026 đến 31/12/2026 · 200 ngày" | |
-| B2 | **Xuất nhật ký theo ngày** | Sheet mới `NK_TheoNgay`, 200 dòng + tiêu đề; cột Ngày dạng dd/mm/yyyy | |
+| B1 | Sheet TDTC: đặt con trỏ 1 ô trong bảng → **Xuất theo ngày** | Hộp thoại: vùng `TDTC!A1:C23`, 3 cột nhận diện A, B, C | |
+| B2 | **Xuất nhật ký** | Sheet mới `NK_TheoNgay`, 200 dòng + tiêu đề, cột Ngày dd/mm/yyyy; hộp thoại kết quả "200 ngày, từ 15/06/2026 đến 31/12/2026", "22 công việc hợp lệ", xem trước 5 ngày | |
 | B3 | Kiểm tra ngày 06/08/2026 | Ô Nội dung có 13 dòng, mỗi dòng bắt đầu "- ", **không** báo lỗi công thức (#NAME?) | |
 | B4 | Xuất lần 2 | Tạo `NK_TheoNgay_2`, sheet cũ giữ nguyên | |
-| B5 | Chọn nguyên cột `A:C` rồi xuất | Kết quả giống B2 | |
+| B5 | Chọn nguyên cột `A:C` rồi xuất; bấm **Hủy** ở hộp thoại | Kết quả giống B2; Hủy thì không tạo sheet | |
 
 ## C. F2 – Xuất theo form mẫu (P2.8) — file `demo_f2.xlsx`
 
 | # | Bước | Kết quả mong đợi | Kết quả |
 |---|---|---|---|
-| C1 | Sheet NK_TheoNgay: chọn `A1:I201` → tab Form mẫu → **Lấy vùng đang chọn** | "9 cột · 200 ngày"; cột Ngày = A | |
-| C2 | Gán cột theo bảng BUSINESS_SPEC §F2.3 (chọn ô merge trên "Mẫu NKTC" → **Ô đang chọn**) | Hiện "→ Mẫu NKTC!E2", "→ Mẫu NKTC!A21"…; ô merge lấy ô trên-trái | |
-| C3 | **Xuất lên form** | Biểu mẫu hiển thị "Ngày 15 tháng 06 năm 2026", thời tiết, nhân lực, nội dung | |
+| C1 | Sheet NK_TheoNgay: đặt con trỏ trong bảng → **Vùng nguồn** | Thông báo "NK_TheoNgay!A1:I201", "Cột Ngày: A – Ngày", "200 ngày hợp lệ" | |
+| C2 | Gán cột theo bảng BUSINESS_SPEC §F2.3: chọn ô merge trên "Mẫu NKTC" → **Gán cột** → chọn cột → Gán | Hộp thoại hiện đúng ô (ô merge lấy ô trên-trái); **Danh sách gán** liệt kê 9 ô | |
+| C3 | **Ngày đầu** | Biểu mẫu hiển thị "Ngày 15 tháng 06 năm 2026", thời tiết, nhân lực, nội dung (nếu ô đích đã có dữ liệu → hộp thoại xác nhận ghi đè) | |
 | C4 | Ô nội dung 3.1 | Hiển thị đúng các dòng "- …", **không** thấy dấu `'` ở đầu (R2.11) | |
 | C5 | Ô tích thời tiết | Tích đúng theo ghi chú (Nắng / Mưa / Bình thường) | |
-| C6 | « ‹ › » và **Đi tới** 05/08/2026 | Biểu mẫu đổi theo ngày; mục 4, 5 có nội dung sự cố / kiến nghị | |
-| C7 | Sửa ô Thời tiết trong NK_TheoNgay → bấm › rồi ‹ | Biểu mẫu nhận giá trị mới | |
-| C8 | Lưu file, đóng, mở lại → tab Form mẫu | Cấu hình gán cột còn nguyên; **Xuất lại** hỏi xác nhận ghi đè | |
+| C6 | **Ngày sau**, **Ngày trước**, **Ngày cuối**, **Đến ngày…** 05/08/2026 | Biểu mẫu đổi theo ngày, không hiện hộp thoại; mục 4, 5 có nội dung sự cố / kiến nghị; ở ngày cuối bấm Ngày sau → báo "Đang ở ngày cuối cùng" | |
+| C7 | Sửa ô Thời tiết trong NK_TheoNgay → **Ngày sau** rồi **Ngày trước** | Biểu mẫu nhận giá trị mới | |
+| C8 | Lưu file, đóng, mở lại → **Ngày sau** | Cấu hình gán cột còn nguyên; ghi luôn, không hỏi lại | |
 | C9 | **File → Print** (Xem trước bản in) | A4 đứng, 2 trang, ngắt trước mục 4 | |
 | C10 | Mở bằng Excel 2016 (nếu có) | C1–C9 đạt | |
 

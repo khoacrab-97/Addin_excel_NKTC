@@ -6,6 +6,8 @@
  * Đầu vào: window.__SMOKE_INPUT = {
  *   sheets: [{ name, values, formulas?: { "A26": "=..." } }], selection: { sheet, address }, apiMinor, settings? }.
  * Ghi chuỗi bắt đầu bằng "'" → lưu phần sau dấu "'" (giống Excel: dấu "'" là ký tự đánh dấu văn bản).
+ * Dialog API 1.1 giả lập: displayDialogAsync ghi nhận hộp thoại; test mở URL hộp thoại ở trang khác và chuyển
+ * messageParent về qua window.__toParent → __smoke.deliver. Không có Office.actions (giống Excel 2016).
  */
 (function () {
   "use strict";
@@ -15,6 +17,11 @@
   var sheets = [];
   var selection = { sheet: input.selection.sheet, address: input.selection.address };
   var settingsStore = JSON.parse(JSON.stringify(input.settings || {}));
+  var dialogs = [];
+  function openDialog() {
+    for (var i = dialogs.length - 1; i >= 0; i--) if (!dialogs[i].closed) return dialogs[i];
+    return null;
+  }
 
   function colIndex(letters) {
     var n = 0;
@@ -116,6 +123,16 @@
       Object.defineProperty(range, "rowIndex", {
         get: function () {
           return box.r1;
+        },
+      });
+      Object.defineProperty(range, "rowCount", {
+        get: function () {
+          return box.r2 - box.r1 + 1;
+        },
+      });
+      Object.defineProperty(range, "columnCount", {
+        get: function () {
+          return box.c2 - box.c1 + 1;
         },
       });
       Object.defineProperty(range, "columnIndex", {
@@ -341,6 +358,28 @@
         return s.name !== name;
       });
     },
+    openDialog: function () {
+      var d = openDialog();
+      return d ? { index: dialogs.indexOf(d), url: d.url, width: d.options.width, height: d.options.height } : null;
+    },
+    dialogClosed: function (index) {
+      return dialogs[index].closed;
+    },
+    dialogCount: function () {
+      return dialogs.length;
+    },
+    /** Tin từ hộp thoại; mặc định origin = origin của add-in (như Office gửi kèm, DialogOrigin 1.1). */
+    deliver: function (message, origin) {
+      var d = openDialog();
+      var from = origin === undefined ? window.location.protocol + "//" + window.location.host : origin;
+      if (d && d.handlers.dialogMessageReceived) d.handlers.dialogMessageReceived({ message: message, origin: from });
+    },
+    dismiss: function () {
+      var d = openDialog();
+      if (!d) return;
+      d.closed = true;
+      if (d.handlers.dialogEventReceived) d.handlers.dialogEventReceived({ error: 12006 });
+    },
     sheetNames: function () {
       return sheets.map(function (s) {
         return s.name;
@@ -355,6 +394,7 @@
   };
   window.Office = {
     AsyncResultStatus: { Succeeded: "succeeded", Failed: "failed" },
+    EventType: { DialogMessageReceived: "dialogMessageReceived", DialogEventReceived: "dialogEventReceived" },
     onReady: function () {
       return Promise.resolve({ host: "Excel", platform: "PC" });
     },
@@ -378,6 +418,33 @@
         },
       },
       diagnostics: { platform: "PC", version: "16.0 (giả lập)" },
+      ui: {
+        displayDialogAsync: function (url, options, callback) {
+          if (openDialog()) {
+            setTimeout(function () {
+              callback({ status: "failed", error: { code: 12007, message: "Đang có hộp thoại" } });
+            }, 0);
+            return;
+          }
+          var dialog = { url: url, options: options, closed: false, handlers: {} };
+          dialog.api = {
+            addEventHandler: function (type, handler) {
+              dialog.handlers[type] = handler;
+            },
+            close: function () {
+              dialog.closed = true;
+            },
+          };
+          dialogs.push(dialog);
+          log.push({ op: "dialog", url: url.split("#")[0] });
+          setTimeout(function () {
+            callback({ status: "succeeded", value: dialog.api });
+          }, 0);
+        },
+        messageParent: function (message) {
+          window.__toParent(message);
+        },
+      },
       requirements: {
         isSetSupported: function (name, version) {
           return name === "ExcelApi" && Number(String(version).split(".")[1]) <= input.apiMinor;

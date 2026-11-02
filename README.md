@@ -56,7 +56,7 @@ npm run stop
 | Loại | Lệnh | Ghi chú |
 |---|---|---|
 | Unit test + hồi quy | `npm test` | Gồm hồi quy F1 trên `test/fixtures/tdtc-sample.json` (dữ liệu mẫu tự tạo, mô phỏng bảng tiến độ phân cấp). |
-| Smoke test F1 + F2 + F3 | `npm run smoke` (hoặc `smoke:f1`, `smoke:f2`, `smoke:f3`) | Chạy bundle production trong Chromium với Excel giả lập (`scripts/smoke/fake-excel.js`). Cần Playwright + Chromium có sẵn trong môi trường (không phải dependency của dự án). |
+| Smoke test F1 + F2 + F3 | `npm run smoke` (hoặc `smoke:f1`, `smoke:f2`, `smoke:f3`) | Chạy bundle production trong Chromium với Excel + Dialog API giả lập (`scripts/smoke/fake-excel.js`): bấm nút Ribbon (gọi hàm của function file), thao tác trong hộp thoại ở trang riêng. Cần Playwright + Chromium có sẵn trong môi trường (không phải dependency của dự án). |
 | Dữ liệu test | `test/fixtures/test_addin_xuat_nktc.xlsx` (tiến độ thật của chủ dự án), `test/fixtures/demo_f2.xlsx` (tiến độ thật + NK_TheoNgay có cột phụ mẫu + biểu mẫu `Mẫu NKTC`) | Sinh lại: `python3 -I scripts/fixtures/make_nktc_workbooks.py test/fixtures/test_addin_xuat_nktc.xlsx` rồi `python3 -I scripts/fixtures/xlsx_to_fixture.py test/fixtures/demo_f2.xlsx test/fixtures/demo_f2.json --all`. Dữ liệu riêng tư để trong `test/fixtures/local/` (git bỏ qua). |
 
 Kiểm thử trên Excel thật (Verified) vẫn phải chạy trên Excel Desktop Windows.
@@ -81,10 +81,12 @@ Phiên bản phát hành lấy từ `package.json` (`version`) và tự đồng 
 ```
 manifest.xml          Manifest add-in (URL dev: https://localhost:3000)
 installer/            Bộ cài Windows (NSIS): đăng ký manifest cho người dùng hiện tại
-assets/               Icon add-in
+assets/               Icon add-in; assets/ribbon/ icon các nút Ribbon (scripts/icons/make_ribbon_icons.py)
 src/
   core/               Business logic thuần TypeScript (không phụ thuộc Office.js)
-  taskpane/           Giao diện React (task pane)
+  commands/           Function file: lệnh của các nút trên tab Ribbon "Nhật ký thi công"
+  dialog/             Hộp thoại React (Office Dialog API) của các lệnh
+  taskpane/           Trang chào mừng (chỉ hiện khi bộ cài kích hoạt add-in)
   excel/              Tầng giao tiếp Office.js
   version/            Thông tin phiên bản
   types/              Khai báo kiểu toàn cục

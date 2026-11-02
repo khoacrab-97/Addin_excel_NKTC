@@ -34,7 +34,10 @@ export default tseslint.config(
         "error",
         {
           patterns: [
-            { group: ["**/excel/**", "**/taskpane/**"], message: "core không được import tầng excel/taskpane." },
+            {
+              group: ["**/excel/**", "**/taskpane/**", "**/commands/**", "**/dialog/**"],
+              message: "core không được import tầng excel/commands/dialog/taskpane.",
+            },
           ],
         },
       ],
@@ -50,7 +53,12 @@ export default tseslint.config(
     languageOptions: { globals: globals.browser, sourceType: "script" },
   },
   {
-    files: ["scripts/smoke/run-*.js", "scripts/smoke/harness.js", "scripts/build-installer.js"],
+    files: [
+      "scripts/smoke/run-*.js",
+      "scripts/smoke/harness.js",
+      "scripts/smoke/fixtures.js",
+      "scripts/build-installer.js",
+    ],
     languageOptions: { globals: globals.node, sourceType: "commonjs" },
   },
   {

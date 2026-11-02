@@ -1,6 +1,6 @@
 import { isRangeAddress, normalizeCellAddress } from "../address/address";
 import { MAX_DAY } from "../dates/excelDate";
-import type { ColumnMapping, MappingConfig } from "./types";
+import { type ColumnMapping, type MappingConfig, mappingKey } from "./types";
 
 /** Khóa lưu cấu hình F2 trong `Office.context.document.settings`. */
 export const MAPPING_SETTINGS_KEY = "nktc.templateMapping.v1";
@@ -46,7 +46,7 @@ function isColumnIndex(value: unknown): value is number {
  */
 export function parseMappingConfig(raw: unknown): MappingConfig | undefined {
   if (!isRecord(raw) || raw.version !== 1) return undefined;
-  const { source, headers, dateColumn, mappings, currentDay } = raw;
+  const { source, headers, dateColumn, mappings, currentDay, confirmedKey } = raw;
   if (!isRecord(source) || !isSheetName(source.sheetName)) return undefined;
   if (typeof source.address !== "string" || !isRangeAddress(source.address)) return undefined;
   if (!Array.isArray(headers) || headers.length > CONFIG_LIMITS.columns) return undefined;
@@ -73,6 +73,10 @@ export function parseMappingConfig(raw: unknown): MappingConfig | undefined {
     mappings: parsedMappings,
   };
   if (isNonNegativeInteger(currentDay) && currentDay <= MAX_DAY) config.currentDay = currentDay;
+  // Chỉ giữ xác nhận khi khớp đúng bộ ô đích hiện tại (dữ liệu sửa tay không thể mở rộng quyền ghi).
+  if (typeof confirmedKey === "string" && confirmedKey === mappingKey(parsedMappings)) {
+    config.confirmedKey = confirmedKey;
+  }
   return config;
 }
 

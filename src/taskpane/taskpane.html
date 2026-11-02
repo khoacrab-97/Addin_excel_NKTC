@@ -4,28 +4,43 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!--
-      CSP: chỉ chạy script của add-in (cùng origin) và Office.js (CDN Microsoft); cấm plugin, đổi base URL, gửi form.
-      Không giới hạn style/font/kết nối vì Fluent UI chèn style và tải font icon từ CDN Office.
-      IE11 (Excel 2016/2019) bỏ qua thẻ này; WebView2 (Microsoft 365) áp dụng.
-    -->
+    <!-- CSP: chỉ chạy script của add-in (cùng origin) và Office.js; cấm plugin, đổi base URL, gửi form. -->
     <meta
       http-equiv="Content-Security-Policy"
       content="script-src 'self' https://appsforoffice.microsoft.com; object-src 'none'; base-uri 'self'; form-action 'none'"
     />
     <title>Nhật ký thi công</title>
     <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 16px;
+        font-family:
+          "Segoe UI",
+          -apple-system,
+          sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #201f1e;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 8px;
+        color: #0f6cbd;
+      }
+      .muted {
+        color: #605e5c;
+        font-size: 12px;
+      }
+    </style>
   </head>
-  <body
-    style="
-      margin: 0;
-      font-family:
-        &quot;Segoe UI&quot;,
-        &quot;Segoe UI Web (West European)&quot;,
-        -apple-system,
-        sans-serif;
-    "
-  >
-    <div id="root"></div>
+  <body>
+    <h1>Nhật ký thi công đã sẵn sàng</h1>
+    <p>
+      Các chức năng nằm trên tab <b>Nhật ký thi công</b> của thanh Ribbon: <b>Xuất theo ngày</b>, <b>Form mẫu</b>,
+      <b>Chuyển ngày</b> và <b>Tiện ích</b>.
+    </p>
+    <p>Bạn có thể <b>đóng khung này</b> (nút ✕ ở góc trên). Khung chỉ hiện một lần khi kích hoạt add-in.</p>
+    <p class="muted">Phiên bản <span id="version"></span></p>
   </body>
 </html>

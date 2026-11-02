@@ -37,14 +37,14 @@ Danh sách nhật ký dạng bảng (có dòng tiêu đề), mỗi dòng là m�
 
 | Thành phần | Lựa chọn | Ghi chú |
 |---|---|---|
-| Nền tảng | Office Add-in, Task Pane, manifest XML | Nút mở add-in trên tab **Home** (Trang đầu). |
+| Nền tảng | Office Add-in (TaskPaneApp manifest XML) + **add-in commands**: tab Ribbon riêng **Nhật ký thi công**, nút chạy hàm trong function file (`ExecuteFunction`), hộp thoại Office Dialog API 1.1 | Từ 1.3.0 không còn khung làm việc bên phải (BUSINESS_SPEC R0.1–R0.3). |
 | Phiên bản Excel tối thiểu | **Microsoft 365 hoặc Excel 2016 trở về sau** (Q6) | |
 | Excel API | Office.js, requirement set **ExcelApi 1.1** làm mức tối thiểu | Excel 2016 bản mua một lần chỉ hỗ trợ ExcelApi 1.1. API cao hơn chỉ được dùng kèm kiểm tra `isSetSupported` và có phương án thay thế. |
 | Trình duyệt nhúng | Phải chạy được trên **Internet Explorer 11** | Excel 2016/2019 bản mua một lần dùng IE11 để hiển thị add-in. |
 | UI | **React 17** + **Fluent UI React v8** + TypeScript (strict) | React 18 và Fluent UI v9 không hỗ trợ IE11. |
 | Build | Webpack 5 + Babel (`preset-env`, core-js polyfill), output **ES5** | `tsc --noEmit` dùng để kiểm tra kiểu. Môi trường dev: Node.js ≥ 22.12. |
 | Hosting | GitHub Pages: `https://khoacrab-97.github.io/Addin_excel_NKTC/` (Q5) | Build production tự thay URL `localhost` trong manifest. |
-| Phân phối | Shared Folder Catalog (thư mục chia sẻ mạng nội bộ) (Q5) | |
+| Phân phối | Bộ cài Windows (NSIS, per-user, đăng ký `HKCU\…\Wef\Developer` + workbook kích hoạt) qua GitHub Releases / Pages; Shared Folder Catalog dự phòng (Q5) | |
 | Test | Vitest (`src/**/*.test.ts`, môi trường Node) | Bắt buộc cho business logic tầng `core`. |
 | Lint | ESLint (typescript-eslint `strictTypeChecked`, react-hooks) + Prettier | ESLint chặn tầng `core` dùng `Office`/`Excel` hoặc import `excel`/`taskpane`. |
 
@@ -69,11 +69,13 @@ src/
     mapping/     F2: mapping cột → ô, cột Ngày, danh sách ngày điều hướng, kế hoạch ghi, cấu hình lưu
     version/     F3: so sánh phiên bản, đọc/kiểm tra version.json
   excel/       Adapter Office.js: đọc/ghi range, tạo sheet, lưu settings
-  taskpane/    React UI (các màn hình F1, F2, F3)
+  commands/    Function file: lệnh của các nút Ribbon (F1, F2, F3), mở hộp thoại, điều phối excel + core
+  dialog/      Hộp thoại React (chọn cột, gán cột, danh sách gán, đến ngày, xác nhận, thông báo, hướng dẫn, phiên bản)
+  taskpane/    Trang chào mừng (chỉ hiện khi kích hoạt add-in)
   version/     Phiên bản đang chạy, tải version.json (XMLHttpRequest), đường dẫn tài liệu/file mẫu
 ```
 
-Nguyên tắc: `taskpane` → gọi `excel` (I/O) và `core` (xử lý); `core` không import `excel` hay `Office`.
+Nguyên tắc: `commands` → gọi `excel` (I/O) và `core` (xử lý); `dialog` chỉ hiển thị/thu thập lựa chọn, giao tiếp với `commands` theo `core/dialog/protocol`; `core` không import `excel` hay `Office`.
 
 ## 5. Ràng buộc an toàn dữ liệu Excel (tóm tắt từ `CLAUDE.md` §4)
 

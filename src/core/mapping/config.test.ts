@@ -78,6 +78,17 @@ describe("parseMappingConfig (R2.8)", () => {
   });
 });
 
+describe("confirmedKey (R2.5)", () => {
+  it("giữ xác nhận khi khớp bộ ô đích hiện tại", () => {
+    expect(parseMappingConfig({ ...valid, confirmedKey: "form!A9" })).toHaveProperty("confirmedKey", "form!A9");
+  });
+
+  it("bỏ xác nhận không khớp bộ ô đích (không mở rộng quyền ghi)", () => {
+    expect(parseMappingConfig({ ...valid, confirmedKey: "form!A9|form!B1" })).not.toHaveProperty("confirmedKey");
+    expect(parseMappingConfig({ ...valid, confirmedKey: 1 })).not.toHaveProperty("confirmedKey");
+  });
+});
+
 describe("headerTexts", () => {
   it("chuyển tiêu đề thành chuỗi", () => {
     expect(headerTexts(["Ngày", 1, true, null, ""])).toEqual(["Ngày", "1", "true", "", ""]);

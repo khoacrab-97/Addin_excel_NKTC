@@ -5,7 +5,7 @@
            xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
            xsi:type="TaskPaneApp">
   <Id>2b55386a-bc23-4f8d-81e4-137b8271b9ea</Id>
-  <Version>1.2.1.0</Version>
+  <Version>1.3.0.0</Version>
   <ProviderName>khoacrab-97</ProviderName>
   <DefaultLocale>vi-VN</DefaultLocale>
   <DisplayName DefaultValue="Nhật ký thi công"/>
@@ -35,33 +35,209 @@
             <Description resid="GetStarted.Description"/>
             <LearnMoreUrl resid="GetStarted.LearnMoreUrl"/>
           </GetStarted>
+          <!-- Trang không giao diện chạy lệnh của các nút (ExecuteFunction). Không có khung làm việc bên phải. -->
+          <FunctionFile resid="Commands.Url"/>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
-            <OfficeTab id="TabHome">
-              <Group id="NKTC.Group">
-                <Label resid="Group.Label"/>
-                <Icon>
-                  <bt:Image size="16" resid="Icon.16x16"/>
-                  <bt:Image size="32" resid="Icon.32x32"/>
-                  <bt:Image size="80" resid="Icon.80x80"/>
-                </Icon>
-                <Control xsi:type="Button" id="NKTC.TaskpaneButton">
-                  <Label resid="TaskpaneButton.Label"/>
-                  <Supertip>
-                    <Title resid="TaskpaneButton.Label"/>
-                    <Description resid="TaskpaneButton.Tooltip"/>
-                  </Supertip>
+            <CustomTab id="NKTC.Tab">
+                <Group id="NKTC.GroupExport">
+                  <Label resid="GroupExport.Label"/>
                   <Icon>
-                    <bt:Image size="16" resid="Icon.16x16"/>
-                    <bt:Image size="32" resid="Icon.32x32"/>
-                    <bt:Image size="80" resid="Icon.80x80"/>
+                    <bt:Image size="16" resid="Icon.export.16"/>
+                    <bt:Image size="32" resid="Icon.export.32"/>
+                    <bt:Image size="80" resid="Icon.export.80"/>
                   </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <TaskpaneId>NKTC.Taskpane</TaskpaneId>
-                    <SourceLocation resid="Taskpane.Url"/>
-                  </Action>
-                </Control>
-              </Group>
-            </OfficeTab>
+                  <Control xsi:type="Button" id="NKTC.ExportDaily">
+                    <Label resid="ExportDaily.Label"/>
+                    <Supertip>
+                      <Title resid="ExportDaily.Label"/>
+                      <Description resid="ExportDaily.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.export.16"/>
+                      <bt:Image size="32" resid="Icon.export.32"/>
+                      <bt:Image size="80" resid="Icon.export.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcExportDaily</FunctionName>
+                    </Action>
+                  </Control>
+                </Group>
+                <Group id="NKTC.GroupForm">
+                  <Label resid="GroupForm.Label"/>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.source.16"/>
+                    <bt:Image size="32" resid="Icon.source.32"/>
+                    <bt:Image size="80" resid="Icon.source.80"/>
+                  </Icon>
+                  <Control xsi:type="Button" id="NKTC.SetSource">
+                    <Label resid="SetSource.Label"/>
+                    <Supertip>
+                      <Title resid="SetSource.Label"/>
+                      <Description resid="SetSource.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.source.16"/>
+                      <bt:Image size="32" resid="Icon.source.32"/>
+                      <bt:Image size="80" resid="Icon.source.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcSetSource</FunctionName>
+                    </Action>
+                  </Control>
+                  <Control xsi:type="Button" id="NKTC.AssignCell">
+                    <Label resid="AssignCell.Label"/>
+                    <Supertip>
+                      <Title resid="AssignCell.Label"/>
+                      <Description resid="AssignCell.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.assign.16"/>
+                      <bt:Image size="32" resid="Icon.assign.32"/>
+                      <bt:Image size="80" resid="Icon.assign.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcAssignCell</FunctionName>
+                    </Action>
+                  </Control>
+                  <Control xsi:type="Button" id="NKTC.MappingList">
+                    <Label resid="MappingList.Label"/>
+                    <Supertip>
+                      <Title resid="MappingList.Label"/>
+                      <Description resid="MappingList.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.list.16"/>
+                      <bt:Image size="32" resid="Icon.list.32"/>
+                      <bt:Image size="80" resid="Icon.list.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcMappingList</FunctionName>
+                    </Action>
+                  </Control>
+                </Group>
+                <Group id="NKTC.GroupDays">
+                  <Label resid="GroupDays.Label"/>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.goto.16"/>
+                    <bt:Image size="32" resid="Icon.goto.32"/>
+                    <bt:Image size="80" resid="Icon.goto.80"/>
+                  </Icon>
+                  <Control xsi:type="Button" id="NKTC.DayFirst">
+                    <Label resid="DayFirst.Label"/>
+                    <Supertip>
+                      <Title resid="DayFirst.Label"/>
+                      <Description resid="DayFirst.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.first.16"/>
+                      <bt:Image size="32" resid="Icon.first.32"/>
+                      <bt:Image size="80" resid="Icon.first.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcDayFirst</FunctionName>
+                    </Action>
+                  </Control>
+                  <Control xsi:type="Button" id="NKTC.DayPrev">
+                    <Label resid="DayPrev.Label"/>
+                    <Supertip>
+                      <Title resid="DayPrev.Label"/>
+                      <Description resid="DayPrev.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.prev.16"/>
+                      <bt:Image size="32" resid="Icon.prev.32"/>
+                      <bt:Image size="80" resid="Icon.prev.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcDayPrev</FunctionName>
+                    </Action>
+                  </Control>
+                  <Control xsi:type="Button" id="NKTC.DayNext">
+                    <Label resid="DayNext.Label"/>
+                    <Supertip>
+                      <Title resid="DayNext.Label"/>
+                      <Description resid="DayNext.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.next.16"/>
+                      <bt:Image size="32" resid="Icon.next.32"/>
+                      <bt:Image size="80" resid="Icon.next.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcDayNext</FunctionName>
+                    </Action>
+                  </Control>
+                  <Control xsi:type="Button" id="NKTC.DayLast">
+                    <Label resid="DayLast.Label"/>
+                    <Supertip>
+                      <Title resid="DayLast.Label"/>
+                      <Description resid="DayLast.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.last.16"/>
+                      <bt:Image size="32" resid="Icon.last.32"/>
+                      <bt:Image size="80" resid="Icon.last.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcDayLast</FunctionName>
+                    </Action>
+                  </Control>
+                  <Control xsi:type="Button" id="NKTC.GoToDay">
+                    <Label resid="GoToDay.Label"/>
+                    <Supertip>
+                      <Title resid="GoToDay.Label"/>
+                      <Description resid="GoToDay.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.goto.16"/>
+                      <bt:Image size="32" resid="Icon.goto.32"/>
+                      <bt:Image size="80" resid="Icon.goto.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcGoToDay</FunctionName>
+                    </Action>
+                  </Control>
+                </Group>
+                <Group id="NKTC.GroupUtilities">
+                  <Label resid="GroupUtilities.Label"/>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.help.16"/>
+                    <bt:Image size="32" resid="Icon.help.32"/>
+                    <bt:Image size="80" resid="Icon.help.80"/>
+                  </Icon>
+                  <Control xsi:type="Button" id="NKTC.Help">
+                    <Label resid="Help.Label"/>
+                    <Supertip>
+                      <Title resid="Help.Label"/>
+                      <Description resid="Help.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.help.16"/>
+                      <bt:Image size="32" resid="Icon.help.32"/>
+                      <bt:Image size="80" resid="Icon.help.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcHelp</FunctionName>
+                    </Action>
+                  </Control>
+                  <Control xsi:type="Button" id="NKTC.About">
+                    <Label resid="About.Label"/>
+                    <Supertip>
+                      <Title resid="About.Label"/>
+                      <Description resid="About.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.about.16"/>
+                      <bt:Image size="32" resid="Icon.about.32"/>
+                      <bt:Image size="80" resid="Icon.about.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcAbout</FunctionName>
+                    </Action>
+                  </Control>
+                </Group>
+              <Label resid="Tab.Label"/>
+            </CustomTab>
           </ExtensionPoint>
         </DesktopFormFactor>
       </Host>
@@ -71,19 +247,76 @@
         <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
         <bt:Image id="Icon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
         <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
+        <bt:Image id="Icon.export.16" DefaultValue="https://localhost:3000/assets/ribbon/export-16.png"/>
+        <bt:Image id="Icon.export.32" DefaultValue="https://localhost:3000/assets/ribbon/export-32.png"/>
+        <bt:Image id="Icon.export.80" DefaultValue="https://localhost:3000/assets/ribbon/export-80.png"/>
+        <bt:Image id="Icon.source.16" DefaultValue="https://localhost:3000/assets/ribbon/source-16.png"/>
+        <bt:Image id="Icon.source.32" DefaultValue="https://localhost:3000/assets/ribbon/source-32.png"/>
+        <bt:Image id="Icon.source.80" DefaultValue="https://localhost:3000/assets/ribbon/source-80.png"/>
+        <bt:Image id="Icon.assign.16" DefaultValue="https://localhost:3000/assets/ribbon/assign-16.png"/>
+        <bt:Image id="Icon.assign.32" DefaultValue="https://localhost:3000/assets/ribbon/assign-32.png"/>
+        <bt:Image id="Icon.assign.80" DefaultValue="https://localhost:3000/assets/ribbon/assign-80.png"/>
+        <bt:Image id="Icon.list.16" DefaultValue="https://localhost:3000/assets/ribbon/list-16.png"/>
+        <bt:Image id="Icon.list.32" DefaultValue="https://localhost:3000/assets/ribbon/list-32.png"/>
+        <bt:Image id="Icon.list.80" DefaultValue="https://localhost:3000/assets/ribbon/list-80.png"/>
+        <bt:Image id="Icon.first.16" DefaultValue="https://localhost:3000/assets/ribbon/first-16.png"/>
+        <bt:Image id="Icon.first.32" DefaultValue="https://localhost:3000/assets/ribbon/first-32.png"/>
+        <bt:Image id="Icon.first.80" DefaultValue="https://localhost:3000/assets/ribbon/first-80.png"/>
+        <bt:Image id="Icon.prev.16" DefaultValue="https://localhost:3000/assets/ribbon/prev-16.png"/>
+        <bt:Image id="Icon.prev.32" DefaultValue="https://localhost:3000/assets/ribbon/prev-32.png"/>
+        <bt:Image id="Icon.prev.80" DefaultValue="https://localhost:3000/assets/ribbon/prev-80.png"/>
+        <bt:Image id="Icon.next.16" DefaultValue="https://localhost:3000/assets/ribbon/next-16.png"/>
+        <bt:Image id="Icon.next.32" DefaultValue="https://localhost:3000/assets/ribbon/next-32.png"/>
+        <bt:Image id="Icon.next.80" DefaultValue="https://localhost:3000/assets/ribbon/next-80.png"/>
+        <bt:Image id="Icon.last.16" DefaultValue="https://localhost:3000/assets/ribbon/last-16.png"/>
+        <bt:Image id="Icon.last.32" DefaultValue="https://localhost:3000/assets/ribbon/last-32.png"/>
+        <bt:Image id="Icon.last.80" DefaultValue="https://localhost:3000/assets/ribbon/last-80.png"/>
+        <bt:Image id="Icon.goto.16" DefaultValue="https://localhost:3000/assets/ribbon/goto-16.png"/>
+        <bt:Image id="Icon.goto.32" DefaultValue="https://localhost:3000/assets/ribbon/goto-32.png"/>
+        <bt:Image id="Icon.goto.80" DefaultValue="https://localhost:3000/assets/ribbon/goto-80.png"/>
+        <bt:Image id="Icon.help.16" DefaultValue="https://localhost:3000/assets/ribbon/help-16.png"/>
+        <bt:Image id="Icon.help.32" DefaultValue="https://localhost:3000/assets/ribbon/help-32.png"/>
+        <bt:Image id="Icon.help.80" DefaultValue="https://localhost:3000/assets/ribbon/help-80.png"/>
+        <bt:Image id="Icon.about.16" DefaultValue="https://localhost:3000/assets/ribbon/about-16.png"/>
+        <bt:Image id="Icon.about.32" DefaultValue="https://localhost:3000/assets/ribbon/about-32.png"/>
+        <bt:Image id="Icon.about.80" DefaultValue="https://localhost:3000/assets/ribbon/about-80.png"/>
       </bt:Images>
       <bt:Urls>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://github.com/khoacrab-97/Addin_excel_NKTC"/>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/taskpane.html"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://localhost:3000/commands.html"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Nhật ký thi công đã sẵn sàng"/>
-        <bt:String id="Group.Label" DefaultValue="Nhật ký thi công"/>
-        <bt:String id="TaskpaneButton.Label" DefaultValue="Nhật ký thi công"/>
+        <bt:String id="Tab.Label" DefaultValue="Nhật ký thi công"/>
+        <bt:String id="GroupExport.Label" DefaultValue="Xuất nhật ký"/>
+        <bt:String id="GroupForm.Label" DefaultValue="Form mẫu"/>
+        <bt:String id="GroupDays.Label" DefaultValue="Chuyển ngày"/>
+        <bt:String id="GroupUtilities.Label" DefaultValue="Tiện ích"/>
+        <bt:String id="ExportDaily.Label" DefaultValue="Xuất theo ngày"/>
+        <bt:String id="SetSource.Label" DefaultValue="Vùng nguồn"/>
+        <bt:String id="AssignCell.Label" DefaultValue="Gán cột"/>
+        <bt:String id="MappingList.Label" DefaultValue="Danh sách gán"/>
+        <bt:String id="DayFirst.Label" DefaultValue="Ngày đầu"/>
+        <bt:String id="DayPrev.Label" DefaultValue="Ngày trước"/>
+        <bt:String id="DayNext.Label" DefaultValue="Ngày sau"/>
+        <bt:String id="DayLast.Label" DefaultValue="Ngày cuối"/>
+        <bt:String id="GoToDay.Label" DefaultValue="Đến ngày…"/>
+        <bt:String id="Help.Label" DefaultValue="Hướng dẫn"/>
+        <bt:String id="About.Label" DefaultValue="Phiên bản"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="GetStarted.Description" DefaultValue="Mở tab Trang đầu và chọn nút Nhật ký thi công để bắt đầu."/>
-        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Mở khung làm việc Nhật ký thi công."/>
+        <bt:String id="GetStarted.Description" DefaultValue="Mở tab Nhật ký thi công trên thanh Ribbon để bắt đầu."/>
+        <bt:String id="ExportDaily.Tip" DefaultValue="Chọn bảng tiến độ (hoặc đặt con trỏ trong sheet tiến độ), xác nhận 3 cột rồi tạo sheet NK_TheoNgay."/>
+        <bt:String id="SetSource.Tip" DefaultValue="Đặt con trỏ trong bảng nhật ký theo ngày (NK_TheoNgay) rồi bấm để làm nguồn dữ liệu cho biểu mẫu."/>
+        <bt:String id="AssignCell.Tip" DefaultValue="Chọn một ô (hoặc ô merge) trên biểu mẫu rồi bấm để chọn cột ghi vào ô đó."/>
+        <bt:String id="MappingList.Tip" DefaultValue="Xem các ô đã gán, bỏ gán, đổi cột Ngày."/>
+        <bt:String id="DayFirst.Tip" DefaultValue="Ghi dữ liệu ngày đầu tiên lên biểu mẫu."/>
+        <bt:String id="DayPrev.Tip" DefaultValue="Ghi dữ liệu ngày trước đó lên biểu mẫu."/>
+        <bt:String id="DayNext.Tip" DefaultValue="Ghi dữ liệu ngày kế tiếp lên biểu mẫu."/>
+        <bt:String id="DayLast.Tip" DefaultValue="Ghi dữ liệu ngày cuối cùng lên biểu mẫu."/>
+        <bt:String id="GoToDay.Tip" DefaultValue="Nhập ngày (dd/mm/yyyy) để ghi dữ liệu ngày đó lên biểu mẫu."/>
+        <bt:String id="Help.Tip" DefaultValue="Hướng dẫn sử dụng và tải biểu mẫu."/>
+        <bt:String id="About.Tip" DefaultValue="Phiên bản add-in, môi trường Excel và kiểm tra cập nhật."/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>
