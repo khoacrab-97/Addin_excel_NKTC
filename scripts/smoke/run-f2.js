@@ -139,7 +139,7 @@ async function main() {
     assert.equal(await targetField(d, row).inputValue(), `${SHEET}!${m.cell}`);
   }
   await d.page.screenshot({ path: path.join("smoke-output", "f2-export-form.png"), fullPage: true });
-  pass("Gán từng dòng", `${MAPPINGS.length} dòng: cột nguồn + ô trên form chọn bằng nút ⬆ (ô gộp → ô trên-trái)`);
+  pass("Gán từng dòng", "cột nguồn + ô trên form chọn bằng nút ⬆ (ô gộp → ô trên-trái)");
 
   // 4. Dòng thừa: + Thêm rồi chọn dòng → Delete; ô trùng → báo lỗi theo dòng, không ghi.
   await d.page.getByRole("button", { name: "+ Thêm" }).click();
@@ -178,10 +178,7 @@ async function main() {
   assert.equal((await cell(meta.formulaCell)).formula, formSheet.formulas[meta.formulaCell]);
   assert.equal((await cell("A1")).value, "TÌNH HÌNH THI CÔNG HÀNG NGÀY");
   assert.equal((await config()).mappings.length, MAPPINGS.length);
-  pass(
-    "Gán",
-    `form nhận ngày 15/06/2026; ${writes.length} lệnh ghi đúng ô đích; công thức ${meta.formulaCell} giữ nguyên`,
-  );
+  pass("Gán", "form nhận ngày đầu; chỉ ghi đúng các ô đích; ô công thức giữ nguyên");
 
   // 6. Chuyển ngày sau khi gán: không mở hộp thoại; biên → thông báo.
   await pressSilently("nktcDayNext");
