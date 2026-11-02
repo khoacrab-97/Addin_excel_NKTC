@@ -17,7 +17,7 @@ export const MAX_SPAN_DAYS = 3660;
 /** Số ký tự tối đa của một ô Excel. */
 export const MAX_CELL_LENGTH = 32_767;
 
-const LINE_PREFIX = "- ";
+/** Mỗi công việc một dòng trong ô, giữ nguyên nội dung người dùng nhập (không thêm tiền tố, R1.4). */
 const LINE_SEPARATOR = "\n";
 
 /** Trải công việc theo từng ngày và gộp nội dung (R1.1–R1.4, R1.10). */
@@ -45,7 +45,7 @@ export function buildDailyLog(items: readonly WorkItem[]): BuildDailyLogResult {
   for (let i = 0; i < span; i++) linesByDay.push([]);
   for (const item of items) {
     for (let day = item.start; day <= item.end; day++) {
-      linesByDay[day - firstDay]?.push(LINE_PREFIX + item.content);
+      linesByDay[day - firstDay]?.push(item.content);
     }
   }
 

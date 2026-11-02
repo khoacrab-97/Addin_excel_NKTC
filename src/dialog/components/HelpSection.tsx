@@ -30,7 +30,8 @@ export function HelpSection(): JSX.Element {
           con trỏ trong sheet tiến độ.
         </li>
         <li>
-          Bấm &quot;Xuất theo ngày&quot;; kiểm tra 3 cột được nhận diện, chỉnh lại nếu cần → &quot;Xuất nhật ký&quot;.
+          Bấm &quot;Xuất theo ngày&quot;; kiểm tra Vùng dữ liệu (chọn lại: kéo chọn vùng rồi bấm ⬆) và 3 cột được nhận
+          diện, chỉnh lại nếu cần → &quot;Xuất nhật ký&quot;.
         </li>
         <li>
           Add-in tạo sheet mới <strong>NK_TheoNgay</strong> (không ghi đè sheet có sẵn) và báo kết quả, các dòng lỗi.
@@ -43,18 +44,23 @@ export function HelpSection(): JSX.Element {
           Trong sheet NK_TheoNgay, thêm các cột phụ khi cần: Thời tiết, Ban chỉ huy - CBKT, Số công nhân, Số thiết bị,
           Nội dung nghiệm thu, Sự cố, Kiến nghị.
         </li>
-        <li>Chép sheet &quot;Mẫu NKTC&quot; (từ file biểu mẫu bên dưới) vào file nhật ký.</li>
-        <li>Đặt con trỏ trong sheet NK_TheoNgay → bấm &quot;Vùng nguồn&quot;.</li>
         <li>
-          Trên biểu mẫu: chọn một ô (hoặc ô merge) → bấm &quot;Gán cột&quot; → chọn cột ghi vào ô đó. Lặp lại cho từng
-          ô.
+          Bấm &quot;Chèn form mẫu&quot; để thêm sheet &quot;Mẫu NKTC&quot; (Excel cũ: tải biểu mẫu bên dưới rồi chép
+          sheet).
         </li>
         <li>
-          Bấm &quot;Ngày đầu&quot;, &quot;Ngày trước&quot;, &quot;Ngày sau&quot;, &quot;Ngày cuối&quot; hoặc &quot;Đến
-          ngày…&quot; để ghi dữ liệu của ngày đó lên biểu mẫu. Lần ghi đầu, nếu ô đích đang có dữ liệu/công thức, add-in
-          hỏi xác nhận.
+          Bấm &quot;Xuất vào form&quot;: kiểm tra Vùng nguồn (tự nhận diện; chọn lại bằng nút ⬆) — dòng đầu là tiêu đề,
+          không được có ô gộp (merge).
         </li>
-        <li>&quot;Danh sách gán&quot;: xem, bỏ gán ô, đổi cột Ngày. Cấu hình được lưu trong file Excel.</li>
+        <li>
+          Mỗi dòng gán: chọn cột nguồn (trái); chọn ô trên biểu mẫu rồi bấm ⬆ (phải). &quot;+ Thêm&quot; để gán tiếp;
+          chọn dòng thừa → Delete (hoặc Xóa dòng).
+        </li>
+        <li>Bấm &quot;Gán&quot;: biểu mẫu nhận dữ liệu ngày đầu tiên. Cấu hình được lưu trong file Excel.</li>
+        <li>
+          Sau khi gán: &quot;Ngày đầu&quot;, &quot;Ngày trước&quot;, &quot;Ngày sau&quot;, &quot;Ngày cuối&quot;,
+          &quot;Đến ngày…&quot; để chuyển ngày. Chưa gán thì các nút này chỉ hiện hướng dẫn.
+        </li>
       </ol>
 
       <Text variant="mediumPlus">Tải về</Text>

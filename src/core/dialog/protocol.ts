@@ -5,27 +5,29 @@
  */
 
 export type DialogView =
-  "create-table" | "f1-columns" | "message" | "assign" | "settings" | "goto" | "confirm" | "help" | "about";
+  "create-table" | "f1-columns" | "message" | "export-form" | "goto" | "confirm" | "help" | "about";
 
 export const DIALOG_VIEWS: readonly DialogView[] = [
   "create-table",
   "f1-columns",
   "message",
-  "assign",
-  "settings",
+  "export-form",
   "goto",
   "confirm",
   "help",
   "about",
 ];
 
-/** Một cột của vùng dữ liệu để chọn trong hộp thoại, ví dụ `{ index: 2, label: "C – Nội dung" }`. */
+/** Một cột của vùng dữ liệu để chọn trong hộp thoại, ví dụ `{ index: 2, label: "Cột C – Nội dung" }`. */
 export interface ColumnOption {
   index: number;
   label: string;
 }
 
 export type MessageTone = "info" | "success" | "warning" | "error";
+
+/** File tải về có sẵn trong add-in. */
+export type DownloadKey = "form-template";
 
 export interface CreateTablePayload {
   /** Sheet đang mở và ô đang chọn — gợi ý vị trí bảng trên sheet hiện tại. */
@@ -35,8 +37,15 @@ export interface CreateTablePayload {
   maxRows: number;
 }
 
+/** Ô chọn vùng có nút mũi tên (giống ô chọn vùng của Excel): giá trị hiển thị + lỗi nếu vùng không dùng được. */
+export interface RangeFieldState {
+  /** Ví dụ `TienDo!A1:D11`. Chuỗi rỗng nếu chưa có vùng. */
+  value: string;
+  error?: string;
+}
+
 export interface F1ColumnsPayload {
-  source: string;
+  source: RangeFieldState;
   options: ColumnOption[];
   detected: { content?: number; start?: number; end?: number };
 }
@@ -45,32 +54,38 @@ export interface MessagePayload {
   title: string;
   tone: MessageTone;
   lines: string[];
+  /**
+   * Liên kết tải về: chỉ là MÃ của file có sẵn trong add-in; hộp thoại tự đổi mã thành đường dẫn cố định
+   * (không nhận đường dẫn từ dữ liệu truyền vào hộp thoại).
+   */
+  link?: DownloadKey;
   /** Bảng xem trước (ví dụ 5 ngày đầu của nhật ký vừa xuất). */
   table?: { headers: string[]; rows: string[][] };
 }
 
-export interface AssignPayload {
+/** Một dòng gán của hộp thoại "Xuất vào form": cột nguồn (trái) → ô trên form (phải). */
+export interface FormRowState {
+  column?: number;
   target: string;
-  source: string;
-  options: ColumnOption[];
-  dateColumn: number;
-  /** Cột đang gán cho ô này (nếu có). */
-  current?: number;
 }
 
-export interface MappingRow {
-  key: string;
-  target: string;
-  column: number;
+/** Trạng thái người dùng đang nhập trong hộp thoại "Xuất vào form" (giữ lại khi mở lại hộp thoại). */
+export interface ExportFormState {
+  dateColumn?: number;
+  rows: FormRowState[];
+  /** Dòng đang chọn (để Xóa dòng). */
+  selected?: number;
 }
 
-export interface SettingsPayload {
-  source: string;
+export interface ExportFormPayload {
+  source: RangeFieldState;
   options: ColumnOption[];
-  dateColumn: number;
-  mappings: MappingRow[];
   dayCount: number;
-  currentDay?: string;
+  state: ExportFormState;
+  /** Lỗi của lần bấm Gán trước (theo dòng). */
+  errors?: string[];
+  /** Lỗi của ô đích cụ thể khi chọn bằng nút mũi tên. */
+  rowError?: { row: number; message: string };
 }
 
 export interface GotoPayload {
@@ -100,8 +115,7 @@ export interface DialogPayloads {
   "create-table": CreateTablePayload;
   "f1-columns": F1ColumnsPayload;
   message: MessagePayload;
-  assign: AssignPayload;
-  settings: SettingsPayload;
+  "export-form": ExportFormPayload;
   goto: GotoPayload;
   confirm: ConfirmPayload;
   help: Record<string, never>;
@@ -112,10 +126,17 @@ export type CancelReply = { action: "cancel" };
 
 export interface DialogReplies {
   "create-table": { action: "create"; target: "current" | "new"; cell: string; rows: number } | CancelReply;
-  "f1-columns": { action: "ok"; columns: { content: number; start: number; end: number } } | CancelReply;
+  "f1-columns":
+    | { action: "ok"; columns: { content: number; start: number; end: number } }
+    /** Chọn lại vùng: `address` = địa chỉ gõ tay; không có → lấy vùng đang chọn trên sheet. */
+    | { action: "pick"; address?: string }
+    | CancelReply;
   message: { action: "ok" } | CancelReply;
-  assign: { action: "assign"; column: number } | { action: "unassign" } | CancelReply;
-  settings: { action: "save"; dateColumn: number; remove: string[] } | CancelReply;
+  "export-form":
+    | { action: "pick-source"; address?: string; state: ExportFormState }
+    | { action: "pick-target"; row: number; address?: string; state: ExportFormState }
+    | { action: "assign"; state: ExportFormState }
+    | CancelReply;
   goto: { action: "goto"; text: string } | CancelReply;
   confirm: { action: "ok" } | CancelReply;
   help: { action: "ok" } | CancelReply;
@@ -169,8 +190,30 @@ function isTone(value: unknown): value is MessageTone {
   return value === "info" || value === "success" || value === "warning" || value === "error";
 }
 
-function isMappingRow(value: unknown): value is MappingRow {
-  return isRecord(value) && isText(value.key) && isText(value.target) && isIndex(value.column);
+function isRangeField(value: unknown): value is RangeFieldState {
+  return isRecord(value) && isText(value.value) && isOptionalText(value.error);
+}
+
+function isFormRow(value: unknown): value is FormRowState {
+  return isRecord(value) && isOptionalIndex(value.column) && isText(value.target) && value.target.length <= 80;
+}
+
+function isFormState(value: unknown): value is ExportFormState {
+  return (
+    isRecord(value) &&
+    isOptionalIndex(value.dateColumn) &&
+    isList(value.rows, isFormRow) &&
+    value.rows.length <= 500 &&
+    isOptionalIndex(value.selected)
+  );
+}
+
+function isOptionalAddress(value: unknown): value is string | undefined {
+  return value === undefined || (typeof value === "string" && value.length <= 80);
+}
+
+function isLink(value: unknown): boolean {
+  return value === undefined || value === "form-template";
 }
 
 function isConfirmCell(value: unknown): value is ConfirmCell {
@@ -192,26 +235,20 @@ const PAYLOAD_GUARDS: Guards = {
   "create-table": (p) =>
     isText(p.sheetName) && isText(p.cell) && isPositiveCount(p.defaultRows) && isPositiveCount(p.maxRows),
   "f1-columns": (p) =>
-    isText(p.source) &&
+    isRangeField(p.source) &&
     isList(p.options, isColumnOption) &&
     isRecord(p.detected) &&
     isOptionalIndex(p.detected.content) &&
     isOptionalIndex(p.detected.start) &&
     isOptionalIndex(p.detected.end),
-  message: (p) => isText(p.title) && isTone(p.tone) && isTextList(p.lines) && isTable(p.table),
-  assign: (p) =>
-    isText(p.target) &&
-    isText(p.source) &&
+  message: (p) => isText(p.title) && isTone(p.tone) && isTextList(p.lines) && isTable(p.table) && isLink(p.link),
+  "export-form": (p) =>
+    isRangeField(p.source) &&
     isList(p.options, isColumnOption) &&
-    isIndex(p.dateColumn) &&
-    isOptionalIndex(p.current),
-  settings: (p) =>
-    isText(p.source) &&
-    isList(p.options, isColumnOption) &&
-    isIndex(p.dateColumn) &&
-    isList(p.mappings, isMappingRow) &&
     typeof p.dayCount === "number" &&
-    isOptionalText(p.currentDay),
+    isFormState(p.state) &&
+    (p.errors === undefined || isTextList(p.errors)) &&
+    (p.rowError === undefined || (isRecord(p.rowError) && isIndex(p.rowError.row) && isText(p.rowError.message))),
   goto: (p) => isOptionalText(p.first) && isOptionalText(p.last) && isOptionalText(p.current),
   confirm: (p) => isText(p.day) && isList(p.cells, isConfirmCell),
   help: () => true,
@@ -226,14 +263,18 @@ const REPLY_GUARDS: Guards = {
     r.cell.length <= 16 &&
     isPositiveCount(r.rows),
   "f1-columns": (r) =>
-    r.action === "ok" &&
-    isRecord(r.columns) &&
-    isIndex(r.columns.content) &&
-    isIndex(r.columns.start) &&
-    isIndex(r.columns.end),
+    (r.action === "ok" &&
+      isRecord(r.columns) &&
+      isIndex(r.columns.content) &&
+      isIndex(r.columns.start) &&
+      isIndex(r.columns.end)) ||
+    (r.action === "pick" && isOptionalAddress(r.address)),
   message: (r) => r.action === "ok",
-  assign: (r) => (r.action === "assign" && isIndex(r.column)) || r.action === "unassign",
-  settings: (r) => r.action === "save" && isIndex(r.dateColumn) && isTextList(r.remove),
+  "export-form": (r) =>
+    isFormState(r.state) &&
+    ((r.action === "pick-source" && isOptionalAddress(r.address)) ||
+      (r.action === "pick-target" && isIndex(r.row) && isOptionalAddress(r.address)) ||
+      r.action === "assign"),
   goto: (r) => r.action === "goto" && isText(r.text),
   confirm: (r) => r.action === "ok",
   help: (r) => r.action === "ok",

@@ -10,7 +10,7 @@ Excel Add-in (Office.js) hỗ trợ lập **Nhật ký thi công (NKTC)** từ d
 | Mã | Nhóm chức năng | Mô tả ngắn |
 |---|---|---|
 | F1 | Xuất nhật ký theo ngày | Trải danh sách công việc theo từng ngày → sheet mới gồm 2 cột **Ngày** và **Nội dung**. |
-| F2 | Xuất theo form mẫu (Template Mapping) | Gán từng cột của vùng nguồn (thường là sheet F1 đã bổ sung cột nội dung phụ) vào ô của form mẫu; điều hướng tăng/giảm ngày để hiển thị nhật ký từng ngày lên form. |
+| F2 | Xuất theo form mẫu (Template Mapping) | Chèn form mẫu dựng sẵn; hộp thoại "Xuất vào form": chọn vùng nguồn (sheet F1 đã thêm cột phụ, dòng đầu là tiêu đề), gán từng cột vào ô của form (+ Thêm / Delete), Gán → form hiện ngày đầu; điều hướng ngày để hiển thị nhật ký từng ngày lên form. |
 | F3 | Tiện ích | Hướng dẫn sử dụng, kiểm tra phiên bản, cập nhật. |
 | F4 | Tạo bảng nhập tiến độ | Tạo Excel Table **STT \| Nội dung công việc \| Bắt đầu \| Kết thúc** (sheet mới hoặc vị trí chọn trên sheet hiện tại, mặc định 10 dòng) để người dùng tự điền rồi xuất bằng F1. |
 

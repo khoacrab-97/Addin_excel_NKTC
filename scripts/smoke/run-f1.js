@@ -36,7 +36,9 @@ async function main() {
   let done = await wb.press("nktcExportDaily");
   let d = await wb.dialog();
   let text = await d.text();
-  assert.ok(text.includes(`Vùng dữ liệu: ${fixture.sheetName}!${fixture.address}`), text);
+  const field = () => d.page.getByRole("textbox", { name: "Vùng dữ liệu (gồm dòng tiêu đề)" });
+  assert.equal(await field().inputValue(), `${fixture.sheetName}!${fixture.address}`);
+  assert.ok(text.includes("Cột A – "), "nhãn cột có chữ Cột");
   for (const label of ["Nội dung công việc", "Ngày bắt đầu", "Ngày kết thúc"]) {
     const value = await d.page.getByRole("combobox", { name: label }).innerText();
     assert.ok(!value.includes("Chọn cột"), `${label} chưa được nhận diện`);
@@ -44,6 +46,19 @@ async function main() {
   assert.ok(await d.page.getByRole("button", { name: "Xuất nhật ký" }).isEnabled());
   await d.page.screenshot({ path: path.join(outDir, "f1-columns.png") });
   pass("Hộp thoại chọn cột", "đặt con trỏ 1 ô → lấy cả vùng dữ liệu; 3 cột nhận diện sẵn");
+
+  // 1b. Chọn lại vùng: gõ địa chỉ + Enter → hộp thoại mở lại với vùng mới; nút ⬆ → lấy vùng đang chọn.
+  await d.act(async (page) => {
+    await field().fill(`${fixture.sheetName}!A1:C5`);
+    await page.keyboard.press("Enter");
+  });
+  d = await wb.dialog();
+  assert.equal(await field().inputValue(), `${fixture.sheetName}!A1:C5`);
+  await wb.smoke((name) => globalThis.__smoke.select(name, "B5"), fixture.sheetName);
+  await d.act((page) => page.getByRole("button", { name: /^Chọn Vùng dữ liệu/ }).click());
+  d = await wb.dialog();
+  assert.equal(await field().inputValue(), `${fixture.sheetName}!${fixture.address}`);
+  pass("Ô vùng dữ liệu", "gõ địa chỉ + Enter → vùng mới; nút ⬆ → lấy lại vùng đang chọn (1 ô → cả bảng)");
 
   // 2. Xuất → sheet mới không trùng tên, thông báo kết quả + xem trước 5 ngày.
   await d.click("Xuất nhật ký");
@@ -80,14 +95,26 @@ async function main() {
   assert.equal((await sheetNames()).length, before);
   pass("Đóng hộp thoại bằng nút X", "lệnh kết thúc, không tạo sheet");
 
-  // 5. Vùng chỉ có 1 dòng → cảnh báo, không mở hộp thoại chọn cột.
+  // 5. Vùng chỉ có 1 dòng / địa chỉ sai → báo lỗi ngay dưới ô vùng, khóa nút Xuất.
   await wb.smoke(() => globalThis.__smoke.select("TDTC", "A1:C1"));
   done = await wb.press("nktcExportDaily");
   d = await wb.dialog();
   assert.match(await d.text(), /cần có dòng tiêu đề và ít nhất một dòng công việc/);
-  await d.click("Đóng");
+  assert.ok(await d.page.getByRole("button", { name: "Xuất nhật ký" }).isDisabled());
+  await d.act(async (page) => {
+    await field().fill("Không có!A1:B2");
+    await page.keyboard.press("Enter");
+  });
+  d = await wb.dialog();
+  assert.match(await d.text(), /Không tìm thấy sheet/);
+  await d.click("Hủy");
   await done();
-  pass("Vùng thiếu dữ liệu", "cảnh báo hướng dẫn chọn lại");
+  pass("Vùng thiếu dữ liệu / sheet không có", "báo lỗi dưới ô vùng, khóa nút Xuất");
+
+  // 6. Nội dung giữ nguyên như người dùng nhập (không tự thêm "- ").
+  const content = (await wb.smoke((n) => globalThis.__smoke.dump(n), created))[1][1].value;
+  assert.ok(!content.startsWith("- "), content.slice(0, 20));
+  pass("Không tự thêm dấu '-'", "mỗi công việc một dòng, giữ nguyên nội dung");
 
   const log = await wb.smoke(() => globalThis.__smoke.log);
   const outside = log.filter((e) => e.op === "values" && !e.range.startsWith(created));

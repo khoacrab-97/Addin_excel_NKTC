@@ -8,8 +8,9 @@ export async function showMessage(
   tone: MessageTone,
   lines: string[],
   table?: MessagePayload["table"],
+  link?: MessagePayload["link"],
 ): Promise<void> {
-  const payload: MessagePayload = table ? { title, tone, lines, table } : { title, tone, lines };
+  const payload: MessagePayload = { title, tone, lines, ...(table ? { table } : {}), ...(link ? { link } : {}) };
   await openDialog("message", payload, table ? DIALOG_SIZE.large : DIALOG_SIZE.small);
 }
 

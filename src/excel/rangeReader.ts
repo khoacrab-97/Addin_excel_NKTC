@@ -106,3 +106,48 @@ export async function getSelectedCell(): Promise<TargetCell> {
     return { sheetName: topLeft.worksheet.name, address };
   });
 }
+
+/** Sheet đang mở. */
+export async function getActiveSheetName(): Promise<string> {
+  return Excel.run(async (context) => {
+    const sheet = context.workbook.worksheets.getActiveWorksheet();
+    sheet.load("name");
+    await context.sync();
+    return sheet.name;
+  });
+}
+
+/**
+ * Dòng tiêu đề có ô gộp (merge)? Cần ExcelApi 1.13 (`getMergedAreasOrNullObject`);
+ * bản Excel cũ hơn trả về `undefined` (không kiểm tra được — dùng kiểm tra ô tiêu đề trống thay thế).
+ */
+export async function headerHasMergedCells(ref: RangeRef): Promise<boolean | undefined> {
+  if (!Office.context.requirements.isSetSupported("ExcelApi", "1.13")) return undefined;
+  return Excel.run(async (context) => {
+    const header = context.workbook.worksheets.getItem(ref.sheetName).getRange(ref.address).getRow(0);
+    const merged = header.getMergedAreasOrNullObject();
+    merged.load("isNullObject");
+    await context.sync();
+    return !merged.isNullObject;
+  });
+}
+
+/** Tên các sheet trong workbook (theo thứ tự). */
+export async function getSheetNames(): Promise<string[]> {
+  return Excel.run(async (context) => {
+    const worksheets = context.workbook.worksheets;
+    worksheets.load("items/name");
+    await context.sync();
+    return worksheets.items.map((sheet) => sheet.name);
+  });
+}
+
+/** Vùng có dữ liệu (used range) của một sheet. */
+export async function getUsedRangeRef(sheetName: string): Promise<RangeRef> {
+  return Excel.run(async (context) => {
+    const used = context.workbook.worksheets.getItem(sheetName).getUsedRange();
+    used.load("address");
+    await context.sync();
+    return { sheetName, address: stripSheetName(used.address) };
+  });
+}

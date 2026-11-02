@@ -3,13 +3,8 @@ import { createTableCommand } from "./createTableCommand";
 import { exportDailyLogCommand } from "./dailyLogCommand";
 import { DIALOG_SIZE, openDialog } from "./dialogHost";
 import { showError } from "./messages";
-import {
-  assignCellCommand,
-  goToDayCommand,
-  mappingListCommand,
-  setSourceCommand,
-  showDayCommand,
-} from "./templateCommands";
+import { exportFormCommand, insertTemplateCommand } from "./formCommands";
+import { goToDayCommand, showDayCommand } from "./templateCommands";
 
 /** Một lệnh của nút trên Ribbon (Action ExecuteFunction trong manifest). */
 type CommandHandler = () => Promise<void>;
@@ -18,13 +13,20 @@ type CommandHandler = () => Promise<void>;
 export const COMMANDS: Readonly<Record<string, CommandHandler>> = {
   nktcCreateTable: createTableCommand,
   nktcExportDaily: exportDailyLogCommand,
-  nktcSetSource: setSourceCommand,
-  nktcAssignCell: assignCellCommand,
-  nktcMappingList: mappingListCommand,
-  nktcDayFirst: () => showDayCommand({ kind: "first" }),
-  nktcDayPrev: () => showDayCommand({ kind: "prev" }),
-  nktcDayNext: () => showDayCommand({ kind: "next" }),
-  nktcDayLast: () => showDayCommand({ kind: "last" }),
+  nktcInsertTemplate: insertTemplateCommand,
+  nktcExportForm: exportFormCommand,
+  nktcDayFirst: async () => {
+    await showDayCommand({ kind: "first" });
+  },
+  nktcDayPrev: async () => {
+    await showDayCommand({ kind: "prev" });
+  },
+  nktcDayNext: async () => {
+    await showDayCommand({ kind: "next" });
+  },
+  nktcDayLast: async () => {
+    await showDayCommand({ kind: "last" });
+  },
   nktcGoToDay: goToDayCommand,
   nktcHelp: async () => {
     await openDialog("help", {}, DIALOG_SIZE.large);
