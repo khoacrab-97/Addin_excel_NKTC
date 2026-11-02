@@ -41,10 +41,13 @@ export function targetKey(target: TargetCell): string {
 
 /** Khóa của bộ ô đích đang cấu hình (không phụ thuộc thứ tự gán). */
 export function mappingKey(mappings: readonly ColumnMapping[]): string {
-  return mappings
-    .map((mapping) => targetKey(mapping.target))
-    .sort()
-    .join("|");
+  return (
+    mappings
+      .map((mapping) => targetKey(mapping.target))
+      // So sánh theo mã ký tự (giống sort() mặc định) để khóa đã lưu trong workbook không đổi.
+      .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0))
+      .join("|")
+  );
 }
 
 /** Hiển thị ô đích cho người dùng: `Form!B5`. */

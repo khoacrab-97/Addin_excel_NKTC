@@ -9,7 +9,7 @@
 | Mã | Quy tắc |
 |---|---|
 | R0.1 | Chức năng nằm trên tab Ribbon riêng **Nhật ký thi công**: nhóm **Xuất nhật ký** (Xuất theo ngày), **Form mẫu** (Vùng nguồn, Gán cột, Danh sách gán), **Chuyển ngày** (Ngày đầu, Ngày trước, Ngày sau, Ngày cuối, Đến ngày…), **Tiện ích** (Hướng dẫn, Phiên bản). Không có khung làm việc bên phải (theo yêu cầu chủ dự án 02/11/2026). |
-| R0.2 | Bước cần nhập liệu/xác nhận dùng hộp thoại (Office Dialog API 1.1 — có từ Excel 2016) mở giữa màn hình và tự đóng khi xong. Dữ liệu vào hộp thoại qua URL/localStorage (cùng domain), kết quả trả về qua `messageParent`; hai phía kiểm tra dữ liệu nhận được, dữ liệu sai coi như Hủy. |
+| R0.2 | Bước cần nhập liệu/xác nhận dùng hộp thoại (Office Dialog API 1.1 — có từ Excel 2016) mở giữa màn hình và tự đóng khi xong. Dữ liệu vào hộp thoại qua URL/localStorage (cùng domain), kết quả trả về qua `messageParent` — chỉ nhận tin có origin của add-in (khi Office cung cấp origin); hai phía kiểm tra dữ liệu nhận được, dữ liệu sai coi như Hủy. |
 | R0.3 | Khung bên phải chỉ hiện **một lần** khi bộ cài kích hoạt add-in (trang chào mừng), người dùng đóng được. |
 
 ## F1. Xuất nhật ký theo ngày

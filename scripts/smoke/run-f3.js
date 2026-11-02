@@ -80,6 +80,19 @@ async function main() {
     pass(`Lỗi kiểm tra cập nhật: ${label}`, "báo lỗi thân thiện");
   }
 
+  // 5b. Tin nhắn từ domain khác (hộp thoại bị điều hướng sang trang lạ) → bỏ qua; tin từ add-in → nhận.
+  const guard = await openWorkbook(INPUT, { browser });
+  const guardDone = await guard.press("nktcHelp");
+  await guard.commands.waitForFunction(() => globalThis.__smoke.openDialog() !== null);
+  await guard.smoke(() => globalThis.__smoke.deliver(JSON.stringify({ action: "ok" }), "https://evil.test"));
+  await guard.commands.waitForTimeout(200);
+  assert.notEqual(await guard.smoke(() => globalThis.__smoke.openDialog()), null, "Nhận tin từ domain lạ");
+  await guard.smoke(() => globalThis.__smoke.deliver(JSON.stringify({ action: "ok" })));
+  await guardDone();
+  errors.push(...guard.pageErrors);
+  await guard.context.close();
+  pass("Kiểm tra origin tin nhắn hộp thoại", "bỏ qua tin từ https://evil.test, nhận tin từ add-in");
+
   // 6. Trang chào mừng (khung hiện một lần khi bộ cài kích hoạt add-in).
   const welcome = await openWorkbook(INPUT, { browser });
   const page = await welcome.context.newPage();

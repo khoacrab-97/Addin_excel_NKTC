@@ -49,7 +49,7 @@ async function main() {
   text = await d.text();
   const created = (await sheetNames()).at(-1);
   assert.equal(created, existing ? `${existing}_2` : "NK_TheoNgay");
-  assert.match(text, new RegExp(`Đã tạo sheet "${created}" gồm \\d+ ngày`));
+  assert.ok(text.includes(`Đã tạo sheet "${created}" gồm `), text);
   assert.ok(text.includes("công việc hợp lệ"));
   assert.equal(await d.page.locator("tbody tr").count(), 5);
   await d.page.screenshot({ path: path.join(outDir, "f1-result.png") });

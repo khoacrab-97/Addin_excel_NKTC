@@ -34,6 +34,11 @@ function removePayload(id: string): void {
   }
 }
 
+/** Origin của add-in (Internet Explorer 11 không có `location.origin`). */
+function addinOrigin(): string {
+  return `${window.location.protocol}//${window.location.host}`;
+}
+
 /** URL thư mục chứa function file (dialog.html nằm cùng thư mục, cùng domain — yêu cầu của Dialog API). */
 function baseUrl(): string {
   return window.location.href.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
@@ -89,9 +94,12 @@ export function openDialog<V extends DialogView>(
           resolve(reply);
         };
         dialog.addEventHandler(Office.EventType.DialogMessageReceived, (args) => {
-          const message = "message" in args ? args.message : "";
+          if (!("message" in args)) return;
+          // Chỉ nhận kết quả từ trang hộp thoại của add-in. `origin` không có trên bản Office cũ
+          // (DialogOrigin 1.1) — khi đó Office chỉ chuyển tin từ trang cùng domain đã mở.
+          if (args.origin !== undefined && args.origin !== addinOrigin()) return;
           dialog.close();
-          finish(parseReply(view, message));
+          finish(parseReply(view, args.message));
         });
         // Người dùng đóng hộp thoại (12006) hoặc trang hộp thoại lỗi.
         dialog.addEventHandler(Office.EventType.DialogEventReceived, () => {

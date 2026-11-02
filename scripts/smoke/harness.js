@@ -102,7 +102,7 @@ async function openWorkbook(input, options = {}) {
       await page.getByRole("combobox", { name: label }).click();
       await page
         .getByRole("option")
-        .filter({ hasText: new RegExp(`^${optionPrefix}`) })
+        .filter({ hasText: new RegExp(`^${optionPrefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`) })
         .first()
         .click();
     };

@@ -368,9 +368,11 @@
     dialogCount: function () {
       return dialogs.length;
     },
-    deliver: function (message) {
+    /** Tin từ hộp thoại; mặc định origin = origin của add-in (như Office gửi kèm, DialogOrigin 1.1). */
+    deliver: function (message, origin) {
       var d = openDialog();
-      if (d && d.handlers.dialogMessageReceived) d.handlers.dialogMessageReceived({ message: message, origin: "" });
+      var from = origin === undefined ? window.location.protocol + "//" + window.location.host : origin;
+      if (d && d.handlers.dialogMessageReceived) d.handlers.dialogMessageReceived({ message: message, origin: from });
     },
     dismiss: function () {
       var d = openDialog();

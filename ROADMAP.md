@@ -88,9 +88,9 @@
 |---|---|---|
 | P6.1 | Tab Ribbon riêng "Nhật ký thi công": 4 nhóm, 11 nút `ExecuteFunction`, icon 16/32/80 (BUSINESS_SPEC R0.1) | Tested |
 | P6.2 | Function file `commands.html`: lệnh F1/F2/F3, một lệnh tại một thời điểm, báo lỗi bằng hộp thoại | Tested |
-| P6.3 | Hộp thoại Office Dialog API 1.1: chọn cột F1, kết quả, gán cột, danh sách gán, đến ngày, xác nhận ghi đè, hướng dẫn, phiên bản; giao thức kiểm tra dữ liệu (R0.2) | Tested |
+| P6.3 | Hộp thoại Office Dialog API 1.1: chọn cột F1, kết quả, gán cột, danh sách gán, đến ngày, xác nhận ghi đè, hướng dẫn, phiên bản; giao thức kiểm tra dữ liệu, chỉ nhận tin từ origin của add-in (R0.2) | Tested |
 | P6.4 | Điều hướng ngày không mở khung: Ngày đầu/trước/sau/cuối, Đến ngày; ngày đang xem lưu trong cấu hình | Tested |
 | P6.5 | Bỏ khung làm việc bên phải; trang chào mừng chỉ hiện khi kích hoạt (R0.3) | Tested |
 | P6.6 | Kiểm thử tab Ribbon + hộp thoại trên Excel Desktop Windows (Microsoft 365, Excel 2016) theo `docs/KIEM_THU_NGHIEM_THU.md` | Not Started |
 
-> P6.1–P6.5 **Tested** = unit test (`core/dialog/protocol`, `core/mapping/navigation`, `confirmedKey`) + smoke test: F1 5 bước, F2 14 bước, F3 9 bước — bấm nút bằng cách gọi hàm của function file, thao tác hộp thoại ở trang riêng với Office/Excel/Dialog API giả lập. Manifest được kiểm tra bằng dịch vụ Microsoft trong CI. Chưa Verified cho tới khi chạy trên Excel thật (P6.6).
+> P6.1–P6.5 **Tested** = unit test (`core/dialog/protocol`, `core/mapping/navigation`, `confirmedKey`) + smoke test: F1 5 bước, F2 14 bước, F3 10 bước — bấm nút bằng cách gọi hàm của function file, thao tác hộp thoại ở trang riêng với Office/Excel/Dialog API giả lập. Manifest được kiểm tra bằng dịch vụ Microsoft trong CI. Chưa Verified cho tới khi chạy trên Excel thật (P6.6).
