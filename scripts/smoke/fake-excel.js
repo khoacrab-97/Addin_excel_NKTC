@@ -6,6 +6,8 @@
  * Đầu vào: window.__SMOKE_INPUT = {
  *   sheets: [{ name, values, formulas?: { "A26": "=..." } }], selection: { sheet, address }, apiMinor, settings? }.
  * Ghi chuỗi bắt đầu bằng "'" → lưu phần sau dấu "'" (giống Excel: dấu "'" là ký tự đánh dấu văn bản).
+ * ExcelApi 1.13 (khi apiMinor ≥ 13): getMergedAreasOrNullObject (ô gộp khai báo trong spec.merged, ví dụ ["A1:B1"]),
+ * insertWorksheetsFromBase64 (chèn sheet từ input.templateSheets; nội dung base64 không được đọc).
  * Dialog API 1.1 giả lập: displayDialogAsync ghi nhận hộp thoại; test mở URL hộp thoại ở trang khác và chuyển
  * messageParent về qua window.__toParent → __smoke.deliver. Không có Office.actions (giống Excel 2016).
  */
@@ -65,6 +67,7 @@
     this.cells = {};
     /** Excel Table giả lập: { name, box, style } — báo lỗi khi chồng lên bảng có sẵn (giống Excel). */
     this.tables = [];
+    this.merged = [];
   }
   Sheet.prototype.cell = function (r, c) {
     var key = r + "," + c;
@@ -212,6 +215,16 @@
       });
       range.format = format;
       range.worksheet = sheetApi(sheet);
+      range.getRow = function (r) {
+        return makeRange(sheet, { r1: box.r1 + r, c1: box.c1, r2: box.r1 + r, c2: box.c2 });
+      };
+      range.getMergedAreasOrNullObject = function () {
+        if (input.apiMinor < 13) context.pendingError = { code: "ApiNotFound", message: "cần ExcelApi 1.13" };
+        var hit = sheet.merged.some(function (m) {
+          return !(box.r2 < m.r1 || box.r1 > m.r2 || box.c2 < m.c1 || box.c1 > m.c2);
+        });
+        return { load: function () {}, isNullObject: !hit };
+      };
       range.getCell = function (r, c) {
         return makeRange(sheet, { r1: box.r1 + r, c1: box.c1 + c, r2: box.r1 + r, c2: box.c1 + c });
       };
@@ -309,6 +322,18 @@
 
     context.workbook = {
       worksheets: worksheets,
+      insertWorksheetsFromBase64: function (base64, options) {
+        if (input.apiMinor < 13) context.pendingError = { code: "ApiNotFound", message: "cần ExcelApi 1.13" };
+        var names = (options && options.sheetNamesToInsert) || [];
+        var ids = [];
+        (input.templateSheets || []).forEach(function (spec) {
+          if (names.length && names.indexOf(spec.name) === -1) return;
+          sheets.push(buildSheet(spec));
+          ids.push(spec.name);
+        });
+        log.push({ op: "insertWorksheets", names: ids, base64Length: base64.length });
+        return { value: ids };
+      },
       getSelectedRange: function () {
         return worksheets.getItem(selection.sheet).getRange(selection.address);
       },
@@ -316,7 +341,7 @@
     return context;
   }
 
-  input.sheets.forEach(function (spec) {
+  function buildSheet(spec) {
     var sheet = new Sheet(spec.name);
     spec.values.forEach(function (row, r) {
       row.forEach(function (value, c) {
@@ -327,7 +352,14 @@
       var box = parseAddress(address);
       sheet.cell(box.r1, box.c1).formula = spec.formulas[address];
     });
-    sheets.push(sheet);
+    (spec.merged || []).forEach(function (address) {
+      sheet.merged.push(parseAddress(address));
+    });
+    return sheet;
+  }
+
+  input.sheets.forEach(function (spec) {
+    sheets.push(buildSheet(spec));
   });
 
   window.__smoke = {

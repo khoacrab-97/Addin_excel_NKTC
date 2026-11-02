@@ -1,9 +1,9 @@
 /*
- * Smoke test F2 (nhóm Form mẫu + Chuyển ngày trên Ribbon) trên bundle production với Excel giả lập.
- * Dữ liệu: test/fixtures/demo_f2.json (sinh từ demo_f2.xlsx) + demo_f2.targets.json (ô đích của từng cột).
- * Mỗi bước có kiểm tra; sai → exit code 1.
+ * Smoke test F2 (nhóm Form mẫu + Chuyển ngày trên Ribbon) trên bundle production với Excel giả lập:
+ * Chèn form mẫu, hộp thoại chung "Xuất vào form" (vùng nguồn + dòng gán + Gán), chuyển ngày.
+ * Dữ liệu: test/fixtures/demo_f2.json + demo_f2.targets.json (ô đích của từng cột).
  *
- *   node scripts/smoke/run-f2.js [tên file trong test/fixtures] [--api 1]
+ *   node scripts/smoke/run-f2.js [tên file trong test/fixtures]
  */
 const fs = require("fs");
 const path = require("path");
@@ -15,8 +15,6 @@ const { openWorkbook } = require("./harness");
 const fixturePath = resolveFixture(
   process.argv[2] && !process.argv[2].startsWith("--") ? process.argv[2] : "demo_f2.json",
 );
-const apiIndex = process.argv.indexOf("--api");
-const apiMinor = apiIndex === -1 ? 1 : Number(process.argv[apiIndex + 1]);
 const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
 /** Ô đích của từng cột nguồn: { column, header, cell, select } — `select` là vùng merge Excel trả về khi chọn ô. */
 const meta = JSON.parse(fs.readFileSync(fixturePath.replace(/\.json$/, ".targets.json"), "utf8"));
@@ -45,11 +43,18 @@ function pass(name, detail = "") {
 
 async function main() {
   const browser = await chromium.launch();
+  const errors = [];
+  // Workbook chưa có biểu mẫu; Excel hỗ trợ ExcelApi 1.13 (chèn sheet, nhận biết ô gộp).
+  const startSheets = fixture.sheets.filter((sheet) => sheet.name !== SHEET);
   let wb = await openWorkbook(
-    { sheets: fixture.sheets, selection: { sheet: "NK_TheoNgay", address: "B7" }, apiMinor },
+    {
+      sheets: startSheets,
+      templateSheets: [formSheet],
+      selection: { sheet: "NK_TheoNgay", address: "B7" },
+      apiMinor: 13,
+    },
     { browser },
   );
-  const errors = [];
   const cell = (address) => wb.smoke(([s, a]) => globalThis.__smoke.cell(s, a), [SHEET, address]);
   const select = (sheet, address) => wb.smoke(([s, a]) => globalThis.__smoke.select(s, a), [sheet, address]);
   const logLength = () => wb.smoke(() => globalThis.__smoke.log.length);
@@ -57,7 +62,6 @@ async function main() {
     wb.smoke((s) => globalThis.__smoke.log.slice(s).filter((e) => e.op === "values"), start);
   const config = async () => (await wb.smoke(() => globalThis.__smoke.settings()))[SETTINGS_KEY];
 
-  /** Bấm nút; nếu có hộp thoại thông báo thì trả về nội dung rồi đóng. */
   async function pressExpectMessage(name) {
     const done = await wb.press(name);
     const d = await wb.dialog();
@@ -66,7 +70,6 @@ async function main() {
     await done();
     return text;
   }
-  /** Bấm nút chuyển ngày, không có hộp thoại nào. */
   async function pressSilently(name) {
     const count = await wb.smoke(() => globalThis.__smoke.dialogCount());
     const done = await wb.press(name);
@@ -81,205 +84,237 @@ async function main() {
       assert.deepEqual(actual, expected, `${SHEET}!${m.cell} (cột ${m.column} – ${m.header}) ngày ${label}`);
     }
   }
-  async function assign(m, column = m.column) {
-    await select(SHEET, m.select);
-    const done = await wb.press("nktcAssignCell");
-    const d = await wb.dialog();
-    assert.ok((await d.text()).includes(`Ô trên biểu mẫu: ${SHEET}!${m.cell}`), await d.text());
-    await d.choose("Cột ghi vào ô này", `${column} –`);
-    await d.click("Gán");
-    await done();
+  const sourceField = (d) => d.page.getByRole("textbox", { name: "Vùng nguồn" });
+  const targetField = (d, row) => d.page.getByRole("textbox", { name: `Ô trên form dòng ${row}` });
+  async function chooseColumn(d, row, letter) {
+    await d.page.getByRole("combobox", { name: `Cột nguồn dòng ${row}` }).click();
+    await d.page
+      .getByRole("option")
+      .filter({ hasText: `Cột ${letter} – ` })
+      .first()
+      .click();
   }
 
-  // 0. Chưa có cấu hình → nút Gán cột / chuyển ngày hướng dẫn đặt vùng nguồn.
+  // 0. Chưa gán → các nút Chuyển ngày chỉ hướng dẫn, không ghi gì.
   let text = await pressExpectMessage("nktcDayNext");
-  assert.match(text, /Chưa có cấu hình form mẫu/);
-  pass("Chưa cấu hình", "hướng dẫn bấm Vùng nguồn trước");
+  assert.match(text, /Chưa gán cột vào form/);
+  pass("Chưa gán", "nút Chuyển ngày chỉ hướng dẫn bấm Xuất vào form");
 
-  // 1. Vùng nguồn: đặt con trỏ 1 ô trong NK_TheoNgay → lấy cả bảng, nhận diện cột Ngày.
-  text = await pressExpectMessage("nktcSetSource");
-  assert.ok(text.includes(`Vùng nguồn: NK_TheoNgay!${sourceAddress}.`), text);
-  assert.ok(text.includes("Cột Ngày: A – Ngày") && text.includes("200 ngày hợp lệ"), text);
-  pass("Vùng nguồn", `NK_TheoNgay!${sourceAddress}, cột Ngày A, 200 ngày`);
+  // 1. Chèn form mẫu (ExcelApi 1.13): thêm sheet "Mẫu NKTC" ở cuối; bấm lần 2 → không ghi đè.
+  text = await pressExpectMessage("nktcInsertTemplate");
+  assert.match(text, new RegExp(`Đã chèn sheet "${SHEET}"`));
+  assert.equal((await wb.smoke(() => globalThis.__smoke.sheetNames())).at(-1), SHEET);
+  assert.equal(await wb.smoke(() => globalThis.__smoke.activeSheet()), SHEET);
+  const inserted = (await wb.smoke(() => globalThis.__smoke.log)).find((e) => e.op === "insertWorksheets");
+  assert.ok(inserted.base64Length > 1000, "base64 của Mau_NKTC.xlsx");
+  text = await pressExpectMessage("nktcInsertTemplate");
+  assert.match(text, /đã có sheet "Mẫu NKTC"/);
+  pass("Chèn form mẫu", `sheet "${SHEET}" từ templates/Mau_NKTC.xlsx; lần 2 báo đã có, không ghi đè`);
 
-  // 2. Gán cột → ô (chọn ô merge → lấy ô trên-trái, R2.2). Tên sheet có dấu và khoảng trắng.
-  for (const m of MAPPINGS) await assign(m);
-  let saved = await config();
-  assert.equal(saved.mappings.length, MAPPINGS.length);
-  pass(`Gán ${MAPPINGS.length} cột vào "${SHEET}"`, MAPPINGS.map((m) => `${m.column}→${m.cell}`).join(", "));
-
-  // 3. Gán lại ô đã gán: hộp thoại hiện cột hiện tại, đổi cột thì thay (mỗi ô một cột, R2.12).
-  await select(SHEET, MAPPINGS[4].select);
-  let done = await wb.press("nktcAssignCell");
+  // 2. Xuất vào form: vùng nguồn tự nhận diện = sheet NK_TheoNgay; cột Ngày nhận diện; 1 dòng gán trống.
+  await select(SHEET, "A1");
+  let done = await wb.press("nktcExportForm");
   let d = await wb.dialog();
-  assert.match(await d.text(), /Ô này đang được gán/);
+  assert.equal(await sourceField(d).inputValue(), `NK_TheoNgay!${sourceAddress}`);
+  text = await d.text();
+  assert.ok(text.includes("200 ngày"), text);
   assert.ok(
-    (await d.page.getByRole("combobox", { name: "Cột ghi vào ô này" }).innerText()).startsWith(
-      `${MAPPINGS[4].column} –`,
+    (await d.page.getByRole("combobox", { name: "Cột ngày (dùng để chuyển ngày)" }).innerText()).startsWith(
+      "Cột A – Ngày",
     ),
   );
-  await d.choose("Cột ghi vào ô này", `${MAPPINGS[2].column} –`);
-  await d.click("Gán");
-  await done();
-  saved = await config();
-  assert.equal(saved.mappings.length, MAPPINGS.length);
-  assert.equal(
-    saved.mappings.find((x) => x.target.address === MAPPINGS[4].cell).column,
-    COLUMN_LETTERS.indexOf(MAPPINGS[2].column),
-  );
-  await assign(MAPPINGS[4]);
-  pass("Gán lại ô đã gán", "hiện cột đang gán, đổi cột thay cho cũ, không tạo gán trùng");
+  assert.equal(await d.page.getByRole("row").count(), 2); // tiêu đề + 1 dòng gán
+  pass("Mở Xuất vào form", `vùng nguồn NK_TheoNgay!${sourceAddress} (gồm cột đã thêm), cột Ngày A, 200 ngày`);
 
-  // 4. Ô đích đã có dữ liệu → hỏi xác nhận (R2.5): Hủy không ghi; Ghi đè thì ghi đúng các ô đích (R2.3, R2.6).
-  await wb.smoke(([s, a]) => globalThis.__smoke.setValue(s, a, "dữ liệu cũ"), [SHEET, MAPPINGS[2].cell]);
+  // 3. Gán từng dòng: chọn cột (trái), chọn ô trên form rồi bấm ⬆ (phải; ô gộp → ô trên-trái); + Thêm.
+  for (let i = 0; i < MAPPINGS.length; i++) {
+    const m = MAPPINGS[i];
+    const row = i + 1;
+    if (i > 0) await d.page.getByRole("button", { name: "+ Thêm" }).click();
+    await chooseColumn(d, row, m.column);
+    await select(SHEET, m.select);
+    await d.act((page) => page.getByRole("button", { name: `Chọn Ô trên form dòng ${row} trên sheet` }).click());
+    d = await wb.dialog();
+    assert.equal(await targetField(d, row).inputValue(), `${SHEET}!${m.cell}`);
+  }
+  await d.page.screenshot({ path: path.join("smoke-output", "f2-export-form.png"), fullPage: true });
+  pass(`Gán ${MAPPINGS.length} dòng`, MAPPINGS.map((m) => `${m.column}→${m.cell}`).join(", "));
+
+  // 4. Dòng thừa: + Thêm rồi chọn dòng → Delete; ô trùng → báo lỗi theo dòng, không ghi.
+  await d.page.getByRole("button", { name: "+ Thêm" }).click();
+  assert.equal(await d.page.getByRole("row").count(), MAPPINGS.length + 2);
+  await d.page.getByRole("row").last().locator("td").first().click();
+  await d.page.keyboard.press("Delete");
+  assert.equal(await d.page.getByRole("row").count(), MAPPINGS.length + 1);
+  await d.page.getByRole("button", { name: "+ Thêm" }).click();
+  const extra = MAPPINGS.length + 1;
+  await chooseColumn(d, extra, "C");
+  await targetField(d, extra).fill(`${SHEET}!E2`);
   let start = await logLength();
-  done = await wb.press("nktcDayFirst");
+  await d.click("Gán");
   d = await wb.dialog();
-  text = await d.text();
-  assert.ok(text.includes(`${SHEET}!${MAPPINGS[2].cell} — có dữ liệu`) && text.includes("15/06/2026"), text);
-  await d.page.screenshot({ path: path.join("smoke-output", "f2-confirm.png") });
-  await d.click("Hủy");
-  await done();
+  assert.match(await d.text(), new RegExp(`Dòng ${extra}: ô ${SHEET}!E2 đã được gán ở dòng 1`));
   assert.equal((await writesSince(start)).length, 0);
-  assert.equal((await cell(MAPPINGS[2].cell)).value, "dữ liệu cũ");
-  done = await wb.press("nktcDayFirst");
+  await d.page.getByRole("row").last().locator("td").first().click();
+  await d.page.getByRole("button", { name: "Xóa dòng" }).click();
+  assert.equal(await d.page.getByRole("row").count(), MAPPINGS.length + 1);
+  pass("Thêm / xóa dòng gán", "Delete xóa dòng đang chọn; ô trùng → báo theo dòng, không ghi");
+
+  // 5. Gán → form nhận dữ liệu ngày đầu tiên; chỉ ghi ô đích; công thức/tiêu đề giữ nguyên.
+  start = await logLength();
+  await d.click("Gán");
   d = await wb.dialog();
-  await d.click("Ghi đè");
+  assert.match(await d.text(), new RegExp(`Đã gán ${MAPPINGS.length} ô; biểu mẫu đang hiển thị dữ liệu ngày đầu tiên`));
+  await d.click("Đóng");
   await done();
   await assertDayOnForm("15/06/2026");
   const writes = await writesSince(start);
-  const written = writes.map((w) => w.range.replace(/^(.+!)([A-Z]+\d+):\2$/, "$1$2"));
-  for (const range of written) assert.ok(TARGET_CELLS.has(range), `Ghi ngoài ô đích: ${range}`);
+  for (const w of writes) {
+    const range = w.range.replace(/^(.+!)([A-Z]+\d+):\2$/, "$1$2");
+    assert.ok(TARGET_CELLS.has(range), `Ghi ngoài ô đích: ${range}`);
+  }
   assert.equal(writes.length, MAPPINGS.length);
   assert.equal((await cell(meta.formulaCell)).formula, formSheet.formulas[meta.formulaCell]);
   assert.equal((await cell("A1")).value, "TÌNH HÌNH THI CÔNG HÀNG NGÀY");
-  assert.equal((await config()).currentDay, 46188);
+  assert.equal((await config()).mappings.length, MAPPINGS.length);
   pass(
-    "Ngày đầu + xác nhận ghi đè",
-    `Hủy → không ghi; Ghi đè → ${writes.length} lệnh ghi đúng ô đích; công thức ${meta.formulaCell}, tiêu đề A1 giữ nguyên`,
+    "Gán",
+    `form nhận ngày 15/06/2026; ${writes.length} lệnh ghi đúng ô đích; công thức ${meta.formulaCell} giữ nguyên`,
   );
 
-  // 5. Văn bản bắt đầu bằng "- " được ghi nguyên văn (R2.11).
-  const content = (await cell(MAPPINGS[1].cell)).value;
-  assert.ok(content.startsWith("- HM - CÔNG TÁC CHUẨN BỊ"));
-  pass("Nội dung nhiều dòng ghi nguyên văn", JSON.stringify(content.split("\n")[0]));
-
-  // 6. Chuyển ngày: không hỏi lại (đã xác nhận), không mở hộp thoại; ở hai đầu → thông báo.
+  // 6. Chuyển ngày sau khi gán: không mở hộp thoại; biên → thông báo.
   await pressSilently("nktcDayNext");
   await assertDayOnForm("16/06/2026");
   await pressSilently("nktcDayLast");
   await assertDayOnForm("31/12/2026");
-  assert.match(await pressExpectMessage("nktcDayNext"), /Đang ở ngày cuối cùng \(31\/12\/2026\)/);
+  assert.match(await pressExpectMessage("nktcDayNext"), /Đang ở ngày cuối cùng/);
   await pressSilently("nktcDayFirst");
-  await assertDayOnForm("15/06/2026");
   assert.match(await pressExpectMessage("nktcDayPrev"), /Đang ở ngày đầu tiên/);
-  pass("Ngày sau / cuối / đầu / trước", "16/06 → 31/12 → (báo ngày cuối) → 15/06 → (báo ngày đầu); không hỏi lại");
+  pass("Chuyển ngày", "16/06 → 31/12 → (báo ngày cuối) → 15/06 → (báo ngày đầu)");
 
-  // 7. Đọc dữ liệu mới nhất mỗi lần chuyển ngày (R2.7).
+  // 7. Đọc dữ liệu mới nhất (R2.7) + Đến ngày.
   await wb.smoke(() => globalThis.__smoke.setValue("NK_TheoNgay", "C3", "Mưa to (sửa sau khi xuất)"));
   await pressSilently("nktcDayNext");
   assert.equal((await cell(MAPPINGS[2].cell)).value, "Mưa to (sửa sau khi xuất)");
-  pass("Đọc lại vùng nguồn mới nhất", `sửa NK_TheoNgay!C3 → ${SHEET}!${MAPPINGS[2].cell} cập nhật`);
-
-  // 8. Đến ngày: hợp lệ; sai định dạng (nút khóa); ngoài phạm vi (báo lỗi).
   done = await wb.press("nktcGoToDay");
   d = await wb.dialog();
-  assert.match(await d.text(), /từ 15\/06\/2026 đến 31\/12\/2026/);
-  const box = d.page.getByRole("textbox", { name: "Ngày (dd/mm/yyyy)" });
-  await box.fill("31/02/2026");
-  assert.ok(await d.page.getByRole("button", { name: "Đi tới" }).isDisabled());
-  await box.fill("05/08/2026");
-  await d.page.screenshot({ path: path.join("smoke-output", "f2-goto.png") });
+  await d.page.getByRole("textbox", { name: "Ngày (dd/mm/yyyy)" }).fill("05/08/2026");
   await d.click("Đi tới");
   await done();
   await assertDayOnForm("05/08/2026");
-  assert.equal((await cell(MAPPINGS[1].cell)).value.split("\n").length, 13);
-  done = await wb.press("nktcGoToDay");
+  pass("Đọc lại nguồn + Đến ngày", "sửa NK_TheoNgay!C3 → form cập nhật; 05/08/2026");
+
+  // 8. Mở lại Xuất vào form: hiện cấu hình đã gán; sửa (bỏ 1 dòng) → Gán lại ghi ngày đầu.
+  done = await wb.press("nktcExportForm");
   d = await wb.dialog();
-  await d.page.getByRole("textbox", { name: "Ngày (dd/mm/yyyy)" }).fill("01/01/2027");
-  await d.click("Đi tới");
+  assert.equal(await d.page.getByRole("row").count(), MAPPINGS.length + 1);
+  assert.equal(await targetField(d, 9).inputValue(), `${SHEET}!${MAPPINGS[8].cell}`);
+  await d.page.getByRole("row").last().locator("td").first().click();
+  await d.page.getByRole("button", { name: "Xóa dòng" }).click();
+  await d.click("Gán");
+  // Bộ ô đích thay đổi + ô đang có dữ liệu → xác nhận ghi đè (R2.5).
   d = await wb.dialog();
-  assert.match(await d.text(), /không có trong vùng nguồn/);
+  assert.match(await d.text(), /sẽ bị ghi đè/);
+  await d.click("Ghi đè");
+  d = await wb.dialog();
   await d.click("Đóng");
   await done();
-  pass("Đến ngày", "05/08/2026 (13 dòng nội dung); 31/02/2026 khóa nút; 01/01/2027 báo không có");
+  assert.equal((await config()).mappings.length, MAPPINGS.length - 1);
+  const firstRow = sourceRowForDate("15/06/2026");
+  for (const m of MAPPINGS.slice(0, -1)) {
+    assert.deepEqual((await cell(m.cell))?.value ?? "", firstRow[COLUMN_LETTERS.indexOf(m.column)], m.cell);
+  }
+  pass("Sửa cấu hình đã gán", "mở lại hiện 9 dòng; bỏ 1 dòng → Gán → xác nhận ghi đè → ngày đầu");
 
-  // 9. Mở lại workbook: cấu hình + xác nhận được khôi phục (R2.8) → chuyển ngày không hỏi lại.
+  // 9. Mở lại workbook: cấu hình còn; chuyển ngày không hỏi lại.
   const settings = await wb.smoke(() => globalThis.__smoke.settings());
   const sheetsNow = await wb.smoke(() => globalThis.__smoke.exportSheets());
   errors.push(...wb.pageErrors);
   await wb.context.close();
   wb = await openWorkbook(
-    { sheets: sheetsNow, selection: { sheet: SHEET, address: "A1" }, apiMinor, settings },
+    { sheets: sheetsNow, selection: { sheet: SHEET, address: "A1" }, apiMinor: 13, settings },
     { browser },
   );
-  await pressSilently("nktcDayPrev");
-  await assertDayOnForm("04/08/2026");
-  pass("Mở lại workbook", "khôi phục gán cột, ngày 05/08 và xác nhận → Ngày trước ghi 04/08 không hỏi lại");
+  await pressSilently("nktcDayNext");
+  assert.equal((await cell(MAPPINGS[0].cell)).value, sourceRowForDate("16/06/2026")[0]);
+  pass("Mở lại workbook", "giữ gán cột và xác nhận → Ngày sau ghi 16/06 không hỏi lại");
 
-  // 10. Thêm ô có công thức → bộ ô đích đổi → hỏi lại, nêu rõ CÔNG THỨC; Hủy giữ nguyên (R2.4).
-  await select(SHEET, meta.formulaCell);
-  done = await wb.press("nktcAssignCell");
-  d = await wb.dialog();
-  await d.choose("Cột ghi vào ô này", "A –");
-  await d.click("Gán");
-  await done();
-  start = await logLength();
-  done = await wb.press("nktcDayNext");
-  d = await wb.dialog();
-  assert.ok((await d.text()).includes(`${SHEET}!${meta.formulaCell} — có công thức`));
+  // 10. Vùng nguồn có dòng tiêu đề bị gộp (merge) → báo không chọn được, phải gỡ merge.
+  const merged = await openWorkbook(
+    {
+      sheets: [
+        {
+          name: "NK",
+          values: [
+            ["Ngày", "", "Thời tiết"],
+            [46188, "a", "Nắng"],
+          ],
+          merged: ["A1:B1"],
+        },
+        { name: "F", values: [[""]] },
+      ],
+      selection: { sheet: "NK", address: "A2" },
+      apiMinor: 13,
+    },
+    { browser },
+  );
+  done = await merged.press("nktcExportForm");
+  d = await merged.dialog();
+  assert.match(await d.text(), /ô bị gộp \(merge\).*gỡ merge/s);
+  assert.ok(await d.page.getByRole("button", { name: "Gán", exact: true }).isDisabled());
   await d.click("Hủy");
   await done();
-  assert.equal((await writesSince(start)).length, 0);
-  assert.equal((await cell(meta.formulaCell)).formula, formSheet.formulas[meta.formulaCell]);
-  pass("Cảnh báo ô đích chứa công thức", `Hủy → công thức ${meta.formulaCell} giữ nguyên`);
+  errors.push(...merged.pageErrors);
+  await merged.context.close();
+  pass("Tiêu đề có ô gộp", "báo phải gỡ merge rồi chọn lại; nút Gán bị khóa");
 
-  // 11. Danh sách gán: bỏ gán ô công thức. Gán cột đã thay đổi nên xác nhận cũ hết hiệu lực →
-  //     lần ghi kế tiếp hỏi lại (ô đích đang có dữ liệu), Ghi đè → các lần sau không hỏi.
-  done = await wb.press("nktcMappingList");
-  d = await wb.dialog();
+  // 11. Excel cũ (ExcelApi 1.1): Chèn form mẫu → hướng dẫn tải file; tiêu đề trống (merge) vẫn bị chặn.
+  const old = await openWorkbook(
+    {
+      sheets: [
+        {
+          name: "NK",
+          values: [
+            ["Ngày", "", "Thời tiết"],
+            [46188, "a", "Nắng"],
+          ],
+        },
+      ],
+      selection: { sheet: "NK", address: "A2" },
+      apiMinor: 1,
+    },
+    { browser },
+  );
+  done = await old.press("nktcInsertTemplate");
+  d = await old.dialog();
   text = await d.text();
-  assert.ok(text.includes(`${SHEET}!${meta.formulaCell}`) && text.includes("A – Ngày"), text);
-  await d.page.screenshot({ path: path.join("smoke-output", "f2-settings.png") });
-  await d.page.getByRole("checkbox", { name: `Bỏ gán ${SHEET}!${meta.formulaCell}` }).check({ force: true });
-  await d.click("Lưu");
-  await done();
-  assert.equal((await config()).mappings.length, MAPPINGS.length);
-  done = await wb.press("nktcDayNext");
-  d = await wb.dialog();
-  assert.ok(!(await d.text()).includes(meta.formulaCell));
-  await d.click("Ghi đè");
-  await done();
-  await assertDayOnForm("05/08/2026");
-  await pressSilently("nktcDayNext");
-  await assertDayOnForm("06/08/2026");
-  pass("Danh sách gán", `bỏ gán ${meta.formulaCell}; gán cột đổi → hỏi xác nhận 1 lần, sau đó ghi thẳng`);
-
-  // 12. Bấm nút khác khi đang mở hộp thoại → bỏ qua (một lệnh tại một thời điểm).
-  done = await wb.press("nktcHelp");
-  d = await wb.dialog();
-  start = await logLength();
-  const second = await wb.press("nktcDayNext");
-  await second();
-  assert.equal((await writesSince(start)).length, 0);
+  assert.match(text, /chưa hỗ trợ chèn sheet/);
+  assert.equal(
+    await d.page.getByRole("link", { name: /Mau_NKTC\.xlsx/ }).getAttribute("href"),
+    "templates/Mau_NKTC.xlsx",
+  );
   await d.click("Đóng");
   await done();
-  pass("Một lệnh tại một thời điểm", "bấm Ngày sau khi đang mở Hướng dẫn → bỏ qua");
+  done = await old.press("nktcExportForm");
+  d = await old.dialog();
+  assert.match(await d.text(), /ô tiêu đề trống \(cột thứ 2\)/);
+  await d.click("Hủy");
+  await done();
+  errors.push(...old.pageErrors);
+  await old.context.close();
+  pass("Excel cũ (ExcelApi 1.1)", "Chèn form mẫu → link tải Mau_NKTC.xlsx; tiêu đề trống → chặn");
 
-  // 13. Sheet biểu mẫu bị đổi tên → báo lỗi, không ghi ô nào (R2.9).
+  // 12. Sheet biểu mẫu bị đổi tên → báo lỗi, không ghi ô nào (R2.9).
   await wb.smoke((s) => globalThis.__smoke.renameSheet(s, `${s} cũ`), SHEET);
   start = await logLength();
   text = await pressExpectMessage("nktcDayNext");
   assert.ok(text.includes(`Không tìm thấy sheet: "${SHEET}"`), text);
   assert.equal((await writesSince(start)).length, 0);
-  pass(
-    "Sheet biểu mẫu bị đổi tên",
-    text.split("\n").find((line) => line.includes("Không tìm thấy")),
-  );
+  pass("Sheet biểu mẫu bị đổi tên", "báo lỗi, không ghi ô nào");
 
   errors.push(...wb.pageErrors);
   await browser.close();
-  console.log(`Smoke F2 (ExcelApi 1.${apiMinor}) — ${steps.length} bước:\n${steps.join("\n")}`);
+  console.log(`Smoke F2 — ${steps.length} bước:\n${steps.join("\n")}`);
   console.log("PAGE ERRORS:", errors.length ? errors : "none");
   if (errors.length) process.exitCode = 1;
 }

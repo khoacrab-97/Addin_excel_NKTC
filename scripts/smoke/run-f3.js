@@ -41,7 +41,7 @@ async function main() {
   const done = await wb.press("nktcHelp");
   const d = await wb.dialog();
   const text = await d.text();
-  assert.ok(text.includes("tab Nhật ký thi công") && text.includes("Xuất theo ngày") && text.includes("Gán cột"));
+  assert.ok(text.includes("tab Nhật ký thi công") && text.includes("Xuất theo ngày") && text.includes("Xuất vào form"));
   const hrefs = await d.page.locator("a").evaluateAll((links) => links.map((a) => a.getAttribute("href")));
   for (const relative of ["templates/Mau_NKTC.xlsx", "templates/Mau_TienDo.xlsx"]) {
     assert.ok(hrefs.includes(relative), `Thiếu link ${relative}`);

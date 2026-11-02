@@ -19,21 +19,21 @@ describe("buildDailyLog", () => {
       firstDay: NOV_1,
       lastDay: NOV_1 + 2,
       entries: [
-        { day: NOV_1, content: "- Đào đất hố ga", itemCount: 1 },
-        { day: NOV_1 + 1, content: "- Đào đất hố ga\n- Lắp đặt cống D600", itemCount: 2 },
-        { day: NOV_1 + 2, content: "- Đào đất hố ga", itemCount: 1 },
+        { day: NOV_1, content: "Đào đất hố ga", itemCount: 1 },
+        { day: NOV_1 + 1, content: "Đào đất hố ga\nLắp đặt cống D600", itemCount: 2 },
+        { day: NOV_1 + 2, content: "Đào đất hố ga", itemCount: 1 },
       ],
     });
   });
 
   it("R1.3: ngày không có công việc vẫn có dòng, nội dung trống", () => {
     const result = buildDailyLog([item("A", NOV_1, NOV_1), item("B", NOV_1 + 3, NOV_1 + 3)]);
-    expect(result.ok && result.entries.map((entry) => entry.content)).toEqual(["- A", "", "", "- B"]);
+    expect(result.ok && result.entries.map((entry) => entry.content)).toEqual(["A", "", "", "B"]);
   });
 
   it("R1.4: giữ thứ tự dòng input, không sắp xếp theo ngày bắt đầu", () => {
     const result = buildDailyLog([item("Sau", NOV_1 + 1, NOV_1 + 1), item("Trước", NOV_1, NOV_1 + 1)]);
-    expect(result.ok && result.entries[1]?.content).toBe("- Sau\n- Trước");
+    expect(result.ok && result.entries[1]?.content).toBe("Sau\nTrước");
   });
 
   it("báo lỗi khi không có công việc", () => {
@@ -49,7 +49,7 @@ describe("buildDailyLog", () => {
   });
 
   it("chặn nội dung một ngày vượt giới hạn ký tự của ô Excel", () => {
-    const longText = "x".repeat(MAX_CELL_LENGTH);
+    const longText = "x".repeat(MAX_CELL_LENGTH + 1);
     const result = buildDailyLog([item(longText, NOV_1, NOV_1)]);
     expect(result).toEqual({
       ok: false,

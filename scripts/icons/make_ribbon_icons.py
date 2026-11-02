@@ -62,11 +62,15 @@ def icon_table():
     return image
 
 
-def icon_source():
+def icon_template():
     image, d = canvas()
-    grid(d, (30, 40, 290, 280), rows=5, cols=4)
-    d.rectangle((30, 40, 290, 88), fill=GREEN)
-    d.rectangle((100, 140, 290, 280), outline=BLUE, width=22)
+    d.rectangle((50, 20, 250, 300), fill=WHITE, outline=BLUE, width=16)
+    d.rectangle((50, 20, 250, 80), fill=BLUE)
+    for y in (120, 170, 220):
+        d.line([(85, y), (215, y)], fill=DARK, width=14)
+    d.ellipse((190, 190, 310, 310), fill=ORANGE)
+    d.rectangle((242, 210, 258, 290), fill=WHITE)
+    d.rectangle((210, 242, 290, 258), fill=WHITE)
     return image
 
 
@@ -76,14 +80,6 @@ def icon_assign():
     d.rectangle((60, 40, 280, 110), fill=BLUE)
     d.line([(170, 110), (120, 200)], fill=ORANGE, width=26)
     d.polygon([(95, 235), (90, 170), (150, 195)], fill=ORANGE)
-    return image
-
-
-def icon_list():
-    image, d = canvas()
-    for i, y in enumerate((70, 160, 250)):
-        d.rectangle((30, y - 22, 74, y + 22), fill=BLUE)
-        d.line([(100, y), (290, y)], fill=DARK, width=24)
     return image
 
 
@@ -143,9 +139,8 @@ def icon_circle_letter(letter):
 ICONS = {
     "table": icon_table,
     "export": icon_export,
-    "source": icon_source,
+    "template": icon_template,
     "assign": icon_assign,
-    "list": icon_list,
     "first": icon_first,
     "prev": icon_prev,
     "next": icon_next,

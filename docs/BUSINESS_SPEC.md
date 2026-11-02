@@ -8,8 +8,10 @@
 
 | Mã | Quy tắc |
 |---|---|
-| R0.1 | Chức năng nằm trên tab Ribbon riêng **Nhật ký thi công**: nhóm **Tiến độ** (Tạo bảng, Xuất theo ngày — từ 1.4.0), **Form mẫu** (Vùng nguồn, Gán cột, Danh sách gán), **Chuyển ngày** (Ngày đầu, Ngày trước, Ngày sau, Ngày cuối, Đến ngày…), **Tiện ích** (Hướng dẫn, Phiên bản). Không có khung làm việc bên phải (theo yêu cầu chủ dự án 02/11/2026). |
+| R0.1 | Chức năng nằm trên tab Ribbon riêng **Nhật ký thi công**: nhóm **Tiến độ** (Tạo bảng, Xuất theo ngày — từ 1.4.0), **Form mẫu** (Chèn form mẫu, Xuất vào form — từ 1.5.0), **Chuyển ngày** (Ngày đầu, Ngày trước, Ngày sau, Ngày cuối, Đến ngày…), **Tiện ích** (Hướng dẫn, Phiên bản). Không có khung làm việc bên phải (theo yêu cầu chủ dự án 02/11/2026). |
 | R0.2 | Bước cần nhập liệu/xác nhận dùng hộp thoại (Office Dialog API 1.1 — có từ Excel 2016) mở giữa màn hình và tự đóng khi xong. Dữ liệu vào hộp thoại qua URL/localStorage (cùng domain), kết quả trả về qua `messageParent` — chỉ nhận tin có origin của add-in (khi Office cung cấp origin); hai phía kiểm tra dữ liệu nhận được, dữ liệu sai coi như Hủy. |
+| R0.4 | Ô chọn vùng (từ 1.5.0, giống ô chọn vùng của Excel): ô hiển thị vùng tự nhận diện, nút **⬆** ở cuối ô lấy vùng/ô đang chọn trên sheet (hộp thoại mở lại với vùng mới), hoặc gõ địa chỉ `Sheet!A1:D20` rồi Enter. Vùng không dùng được → báo lỗi ngay dưới ô, khóa nút thực hiện. |
+| R0.5 | Office.js chỉ làm mờ (disable) được nút Ribbon khi add-in chạy shared runtime (không có trên Excel 2016). Vì vậy các nút Chuyển ngày luôn bấm được; khi chưa gán, nút chỉ hiện hướng dẫn "bấm Xuất vào form", không ghi gì. |
 | R0.3 | Khung bên phải chỉ hiện **một lần** khi bộ cài kích hoạt add-in (trang chào mừng), người dùng đóng được. |
 
 ## F1. Xuất nhật ký theo ngày
@@ -19,7 +21,7 @@
 > Từ 1.3.0 mọi chức năng nằm trên tab Ribbon **Nhật ký thi công** (R0.1); không còn khung làm việc bên phải.
 
 1. Người dùng bôi chọn vùng danh sách công việc (dòng đầu là tiêu đề; được phép chọn nguyên cột) — hoặc chỉ đặt con trỏ 1 ô trong sheet tiến độ (add-in lấy toàn bộ vùng có dữ liệu của sheet) — rồi bấm nút **Xuất theo ngày**.
-2. Hộp thoại hiện vùng dữ liệu và 3 ô chọn cột đã tự nhận diện theo tiêu đề (R1.12); người dùng chỉnh lại nếu cần → **Xuất nhật ký**.
+2. Hộp thoại có ô **Vùng dữ liệu** (tự nhận diện, nút ⬆ để chọn lại — R0.4) và 3 ô chọn cột (nhãn `Cột A – <tiêu đề>`) đã tự nhận diện theo tiêu đề (R1.12); người dùng chỉnh lại nếu cần → **Xuất nhật ký**.
 3. Add-in đọc lại dữ liệu mới nhất của vùng; nếu dòng tiêu đề đã thay đổi thì dừng và yêu cầu bấm lại; nếu không, tạo sheet mới gồm 2 cột: **Ngày** | **Nội dung**.
 4. Hộp thoại kết quả: tên sheet, số ngày, khoảng ngày, số công việc hợp lệ, danh sách dòng lỗi (tối đa 10) và xem trước 5 ngày đầu.
 
@@ -30,7 +32,7 @@
 | R1.1 | Một công việc xuất hiện ở **mọi ngày d** thỏa `Ngày bắt đầu ≤ d ≤ Ngày kết thúc` (tính cả hai đầu). |
 | R1.2 | Phạm vi ngày xuất: từ `min(Ngày bắt đầu)` đến `max(Ngày kết thúc)`, liên tục từng ngày dương lịch. |
 | R1.3 | `[GIẢ ĐỊNH]` Ngày không có công việc vẫn xuất một dòng với Nội dung để trống. |
-| R1.4 | `[GIẢ ĐỊNH]` Nội dung của một ngày = các công việc đang thực hiện, giữ **thứ tự dòng trong input**, mỗi công việc một dòng trong ô, tiền tố `- `, phân tách bằng xuống dòng (Alt+Enter). |
+| R1.4 | Nội dung của một ngày = các công việc đang thực hiện, giữ **thứ tự dòng trong input**, mỗi công việc một dòng trong ô, **giữ nguyên nội dung người dùng nhập** (từ 1.5.0 không tự thêm tiền tố `- `). |
 | R1.5 | `[GIẢ ĐỊNH]` Thiếu Ngày kết thúc → coi bằng Ngày bắt đầu (công việc 1 ngày). |
 | R1.6 | Ngày bắt đầu không hợp lệ, hoặc Ngày kết thúc < Ngày bắt đầu, hoặc Nội dung trống → dòng lỗi: **bỏ qua và báo cáo** (số dòng, lý do). |
 | R1.7 | Chấp nhận ngày dạng Excel date (serial) và dạng text `dd/mm/yyyy`. |
@@ -64,12 +66,14 @@ Output:
 
 ### F2.1 Luồng sử dụng
 
-1. Người dùng (tùy nhu cầu) bổ sung các cột nội dung phụ vào sheet theo ngày (Thời tiết, Ban chỉ huy – CBKT, Số công nhân, Số thiết bị, Nội dung nghiệm thu…).
-2. Nhóm **Form mẫu** trên Ribbon:
-   - **Vùng nguồn:** bôi chọn vùng dữ liệu theo ngày (gồm tiêu đề) hoặc đặt con trỏ trong sheet đó → bấm → add-in lưu vùng nguồn, tự nhận diện **cột Ngày** (R2.13) và báo vùng, cột Ngày, số ngày hợp lệ. Nếu tiêu đề giống cấu hình cũ thì giữ các ô đã gán; khác thì bỏ gán cũ.
-   - **Gán cột:** chọn ô (hoặc ô merge) trên form → bấm → hộp thoại chọn cột ghi vào ô đó. Ô đã gán: hộp thoại hiện cột hiện tại, chọn cột khác để thay hoặc **Bỏ gán ô này**. Một cột có thể gán vào nhiều ô.
-   - **Danh sách gán:** bảng ô đích → cột nguồn; tích **Bỏ gán** để xóa; đổi **cột Ngày**.
-3. Nhóm **Chuyển ngày**: **Ngày đầu**, **Ngày trước**, **Ngày sau**, **Ngày cuối**, **Đến ngày…** (hộp thoại nhập dd/mm/yyyy). Phạm vi điều hướng = các ngày hợp lệ trong vùng nguồn, tăng dần; ngày đang hiển thị được lưu trong cấu hình. Mỗi lần bấm, add-in đọc lại vùng nguồn và ghi các ô đích; không mở hộp thoại trừ khi cần xác nhận (R2.5), đã ở ngày đầu/cuối, hoặc có lỗi. Ngày đang xem hiển thị trên chính biểu mẫu (ô gán cột Ngày) — Ribbon Office.js không hiển thị được nhãn động.
+1. Người dùng **tự thêm các cột** cần thiết vào bảng kết quả F1 (Thời tiết, Ban chỉ huy – CBKT, Số công nhân, Số thiết bị, Nội dung nghiệm thu…) tùy nhu cầu.
+2. **Chèn form mẫu** (nhóm Form mẫu): thêm sheet `Mẫu NKTC` (biểu mẫu dựng sẵn, `templates/Mau_NKTC.xlsx`) vào cuối file, bằng `insertWorksheetsFromBase64` (ExcelApi 1.13 — Microsoft 365 / Excel 2021+). Đã có sheet cùng tên → báo, không ghi đè. Excel cũ hơn → hộp thoại hướng dẫn tải file mẫu và chép sheet (Move or Copy).
+3. **Xuất vào form** — một hộp thoại chung:
+   - **Vùng nguồn** (ô chọn vùng R0.4): mặc định = cấu hình đã lưu → sheet `NK_TheoNgay` đang mở hoặc mới nhất → vùng đang chọn. Gồm cả các cột người dùng đã thêm. **Dòng đầu tiên là tiêu đề** — cơ sở để gán. Dòng tiêu đề có ô gộp (merge, phát hiện bằng ExcelApi 1.13) hoặc ô trống → báo "không chọn được, gỡ merge rồi chọn lại", khóa nút Gán.
+   - **Cột ngày** (dùng để chuyển ngày): tự nhận diện (R2.13), chọn lại được; hiển thị số ngày hợp lệ.
+   - **Dòng gán**: bên trái chọn cột nguồn (`Cột A – <tiêu đề>`), bên phải ô trên form (ô chọn vùng: chọn ô/ô gộp trên biểu mẫu rồi bấm ⬆, hoặc gõ `Mẫu NKTC!E2`; ô không ghi tên sheet thuộc sheet của dòng gán khác → `Mẫu NKTC` → sheet đang mở). **+ Thêm** để thêm dòng; chọn dòng → **Delete** (hoặc **Xóa dòng**) để xóa.
+   - **Gán**: kiểm tra từng dòng (thiếu cột/ô, ô sai, ô trùng — báo theo dòng), lưu cấu hình, rồi ghi **dữ liệu ngày đầu tiên** lên form (xác nhận ghi đè theo R2.5). Mở lại hộp thoại → hiện cấu hình đã gán để sửa.
+4. Nhóm **Chuyển ngày**: **Ngày đầu**, **Ngày trước**, **Ngày sau**, **Ngày cuối**, **Đến ngày…**. Chỉ hoạt động sau khi đã Gán (R0.5). Phạm vi = các ngày hợp lệ trong vùng nguồn, tăng dần; mỗi lần bấm đọc lại vùng nguồn và ghi các ô đích; không mở hộp thoại trừ khi cần xác nhận, đã ở ngày đầu/cuối, hoặc có lỗi.
 
 ### F2.2 Quy tắc nghiệp vụ
 

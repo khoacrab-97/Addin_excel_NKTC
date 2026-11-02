@@ -3,14 +3,13 @@ import type { JSX } from "react";
 import ReactDOM from "react-dom";
 import { type LoadedDialog, loadDialog } from "./payload";
 import { AboutView } from "./views/AboutView";
-import { AssignView } from "./views/AssignView";
 import { ConfirmView } from "./views/ConfirmView";
 import { CreateTableView } from "./views/CreateTableView";
+import { ExportFormView } from "./views/ExportFormView";
 import { F1ColumnsView } from "./views/F1ColumnsView";
 import { GotoView } from "./views/GotoView";
 import { HelpView } from "./views/HelpView";
 import { MessageView } from "./views/MessageView";
-import { SettingsView } from "./views/SettingsView";
 
 /** Gửi kết quả về nút lệnh trên Ribbon; function file đóng hộp thoại khi nhận được. */
 function reply(value: object): void {
@@ -25,10 +24,8 @@ function DialogApp({ dialog }: { dialog: LoadedDialog }): JSX.Element {
       return <F1ColumnsView payload={dialog.payload} reply={reply} />;
     case "message":
       return <MessageView payload={dialog.payload} reply={reply} />;
-    case "assign":
-      return <AssignView payload={dialog.payload} reply={reply} />;
-    case "settings":
-      return <SettingsView payload={dialog.payload} reply={reply} />;
+    case "export-form":
+      return <ExportFormView payload={dialog.payload} reply={reply} />;
     case "goto":
       return <GotoView payload={dialog.payload} reply={reply} />;
     case "confirm":

@@ -33,11 +33,11 @@ describe("F1 với bảng tiến độ phân cấp (tdtc-sample)", () => {
     const byDate = new Map(result.built.entries.map((entry) => [formatDay(entry.day), entry]));
     expect(byDate.get("15/06/2026")?.content).toBe(
       [
-        "- HM - CÔNG TÁC CHUẨN BỊ",
-        "- HM - CÔNG TÁC CHUẨN BỊ",
-        "- Dọn dẹp mặt bằng, dựng lán trại",
-        "- LẬP HỒ SƠ HOÀN CÔNG",
-        "- Lập hồ sơ nghiệm thu, hoàn công",
+        "HM - CÔNG TÁC CHUẨN BỊ",
+        "HM - CÔNG TÁC CHUẨN BỊ",
+        "Dọn dẹp mặt bằng, dựng lán trại",
+        "LẬP HỒ SƠ HOÀN CÔNG",
+        "Lập hồ sơ nghiệm thu, hoàn công",
       ].join("\n"),
     );
     expect(byDate.get("23/06/2026")?.itemCount).toBe(6);

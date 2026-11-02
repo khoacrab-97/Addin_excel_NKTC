@@ -146,9 +146,9 @@ async function main() {
   done = await wb.press("nktcExportDaily");
   d = await wb.dialog();
   for (const [label, column] of [
-    ["Nội dung công việc", "B – Nội dung công việc"],
-    ["Ngày bắt đầu", "C – Bắt đầu"],
-    ["Ngày kết thúc", "D – Kết thúc"],
+    ["Nội dung công việc", "Cột B – Nội dung công việc"],
+    ["Ngày bắt đầu", "Cột C – Bắt đầu"],
+    ["Ngày kết thúc", "Cột D – Kết thúc"],
   ]) {
     assert.ok((await d.page.getByRole("combobox", { name: label }).innerText()).startsWith(column), label);
   }

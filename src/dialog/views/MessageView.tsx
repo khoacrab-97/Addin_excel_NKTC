@@ -1,4 +1,4 @@
-import { MessageBar, MessageBarType, Stack } from "@fluentui/react";
+import { Link, MessageBar, MessageBarType, Stack } from "@fluentui/react";
 import type { JSX } from "react";
 import type { DialogPayloads, DialogReplies, MessageTone } from "../../core/dialog/protocol";
 import { DialogFrame } from "../components/DialogFrame";
@@ -42,6 +42,11 @@ export function MessageView({ payload, reply }: Props): JSX.Element {
             <div key={index}>{line}</div>
           ))}
         </Stack>
+      )}
+      {payload.link && (
+        <Link href={payload.link.href} target="_blank" rel="noopener noreferrer">
+          {payload.link.text}
+        </Link>
       )}
       {payload.table && (
         <table style={{ borderCollapse: "collapse", width: "100%", fontSize: 12 }}>

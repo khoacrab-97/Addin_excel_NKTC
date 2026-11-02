@@ -96,6 +96,12 @@ async function openWorkbook(input, options = {}) {
       await commands.waitForFunction((index) => globalThis.__smoke.dialogClosed(index), info.index);
       await page.close();
     };
+    /** Thao tác bất kỳ trong hộp thoại làm hộp thoại gửi kết quả (ví dụ nhấn Enter, nút ⬆) rồi chờ đóng. */
+    const act = async (action) => {
+      await action(page);
+      await commands.waitForFunction((index) => globalThis.__smoke.dialogClosed(index), info.index);
+      await page.close();
+    };
     const text = () => page.locator("#root").innerText();
     /** Chọn giá trị trong ô chọn cột (Fluent Dropdown). */
     const choose = async (label, optionPrefix) => {
@@ -106,7 +112,7 @@ async function openWorkbook(input, options = {}) {
         .first()
         .click();
     };
-    return { page, info, click, text, choose };
+    return { page, info, click, act, text, choose };
   }
 
   return { browser, context, commands, pageErrors, smoke, press, dialog };

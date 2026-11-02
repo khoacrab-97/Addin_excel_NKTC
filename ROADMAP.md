@@ -105,3 +105,16 @@
 | P7.4 | Kiểm thử trên Excel Desktop Windows (`docs/KIEM_THU_NGHIEM_THU.md` mục A') | Not Started |
 
 > P7.1–P7.3 **Tested** = unit test (`layout.test.ts`, giao thức hộp thoại) + smoke F4 5 bước (sheet mới mặc định, sheet hiện tại ô B3, vùng có dữ liệu không ghi, kiểm tra nhập liệu, điền bảng → Xuất theo ngày) với Excel giả lập có Excel Table. Chưa Verified cho tới khi chạy trên Excel thật (P7.4).
+
+## Phase 8 — Phản hồi thử nghiệm 1.4.0 (bản 1.5.0)
+
+| ID | Hạng mục | Trạng thái |
+|---|---|---|
+| P8.1 | F1: không tự thêm "- " trước nội dung (R1.4) | Tested |
+| P8.2 | Ô chọn vùng có nút ⬆ (tự nhận diện, chọn lại vùng đang chọn / gõ địa chỉ) cho Xuất theo ngày và Xuất vào form; nhãn cột "Cột A – …" (R0.4) | Tested |
+| P8.3 | Nút **Chèn form mẫu** (ExcelApi 1.13; Excel cũ → hướng dẫn tải file) | Tested |
+| P8.4 | Hộp thoại chung **Xuất vào form** (vùng nguồn, cột ngày, dòng gán + Thêm / Delete, Gán → ngày đầu), thay 3 nút Vùng nguồn / Gán cột / Danh sách gán; tiêu đề có ô gộp → chặn | Tested |
+| P8.5 | Nút Chuyển ngày khi chưa gán: chỉ hướng dẫn (không làm mờ được — R0.5) | Tested |
+| P8.6 | Kiểm thử trên Excel Desktop Windows: nút ⬆ khi hộp thoại đang mở, chèn form mẫu, Xuất vào form (`docs/KIEM_THU_NGHIEM_THU.md` mục B, C) | Not Started |
+
+> P8.1–P8.5 **Tested** = unit test (`reference`, `formRows`, giao thức, `buildDailyLog`) + smoke: F1 7 bước, F2 13 bước (ExcelApi 1.13 và 1.1), F3 10 bước, F4 5 bước — Excel giả lập có ô gộp, chèn sheet, Dialog API. Chưa Verified (P8.6): nút ⬆ giả định hộp thoại Office không chặn thao tác trên sheet (non-modal) — cần xác nhận trên Excel thật.
