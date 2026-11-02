@@ -58,9 +58,13 @@
     return /^[A-Za-z0-9_]+$/.test(name) ? name : "'" + name.replace(/'/g, "''") + "'";
   }
 
+  var activeSheetName = input.selection.sheet;
+  var tableCount = 0;
   function Sheet(name) {
     this.name = name;
     this.cells = {};
+    /** Excel Table giả lập: { name, box, style } — báo lỗi khi chồng lên bảng có sẵn (giống Excel). */
+    this.tables = [];
   }
   Sheet.prototype.cell = function (r, c) {
     var key = r + "," + c;
@@ -225,6 +229,11 @@
         }
         return makeRange(sheet, b);
       };
+      range.select = function () {
+        selection = { sheet: sheet.name, address: label.split("!")[1] };
+        activeSheetName = sheet.name;
+        log.push({ op: "select", range: label });
+      };
       range.__box = box;
       return range;
     }
@@ -247,13 +256,36 @@
           return makeRange(sheet, sheet.usedBox());
         },
         activate: function () {
+          activeSheetName = sheet.name;
           log.push({ op: "activate", sheet: sheet.name });
+        },
+        tables: {
+          add: function (address, hasHeaders) {
+            var box = parseAddress(address);
+            var overlap = sheet.tables.some(function (t) {
+              return !(box.r2 < t.box.r1 || box.r1 > t.box.r2 || box.c2 < t.box.c1 || box.c1 > t.box.c2);
+            });
+            if (overlap) context.pendingError = { code: "InvalidOperation", message: "Chồng lên bảng có sẵn" };
+            var table = { name: "Table" + ++tableCount, box: box, hasHeaders: hasHeaders, style: "" };
+            if (!overlap) sheet.tables.push(table);
+            log.push({ op: "tables.add", sheet: sheet.name, address: address, hasHeaders: hasHeaders });
+            var api = {};
+            Object.defineProperty(api, "style", {
+              set: function (v) {
+                table.style = v;
+              },
+            });
+            return api;
+          },
         },
       };
     }
 
     var worksheets = {
       load: function () {},
+      getActiveWorksheet: function () {
+        return worksheets.getItem(activeSheetName);
+      },
       get items() {
         return sheets.map(sheetApi);
       },
@@ -319,6 +351,7 @@
     },
     select: function (sheetName, address) {
       selection = { sheet: sheetName, address: address };
+      activeSheetName = sheetName;
     },
     setValue: function (sheetName, address, value) {
       var box = parseAddress(address);
@@ -379,6 +412,21 @@
       if (!d) return;
       d.closed = true;
       if (d.handlers.dialogEventReceived) d.handlers.dialogEventReceived({ error: 12006 });
+    },
+    tables: function (name) {
+      return findSheet(name).tables.map(function (t) {
+        return {
+          name: t.name,
+          address: colLetters(t.box.c1) + (t.box.r1 + 1) + ":" + colLetters(t.box.c2) + (t.box.r2 + 1),
+          style: t.style,
+        };
+      });
+    },
+    activeSheet: function () {
+      return activeSheetName;
+    },
+    selection: function () {
+      return selection;
     },
     sheetNames: function () {
       return sheets.map(function (s) {

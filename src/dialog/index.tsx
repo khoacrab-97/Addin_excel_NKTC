@@ -5,6 +5,7 @@ import { type LoadedDialog, loadDialog } from "./payload";
 import { AboutView } from "./views/AboutView";
 import { AssignView } from "./views/AssignView";
 import { ConfirmView } from "./views/ConfirmView";
+import { CreateTableView } from "./views/CreateTableView";
 import { F1ColumnsView } from "./views/F1ColumnsView";
 import { GotoView } from "./views/GotoView";
 import { HelpView } from "./views/HelpView";
@@ -18,6 +19,8 @@ function reply(value: object): void {
 
 function DialogApp({ dialog }: { dialog: LoadedDialog }): JSX.Element {
   switch (dialog.view) {
+    case "create-table":
+      return <CreateTableView payload={dialog.payload} reply={reply} />;
     case "f1-columns":
       return <F1ColumnsView payload={dialog.payload} reply={reply} />;
     case "message":

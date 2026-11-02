@@ -52,6 +52,16 @@ def icon_export():
     return image
 
 
+def icon_table():
+    image, d = canvas()
+    grid(d, (20, 50, 250, 290), color=GREEN, rows=4, cols=3)
+    d.rectangle((20, 50, 250, 110), fill=GREEN)
+    d.ellipse((190, 10, 310, 130), fill=ORANGE)
+    d.rectangle((242, 30, 258, 110), fill=WHITE)
+    d.rectangle((210, 62, 290, 78), fill=WHITE)
+    return image
+
+
 def icon_source():
     image, d = canvas()
     grid(d, (30, 40, 290, 280), rows=5, cols=4)
@@ -131,6 +141,7 @@ def icon_circle_letter(letter):
 
 
 ICONS = {
+    "table": icon_table,
     "export": icon_export,
     "source": icon_source,
     "assign": icon_assign,

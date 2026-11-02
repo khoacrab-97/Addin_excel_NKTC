@@ -8,7 +8,7 @@
 
 | Mã | Quy tắc |
 |---|---|
-| R0.1 | Chức năng nằm trên tab Ribbon riêng **Nhật ký thi công**: nhóm **Xuất nhật ký** (Xuất theo ngày), **Form mẫu** (Vùng nguồn, Gán cột, Danh sách gán), **Chuyển ngày** (Ngày đầu, Ngày trước, Ngày sau, Ngày cuối, Đến ngày…), **Tiện ích** (Hướng dẫn, Phiên bản). Không có khung làm việc bên phải (theo yêu cầu chủ dự án 02/11/2026). |
+| R0.1 | Chức năng nằm trên tab Ribbon riêng **Nhật ký thi công**: nhóm **Tiến độ** (Tạo bảng, Xuất theo ngày — từ 1.4.0), **Form mẫu** (Vùng nguồn, Gán cột, Danh sách gán), **Chuyển ngày** (Ngày đầu, Ngày trước, Ngày sau, Ngày cuối, Đến ngày…), **Tiện ích** (Hướng dẫn, Phiên bản). Không có khung làm việc bên phải (theo yêu cầu chủ dự án 02/11/2026). |
 | R0.2 | Bước cần nhập liệu/xác nhận dùng hộp thoại (Office Dialog API 1.1 — có từ Excel 2016) mở giữa màn hình và tự đóng khi xong. Dữ liệu vào hộp thoại qua URL/localStorage (cùng domain), kết quả trả về qua `messageParent` — chỉ nhận tin có origin của add-in (khi Office cung cấp origin); hai phía kiểm tra dữ liệu nhận được, dữ liệu sai coi như Hủy. |
 | R0.3 | Khung bên phải chỉ hiện **một lần** khi bộ cài kích hoạt add-in (trang chào mừng), người dùng đóng được. |
 
@@ -112,6 +112,27 @@ Chuyển từ mẫu Word, sheet **Mẫu NKTC**, khổ A4 đứng, lề trái 2,5
 | 6. Nhận xét của kỹ sư giám sát; 7. Chỉ huy trưởng tiếp thu | — | Dòng gạch chấm để ghi tay, ký tên. |
 
 Sinh lại biểu mẫu: `python3 -I scripts/fixtures/make_nktc_workbooks.py test/fixtures/test_addin_xuat_nktc.xlsx`.
+
+---
+
+## F4. Tạo bảng nhập tiến độ (từ 1.4.0)
+
+### F4.1 Luồng sử dụng
+
+1. Người dùng bấm **Tạo bảng** (nhóm Tiến độ).
+2. Hộp thoại: chọn **Sheet mới** (mặc định) hoặc **Sheet hiện tại**; nếu sheet hiện tại thì nhập **ô bắt đầu** (góc trên-trái, ô tiêu đề STT — gợi ý sẵn ô đang chọn); nhập **số dòng** (mặc định 10). Hộp thoại hiển thị vùng bảng sẽ chiếm.
+3. Add-in tạo bảng 4 cột **STT | Nội dung công việc | Bắt đầu | Kết thúc**, đặt con trỏ vào ô Nội dung đầu tiên và báo kết quả.
+4. Người dùng điền dữ liệu, rồi dùng **Xuất theo ngày** (F1) trên bảng này — tiêu đề được F1 tự nhận diện đủ 3 cột.
+
+### F4.2 Quy tắc nghiệp vụ
+
+| Mã | Quy tắc |
+|---|---|
+| R4.1 | Bảng là **Excel Table** (kiểu `TableStyleMedium2`, có lọc, tự mở rộng khi gõ ngay dưới dòng cuối); cột STT điền sẵn 1..n; Nội dung định dạng văn bản (`@`), xuống dòng trong ô; Bắt đầu/Kết thúc định dạng `dd/mm/yyyy`. Độ rộng cột chỉ đặt khi có ExcelApi 1.2 (Excel 2016 bản mua một lần: giữ độ rộng mặc định). |
+| R4.2 | Số dòng: số nguyên 1–1.000, mặc định 10. Ô bắt đầu: địa chỉ một ô hợp lệ (`B3`, `$b$3`); bảng không được vượt giới hạn sheet (cột XFD, dòng 1.048.576). |
+| R4.3 | Sheet mới: tên `TienDo`, `TienDo_2`… (không trùng sheet có sẵn), bảng bắt đầu tại A1. |
+| R4.4 | Sheet hiện tại: chỉ tạo khi **toàn bộ vùng bảng đang trống** (không có giá trị/công thức); nếu không → báo các ô đang có dữ liệu (tối đa 8 ô), **không ghi ô nào**. Vùng chồng lên bảng/ô merge có sẵn hoặc sheet bị bảo vệ → báo lỗi, không ghi. |
+| R4.5 | Tiêu đề bảng giữ đúng `STT`, `Nội dung công việc`, `Bắt đầu`, `Kết thúc` để F1 nhận diện cột (R1.12); dòng trống trong bảng bị F1 bỏ qua, không báo lỗi. |
 
 ---
 

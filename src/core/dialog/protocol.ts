@@ -4,9 +4,11 @@
  * `messageParent(string)`. Hai phía đều kiểm tra dữ liệu nhận được (CLAUDE.md §3: dữ liệu bên ngoài).
  */
 
-export type DialogView = "f1-columns" | "message" | "assign" | "settings" | "goto" | "confirm" | "help" | "about";
+export type DialogView =
+  "create-table" | "f1-columns" | "message" | "assign" | "settings" | "goto" | "confirm" | "help" | "about";
 
 export const DIALOG_VIEWS: readonly DialogView[] = [
+  "create-table",
   "f1-columns",
   "message",
   "assign",
@@ -24,6 +26,14 @@ export interface ColumnOption {
 }
 
 export type MessageTone = "info" | "success" | "warning" | "error";
+
+export interface CreateTablePayload {
+  /** Sheet đang mở và ô đang chọn — gợi ý vị trí bảng trên sheet hiện tại. */
+  sheetName: string;
+  cell: string;
+  defaultRows: number;
+  maxRows: number;
+}
 
 export interface F1ColumnsPayload {
   source: string;
@@ -87,6 +97,7 @@ export interface AboutPayload {
 }
 
 export interface DialogPayloads {
+  "create-table": CreateTablePayload;
   "f1-columns": F1ColumnsPayload;
   message: MessagePayload;
   assign: AssignPayload;
@@ -100,6 +111,7 @@ export interface DialogPayloads {
 export type CancelReply = { action: "cancel" };
 
 export interface DialogReplies {
+  "create-table": { action: "create"; target: "current" | "new"; cell: string; rows: number } | CancelReply;
   "f1-columns": { action: "ok"; columns: { content: number; start: number; end: number } } | CancelReply;
   message: { action: "ok" } | CancelReply;
   assign: { action: "assign"; column: number } | { action: "unassign" } | CancelReply;
@@ -123,6 +135,10 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function isIndex(value: unknown): value is number {
   return typeof value === "number" && Number.isInteger(value) && value >= 0 && value < 16_384;
+}
+
+function isPositiveCount(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= 1_048_576;
 }
 
 function isText(value: unknown): value is string {
@@ -173,6 +189,8 @@ function isTable(value: unknown): value is MessagePayload["table"] {
 type Guards = { [V in DialogView]: (value: Record<string, unknown>) => boolean };
 
 const PAYLOAD_GUARDS: Guards = {
+  "create-table": (p) =>
+    isText(p.sheetName) && isText(p.cell) && isPositiveCount(p.defaultRows) && isPositiveCount(p.maxRows),
   "f1-columns": (p) =>
     isText(p.source) &&
     isList(p.options, isColumnOption) &&
@@ -201,6 +219,12 @@ const PAYLOAD_GUARDS: Guards = {
 };
 
 const REPLY_GUARDS: Guards = {
+  "create-table": (r) =>
+    r.action === "create" &&
+    (r.target === "current" || r.target === "new") &&
+    isText(r.cell) &&
+    r.cell.length <= 16 &&
+    isPositiveCount(r.rows),
   "f1-columns": (r) =>
     r.action === "ok" &&
     isRecord(r.columns) &&
