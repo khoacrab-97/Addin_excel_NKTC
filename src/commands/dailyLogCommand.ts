@@ -8,7 +8,7 @@ import { toUserMessage } from "../excel/errors";
 import { type RangeRef, readRange } from "../excel/rangeReader";
 import { DIALOG_SIZE, openDialog } from "./dialogHost";
 import { showMessage } from "./messages";
-import { type SnapshotResult, refText, resolveRangeRef, tryReadRange } from "./rangePick";
+import { type SnapshotResult, pickOnSheet, refText, resolveRangeRef, tryReadRange } from "./rangePick";
 
 const TITLE = "Xuất nhật ký theo ngày";
 const MAX_ISSUES_SHOWN = 10;
@@ -57,6 +57,7 @@ export async function exportDailyLogCommand(): Promise<void> {
     );
     if (reply.action === "cancel") return;
     if (reply.action === "pick") {
+      if (reply.address === undefined && !(await pickOnSheet("range", "vùng dữ liệu (gồm dòng tiêu đề)"))) continue;
       pickError = undefined;
       try {
         ref = await resolveRangeRef(reply.address);

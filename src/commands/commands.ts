@@ -4,7 +4,7 @@ import { exportDailyLogCommand } from "./dailyLogCommand";
 import { DIALOG_SIZE, openDialog } from "./dialogHost";
 import { showError } from "./messages";
 import { exportFormCommand, insertTemplateCommand } from "./formCommands";
-import { goToDayCommand, showDayCommand } from "./templateCommands";
+import { dayPanelCommand, interruptDayPanel, showDayCommand } from "./templateCommands";
 
 /** Một lệnh của nút trên Ribbon (Action ExecuteFunction trong manifest). */
 type CommandHandler = () => Promise<void>;
@@ -15,6 +15,7 @@ export const COMMANDS: Readonly<Record<string, CommandHandler>> = {
   nktcExportDaily: exportDailyLogCommand,
   nktcInsertTemplate: insertTemplateCommand,
   nktcExportForm: exportFormCommand,
+  nktcDayPanel: dayPanelCommand,
   nktcDayFirst: async () => {
     await showDayCommand({ kind: "first" });
   },
@@ -27,7 +28,6 @@ export const COMMANDS: Readonly<Record<string, CommandHandler>> = {
   nktcDayLast: async () => {
     await showDayCommand({ kind: "last" });
   },
-  nktcGoToDay: goToDayCommand,
   nktcHelp: async () => {
     await openDialog("help", {}, DIALOG_SIZE.large);
   },
@@ -36,22 +36,35 @@ export const COMMANDS: Readonly<Record<string, CommandHandler>> = {
   },
 };
 
-/** Chỉ chạy một lệnh tại một thời điểm (bấm liên tiếp khi đang mở hộp thoại → bỏ qua). */
-let running = false;
+/** Lệnh đang chạy. Chỉ chạy một lệnh tại một thời điểm (bấm khi đang mở hộp thoại → bỏ qua). */
+let current: Promise<void> | undefined;
+
+function run(handler: CommandHandler, event: Office.AddinCommands.Event): void {
+  const task = handler()
+    .catch((error: unknown) => showError(error))
+    .finally(() => {
+      if (current === task) current = undefined;
+      event.completed();
+    });
+  current = task;
+}
 
 function wrap(handler: CommandHandler): (event: Office.AddinCommands.Event) => void {
   return (event) => {
-    if (running) {
-      event.completed();
+    const active = current;
+    if (!active) {
+      run(handler, event);
       return;
     }
-    running = true;
-    handler()
-      .catch((error: unknown) => showError(error))
-      .finally(() => {
-        running = false;
-        event.completed();
+    // Bảng chuyển ngày để mở lâu: bấm nút khác trên Ribbon → đóng bảng rồi chạy lệnh mới.
+    if (interruptDayPanel()) {
+      void active.then(() => {
+        if (current) event.completed();
+        else run(handler, event);
       });
+      return;
+    }
+    event.completed();
   };
 }
 

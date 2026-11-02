@@ -54,11 +54,13 @@ async function main() {
   });
   d = await wb.dialog();
   assert.equal(await field().inputValue(), `${fixture.sheetName}!A1:C5`);
-  await wb.smoke((name) => globalThis.__smoke.select(name, "B5"), fixture.sheetName);
-  await d.act((page) => page.getByRole("button", { name: /^Chọn Vùng dữ liệu/ }).click());
-  d = await wb.dialog();
+  // Nút ⬆: hộp thoại ẩn → hộp thoại nhỏ → chọn trên sheet → OK → hộp thoại mở lại với vùng vừa chọn.
+  d = await wb.pickVia(d, /^Chọn Vùng dữ liệu/, [fixture.sheetName, "B5"]);
   assert.equal(await field().inputValue(), `${fixture.sheetName}!${fixture.address}`);
-  pass("Ô vùng dữ liệu", "gõ địa chỉ + Enter → vùng mới; nút ⬆ → lấy lại vùng đang chọn (1 ô → cả bảng)");
+  // Hủy ở hộp thoại nhỏ → giữ vùng cũ.
+  d = await wb.pickVia(d, /^Chọn Vùng dữ liệu/, [fixture.sheetName, "A1:B2"], false);
+  assert.equal(await field().inputValue(), `${fixture.sheetName}!${fixture.address}`);
+  pass("Ô vùng dữ liệu", "gõ địa chỉ + Enter → vùng mới; ⬆ → hộp thoại nhỏ → chọn trên sheet → OK (Hủy giữ vùng cũ)");
 
   // 2. Xuất → sheet mới không trùng tên, thông báo kết quả + xem trước 5 ngày.
   await d.click("Xuất nhật ký");

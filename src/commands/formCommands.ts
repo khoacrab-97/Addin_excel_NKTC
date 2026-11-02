@@ -21,7 +21,7 @@ import { loadMappingConfig, saveMappingConfig } from "../excel/settingsStore";
 import { FORM_SHEET_NAME, canInsertTemplate, insertFormTemplate } from "../excel/templateInserter";
 import { DIALOG_SIZE, openDialog } from "./dialogHost";
 import { showMessage } from "./messages";
-import { refText, resolveRangeRef, tryReadRange } from "./rangePick";
+import { pickOnSheet, refText, resolveRangeRef, tryReadRange } from "./rangePick";
 import { showDayCommand } from "./templateCommands";
 
 const TITLE = "Xuất vào form";
@@ -179,6 +179,7 @@ export async function exportFormCommand(): Promise<void> {
     state = reply.state;
 
     if (reply.action === "pick-source") {
+      if (reply.address === undefined && !(await pickOnSheet("range", "vùng nguồn (dòng đầu là tiêu đề)"))) continue;
       pickError = undefined;
       try {
         ref = await resolveRangeRef(reply.address);
@@ -191,6 +192,9 @@ export async function exportFormCommand(): Promise<void> {
     if (reply.action === "pick-target") {
       const row = state.rows[reply.row];
       if (!row) continue;
+      if (reply.address === undefined && !(await pickOnSheet("cell", `ô trên form cho dòng ${reply.row + 1}`))) {
+        continue;
+      }
       try {
         let text: string;
         if (reply.address === undefined) {

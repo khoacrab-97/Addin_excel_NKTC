@@ -5,7 +5,7 @@
            xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
            xsi:type="TaskPaneApp">
   <Id>2b55386a-bc23-4f8d-81e4-137b8271b9ea</Id>
-  <Version>1.5.0.0</Version>
+  <Version>1.6.0.0</Version>
   <ProviderName>khoacrab-97</ProviderName>
   <DefaultLocale>vi-VN</DefaultLocale>
   <DisplayName DefaultValue="Nhật ký thi công"/>
@@ -122,6 +122,21 @@
                     <bt:Image size="32" resid="Icon.goto.32"/>
                     <bt:Image size="80" resid="Icon.goto.80"/>
                   </Icon>
+                  <Control xsi:type="Button" id="NKTC.DayPanel">
+                    <Label resid="DayPanel.Label"/>
+                    <Supertip>
+                      <Title resid="DayPanel.Label"/>
+                      <Description resid="DayPanel.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.goto.16"/>
+                      <bt:Image size="32" resid="Icon.goto.32"/>
+                      <bt:Image size="80" resid="Icon.goto.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcDayPanel</FunctionName>
+                    </Action>
+                  </Control>
                   <Control xsi:type="Button" id="NKTC.DayFirst">
                     <Label resid="DayFirst.Label"/>
                     <Supertip>
@@ -180,21 +195,6 @@
                     </Icon>
                     <Action xsi:type="ExecuteFunction">
                       <FunctionName>nktcDayLast</FunctionName>
-                    </Action>
-                  </Control>
-                  <Control xsi:type="Button" id="NKTC.GoToDay">
-                    <Label resid="GoToDay.Label"/>
-                    <Supertip>
-                      <Title resid="GoToDay.Label"/>
-                      <Description resid="GoToDay.Tip"/>
-                    </Supertip>
-                    <Icon>
-                      <bt:Image size="16" resid="Icon.goto.16"/>
-                      <bt:Image size="32" resid="Icon.goto.32"/>
-                      <bt:Image size="80" resid="Icon.goto.80"/>
-                    </Icon>
-                    <Action xsi:type="ExecuteFunction">
-                      <FunctionName>nktcGoToDay</FunctionName>
                     </Action>
                   </Control>
                 </Group>
@@ -296,11 +296,11 @@
         <bt:String id="ExportDaily.Label" DefaultValue="Xuất theo ngày"/>
         <bt:String id="InsertTemplate.Label" DefaultValue="Chèn form mẫu"/>
         <bt:String id="ExportForm.Label" DefaultValue="Xuất vào form"/>
+        <bt:String id="DayPanel.Label" DefaultValue="Bảng chuyển ngày"/>
         <bt:String id="DayFirst.Label" DefaultValue="Ngày đầu"/>
         <bt:String id="DayPrev.Label" DefaultValue="Ngày trước"/>
         <bt:String id="DayNext.Label" DefaultValue="Ngày sau"/>
         <bt:String id="DayLast.Label" DefaultValue="Ngày cuối"/>
-        <bt:String id="GoToDay.Label" DefaultValue="Đến ngày…"/>
         <bt:String id="Help.Label" DefaultValue="Hướng dẫn"/>
         <bt:String id="About.Label" DefaultValue="Phiên bản"/>
       </bt:ShortStrings>
@@ -310,11 +310,11 @@
         <bt:String id="ExportDaily.Tip" DefaultValue="Chọn bảng tiến độ (hoặc đặt con trỏ trong sheet tiến độ), xác nhận 3 cột rồi tạo sheet NK_TheoNgay."/>
         <bt:String id="InsertTemplate.Tip" DefaultValue="Thêm sheet biểu mẫu &quot;Mẫu NKTC&quot; (Tình hình thi công hàng ngày) đã dựng sẵn vào file."/>
         <bt:String id="ExportForm.Tip" DefaultValue="Chọn vùng nhật ký theo ngày, gán từng cột vào ô của biểu mẫu rồi bấm Gán. Sau khi gán mới dùng được các nút Chuyển ngày."/>
+        <bt:String id="DayPanel.Tip" DefaultValue="Mở bảng nhỏ nổi: xem ngày đang hiển thị, gõ ngày cần đến rồi Enter, chuyển Đầu / Trước / Sau / Cuối. Để mở trong lúc làm việc."/>
         <bt:String id="DayFirst.Tip" DefaultValue="Ghi dữ liệu ngày đầu tiên lên biểu mẫu."/>
         <bt:String id="DayPrev.Tip" DefaultValue="Ghi dữ liệu ngày trước đó lên biểu mẫu."/>
         <bt:String id="DayNext.Tip" DefaultValue="Ghi dữ liệu ngày kế tiếp lên biểu mẫu."/>
         <bt:String id="DayLast.Tip" DefaultValue="Ghi dữ liệu ngày cuối cùng lên biểu mẫu."/>
-        <bt:String id="GoToDay.Tip" DefaultValue="Nhập ngày (dd/mm/yyyy) để ghi dữ liệu ngày đó lên biểu mẫu."/>
         <bt:String id="Help.Tip" DefaultValue="Hướng dẫn sử dụng và tải biểu mẫu."/>
         <bt:String id="About.Tip" DefaultValue="Phiên bản add-in, môi trường Excel và kiểm tra cập nhật."/>
       </bt:LongStrings>
