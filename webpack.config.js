@@ -24,7 +24,12 @@ module.exports = async (env, argv) => {
     // Excel 2016/2019 chạy add-in trên Internet Explorer 11 webview → output ES5.
     target: ["web", "es5"],
     entry: {
-      taskpane: "./src/taskpane/index.tsx",
+      // Trang chào mừng (chỉ hiện khi bộ cài kích hoạt add-in).
+      taskpane: "./src/taskpane/index.ts",
+      // Function file: lệnh của các nút trên tab Ribbon.
+      commands: "./src/commands/commands.ts",
+      // Hộp thoại (Office Dialog API) của các lệnh.
+      dialog: "./src/dialog/index.tsx",
     },
     output: {
       path: path.resolve(__dirname, "dist"),
@@ -58,9 +63,21 @@ module.exports = async (env, argv) => {
         template: "./src/taskpane/taskpane.html",
         chunks: ["taskpane"],
       }),
+      new HtmlWebpackPlugin({
+        filename: "commands.html",
+        template: "./src/commands/commands.html",
+        chunks: ["commands"],
+      }),
+      new HtmlWebpackPlugin({
+        filename: "dialog.html",
+        template: "./src/dialog/dialog.html",
+        chunks: ["dialog"],
+      }),
       new CopyWebpackPlugin({
         patterns: [
           { from: "assets/*.png", to: "assets/[name][ext]" },
+          // Icon các nút trên tab Ribbon (scripts/icons/make_ribbon_icons.py).
+          { from: "assets/ribbon/*.png", to: "assets/ribbon/[name][ext]" },
           // Biểu mẫu và file mẫu tải về từ tab Tiện ích (P3.1).
           { from: "templates/*.xlsx", to: "templates/[name][ext]" },
           {

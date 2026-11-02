@@ -4,14 +4,24 @@
 
 ---
 
+## F0. Giao diện (từ 1.3.0)
+
+| Mã | Quy tắc |
+|---|---|
+| R0.1 | Chức năng nằm trên tab Ribbon riêng **Nhật ký thi công**: nhóm **Xuất nhật ký** (Xuất theo ngày), **Form mẫu** (Vùng nguồn, Gán cột, Danh sách gán), **Chuyển ngày** (Ngày đầu, Ngày trước, Ngày sau, Ngày cuối, Đến ngày…), **Tiện ích** (Hướng dẫn, Phiên bản). Không có khung làm việc bên phải (theo yêu cầu chủ dự án 02/11/2026). |
+| R0.2 | Bước cần nhập liệu/xác nhận dùng hộp thoại (Office Dialog API 1.1 — có từ Excel 2016) mở giữa màn hình và tự đóng khi xong. Dữ liệu vào hộp thoại qua URL/localStorage (cùng domain), kết quả trả về qua `messageParent`; hai phía kiểm tra dữ liệu nhận được, dữ liệu sai coi như Hủy. |
+| R0.3 | Khung bên phải chỉ hiện **một lần** khi bộ cài kích hoạt add-in (trang chào mừng), người dùng đóng được. |
+
 ## F1. Xuất nhật ký theo ngày
 
 ### F1.1 Luồng sử dụng
 
-1. Người dùng bôi chọn vùng danh sách công việc trên sheet (dòng đầu là tiêu đề; được phép chọn nguyên cột), nhấn **Lấy vùng đang chọn**.
-2. Add-in tự nhận diện cột theo tiêu đề (R1.12); người dùng có thể chỉnh lại cột tương ứng trong 3 ô chọn.
-3. Add-in kiểm tra dữ liệu, hiển thị số công việc hợp lệ, khoảng ngày, danh sách dòng lỗi và xem trước 5 ngày đầu.
-4. Nhấn **Xuất nhật ký theo ngày** → add-in đọc lại dữ liệu mới nhất của vùng; nếu dòng tiêu đề đã thay đổi thì dừng và yêu cầu kiểm tra lại cột; nếu không, tạo sheet mới gồm 2 cột: **Ngày** | **Nội dung**.
+> Từ 1.3.0 mọi chức năng nằm trên tab Ribbon **Nhật ký thi công** (R0.1); không còn khung làm việc bên phải.
+
+1. Người dùng bôi chọn vùng danh sách công việc (dòng đầu là tiêu đề; được phép chọn nguyên cột) — hoặc chỉ đặt con trỏ 1 ô trong sheet tiến độ (add-in lấy toàn bộ vùng có dữ liệu của sheet) — rồi bấm nút **Xuất theo ngày**.
+2. Hộp thoại hiện vùng dữ liệu và 3 ô chọn cột đã tự nhận diện theo tiêu đề (R1.12); người dùng chỉnh lại nếu cần → **Xuất nhật ký**.
+3. Add-in đọc lại dữ liệu mới nhất của vùng; nếu dòng tiêu đề đã thay đổi thì dừng và yêu cầu bấm lại; nếu không, tạo sheet mới gồm 2 cột: **Ngày** | **Nội dung**.
+4. Hộp thoại kết quả: tên sheet, số ngày, khoảng ngày, số công việc hợp lệ, danh sách dòng lỗi (tối đa 10) và xem trước 5 ngày đầu.
 
 ### F1.2 Quy tắc nghiệp vụ
 
@@ -55,11 +65,11 @@ Output:
 ### F2.1 Luồng sử dụng
 
 1. Người dùng (tùy nhu cầu) bổ sung các cột nội dung phụ vào sheet theo ngày (Thời tiết, Ban chỉ huy – CBKT, Số công nhân, Số thiết bị, Nội dung nghiệm thu…).
-2. Tab **Form mẫu** gồm 3 khu vực:
-   - **1. Nguồn dữ liệu (Input):** bôi chọn vùng dữ liệu (gồm dòng tiêu đề) → **Lấy vùng đang chọn** → add-in hiển thị vùng, **số lượng cột**, số ngày. **Cột Ngày** được tự nhận diện (R2.13), có thể chọn lại.
-   - **2. Gán cột vào ô (Output):** mỗi cột nguồn một dòng (chữ cột + tiêu đề). Người dùng chọn ô (hoặc ô merge) trên form → nhấn **Ô đang chọn** ở cột tương ứng. Có thể gán một cột vào nhiều ô; **× Bỏ gán** để xóa.
-   - **3. Xuất và chuyển ngày:** **Xuất lên form** → điền dữ liệu ngày đầu tiên (hoặc ngày đang mở lần trước) vào các ô đích.
-3. Thanh điều hướng: **« Đầu | ‹ Trước | [dd/mm/yyyy · Ngày i/n] | Sau › | Cuối »** và ô **Nhảy tới ngày**. Phạm vi điều hướng = các ngày hợp lệ trong vùng nguồn, tăng dần. Mỗi lần chuyển ngày, add-in đọc lại vùng nguồn và cập nhật các ô đích.
+2. Nhóm **Form mẫu** trên Ribbon:
+   - **Vùng nguồn:** bôi chọn vùng dữ liệu theo ngày (gồm tiêu đề) hoặc đặt con trỏ trong sheet đó → bấm → add-in lưu vùng nguồn, tự nhận diện **cột Ngày** (R2.13) và báo vùng, cột Ngày, số ngày hợp lệ. Nếu tiêu đề giống cấu hình cũ thì giữ các ô đã gán; khác thì bỏ gán cũ.
+   - **Gán cột:** chọn ô (hoặc ô merge) trên form → bấm → hộp thoại chọn cột ghi vào ô đó. Ô đã gán: hộp thoại hiện cột hiện tại, chọn cột khác để thay hoặc **Bỏ gán ô này**. Một cột có thể gán vào nhiều ô.
+   - **Danh sách gán:** bảng ô đích → cột nguồn; tích **Bỏ gán** để xóa; đổi **cột Ngày**.
+3. Nhóm **Chuyển ngày**: **Ngày đầu**, **Ngày trước**, **Ngày sau**, **Ngày cuối**, **Đến ngày…** (hộp thoại nhập dd/mm/yyyy). Phạm vi điều hướng = các ngày hợp lệ trong vùng nguồn, tăng dần; ngày đang hiển thị được lưu trong cấu hình. Mỗi lần bấm, add-in đọc lại vùng nguồn và ghi các ô đích; không mở hộp thoại trừ khi cần xác nhận (R2.5), đã ở ngày đầu/cuối, hoặc có lỗi. Ngày đang xem hiển thị trên chính biểu mẫu (ô gán cột Ngày) — Ribbon Office.js không hiển thị được nhãn động.
 
 ### F2.2 Quy tắc nghiệp vụ
 
@@ -69,14 +79,14 @@ Output:
 | R2.2 | Ô đích nằm trong vùng merge → ghi vào ô đầu (top-left) của vùng merge. Chọn nhiều ô → lấy ô trên-trái. Chọn nhiều vùng rời → báo lỗi. |
 | R2.3 | Chỉ ghi **giá trị**; giữ nguyên định dạng, merge, viền của form mẫu. |
 | R2.4 | Ô đích đang chứa **công thức** → cảnh báo, không ghi trừ khi người dùng xác nhận. |
-| R2.5 | Lần ghi đầu tiên (mỗi lần mở task pane, hoặc khi đổi bộ ô đích) vào ô đích đang có dữ liệu → yêu cầu xác nhận, liệt kê các ô; **Hủy** thì không ghi ô nào. Sau khi xác nhận, chuyển ngày không hỏi lại. Trong lúc chờ xác nhận, chọn vùng nguồn / cột Ngày / gán cột bị khóa; xác nhận chỉ có hiệu lực cho đúng bộ ô đích đã liệt kê — nếu bộ ô đích khác thì kiểm tra lại. |
+| R2.5 | Lần ghi đầu tiên cho một bộ ô đích vào ô đang có dữ liệu/công thức → hộp thoại xác nhận liệt kê các ô; **Hủy** (hoặc đóng hộp thoại) thì không ghi ô nào. Xác nhận được lưu trong workbook gắn với đúng bộ ô đích (`confirmedKey`); chuyển ngày sau đó, kể cả khi mở lại file, không hỏi lại. Thay đổi gán cột → xác nhận cũ hết hiệu lực, hỏi lại. Xác nhận đọc từ file không khớp bộ ô đích → bị bỏ. Mỗi lần chỉ chạy một lệnh (bấm nút khác khi đang mở hộp thoại → bỏ qua). |
 | R2.6 | Không ghi bất kỳ ô nào ngoài danh sách ô đích đã cấu hình. |
 | R2.7 | Mỗi lần xuất/chuyển ngày: đọc lại vùng nguồn mới nhất (không dùng dữ liệu cache). |
 | R2.8 | Cấu hình mapping được lưu trong workbook để dùng lại ở lần mở sau. |
 | R2.9 | Vùng nguồn/ô đích bị xóa, đổi tên sheet hoặc không hợp lệ → báo lỗi rõ ràng, không ghi ô nào. Dòng tiêu đề vùng nguồn thay đổi so với cấu hình → dừng, yêu cầu kiểm tra lại gán cột. |
 | R2.10 | Danh sách ngày điều hướng: dòng có ô Ngày trống → bỏ qua; ngày không hợp lệ → báo lỗi theo dòng; ngày trùng → báo lỗi, giữ dòng xuất hiện trước. |
 | R2.11 | Giá trị văn bản được ghi kèm dấu `'` đầu chuỗi (ký tự đánh dấu văn bản của Excel, không hiển thị) để Excel không hiểu nhầm `- …`, `= …`, `01/11` thành công thức/ngày mà không phải đổi định dạng ô của form. Số (kể cả ngày dạng serial) giữ nguyên → hiển thị theo định dạng sẵn có của ô đích. |
-| R2.12 | Ô đích chỉ nhận **một** ô; một ô đích không được gán cho 2 cột (cảnh báo khi gán). |
+| R2.12 | Ô đích chỉ nhận **một** cột: gán cột cho ô đã gán → thay cột cũ (hộp thoại hiện cột hiện tại trước khi thay). |
 | R2.14 | Cấu hình đọc từ workbook vượt giới hạn → bỏ toàn bộ cấu hình (fail closed): tên sheet ≤ 31 ký tự; địa chỉ vùng nguồn phải là một vùng liên tục không kèm tên sheet (`A1:I201`, `A:C`, `3:5`); ≤ 16.384 tiêu đề, mỗi tiêu đề ≤ 32.767 ký tự; ≤ 500 ô đích; chỉ số cột < 16.384. |
 | R2.13 | Nhận diện cột Ngày: tiêu đề `Ngày` → tiêu đề chứa từ "ngày" → cột đầu tiên có toàn bộ ô không trống là ngày hợp lệ. |
 
@@ -109,9 +119,9 @@ Sinh lại biểu mẫu: `python3 -I scripts/fixtures/make_nktc_workbooks.py tes
 
 | Mã | Chức năng | Mô tả |
 |---|---|---|
-| F3.1 | Hướng dẫn | Tab **Tiện ích** → "Hướng dẫn sử dụng": các bước F1, F2; link tải `templates/Mau_NKTC.xlsx` (biểu mẫu), `templates/Mau_TienDo.xlsx` (danh sách công việc mẫu), bảng ô đích, hướng dẫn cài đặt. |
-| F3.2 | Kiểm tra phiên bản | Hiển thị phiên bản add-in, nền tảng, phiên bản Office, ExcelApi tối đa. Nút **Kiểm tra cập nhật** đọc `version.json` trên máy chủ phát hành (R3.1–R3.3). |
-| F3.3 | Cập nhật | Add-in tự kiểm tra một lần khi mở; có bản mới → thông báo đầu khung (ở tab khác) + nút "Xem hướng dẫn cập nhật" → tab Tiện ích hiển thị các bước cập nhật. |
+| F3.1 | Hướng dẫn | Nút **Hướng dẫn** (nhóm Tiện ích) → hộp thoại: các bước F1, F2 theo nút Ribbon; link tải `templates/Mau_NKTC.xlsx` (biểu mẫu), `templates/Mau_TienDo.xlsx` (danh sách công việc mẫu), bảng ô đích, hướng dẫn cài đặt. |
+| F3.2 | Kiểm tra phiên bản | Nút **Phiên bản** → hộp thoại: phiên bản add-in, nền tảng, phiên bản Office, ExcelApi tối đa; tự kiểm tra `version.json` trên máy chủ phát hành khi mở, nút **Kiểm tra lại** (R3.1–R3.3). |
+| F3.3 | Cập nhật | Mã add-in tải từ máy chủ phát hành mỗi lần Excel nạp add-in → tự cập nhật. Có bản mới hơn bản đang chạy → hộp thoại Phiên bản hiển thị các bước cập nhật. |
 
 | Mã | Quy tắc |
 |---|---|

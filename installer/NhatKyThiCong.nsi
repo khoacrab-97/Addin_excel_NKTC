@@ -3,7 +3,8 @@
 ; - Đăng ký manifest với Excel theo cơ chế sideload của Microsoft (office-addin-dev-settings):
 ;   HKCU\Software\Microsoft\Office\16.0\Wef\Developer, tên giá trị = ID add-in, dữ liệu = đường dẫn manifest.
 ; - Kích hoạt: mở workbook NhatKyThiCong_BatDau.xlsx (có tham chiếu tới add-in, sinh bằng generateSideloadFile
-;   của Microsoft) → Excel nạp add-in, mở khung làm việc và hiện nút trên tab Home. Có lối tắt trong Start menu.
+;   của Microsoft) → Excel nạp add-in (khung chào mừng hiện một lần) và hiện tab Ribbon "Nhật ký thi công".
+;   Có lối tắt trong Start menu.
 ; - Mã add-in chạy từ GitHub Pages nên tự cập nhật; chạy lại bộ cài chỉ cần khi manifest thay đổi.
 ;
 ; Build (scripts/build-installer.js):
@@ -54,7 +55,7 @@ VIAddVersionKey /LANG=0 "LegalCopyright" "${PUBLISHER}"
 !define MUI_WELCOMEPAGE_TITLE "Cài đặt ${APP_NAME}"
 !define MUI_WELCOMEPAGE_TEXT "Bộ cài sẽ thêm add-in Nhật ký thi công vào Excel trên máy này (chỉ cho tài khoản Windows hiện tại, không cần quyền quản trị).$\r$\n$\r$\nVui lòng LƯU và ĐÓNG Excel trước khi tiếp tục.$\r$\n$\r$\nPhiên bản: ${VERSION}"
 !define MUI_FINISHPAGE_TITLE "Đã cài đặt xong"
-!define MUI_FINISHPAGE_TEXT "Bấm Hoàn tất để mở Excel và kích hoạt add-in (lần đầu Excel có thể hỏi tin cậy add-in → chọn Trust/Tin cậy).$\r$\n$\r$\nSau đó dùng nút Nhật ký thi công trên tab Home. Mở lại lần sau: Start menu → Nhật ký thi công (Excel).$\r$\n$\r$\nAdd-in tự cập nhật mỗi lần mở; cần kết nối Internet."
+!define MUI_FINISHPAGE_TEXT "Bấm Hoàn tất để mở Excel và kích hoạt add-in (lần đầu Excel có thể hỏi tin cậy add-in → chọn Trust/Tin cậy).$\r$\n$\r$\nSau đó dùng tab Nhật ký thi công trên thanh Ribbon (có thể đóng khung chào mừng bên phải). Mở lại lần sau: Start menu → Nhật ký thi công (Excel).$\r$\n$\r$\nAdd-in tự cập nhật mỗi lần mở; cần kết nối Internet."
 !define MUI_FINISHPAGE_RUN
 !define MUI_FINISHPAGE_RUN_TEXT "Mở Excel và kích hoạt add-in"
 !define MUI_FINISHPAGE_RUN_FUNCTION OpenStarterWorkbook

@@ -34,7 +34,10 @@ export default tseslint.config(
         "error",
         {
           patterns: [
-            { group: ["**/excel/**", "**/taskpane/**"], message: "core không được import tầng excel/taskpane." },
+            {
+              group: ["**/excel/**", "**/taskpane/**", "**/commands/**", "**/dialog/**"],
+              message: "core không được import tầng excel/commands/dialog/taskpane.",
+            },
           ],
         },
       ],

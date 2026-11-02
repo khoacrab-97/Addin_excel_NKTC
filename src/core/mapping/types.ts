@@ -27,11 +27,24 @@ export interface MappingConfig {
   mappings: ColumnMapping[];
   /** Ngày đang hiển thị trên form (DayNumber), để mở lại đúng ngày. */
   currentDay?: number;
+  /**
+   * Bộ ô đích người dùng đã đồng ý cho add-in ghi đè (R2.5) — khóa của `mappingKey`.
+   * Gán cột thay đổi → khóa khác → hỏi xác nhận lại.
+   */
+  confirmedKey?: string;
 }
 
 /** Khóa so sánh ô đích (tên sheet không phân biệt hoa/thường như Excel). */
 export function targetKey(target: TargetCell): string {
   return `${target.sheetName.toLowerCase()}!${target.address.toUpperCase()}`;
+}
+
+/** Khóa của bộ ô đích đang cấu hình (không phụ thuộc thứ tự gán). */
+export function mappingKey(mappings: readonly ColumnMapping[]): string {
+  return mappings
+    .map((mapping) => targetKey(mapping.target))
+    .sort()
+    .join("|");
 }
 
 /** Hiển thị ô đích cho người dùng: `Form!B5`. */

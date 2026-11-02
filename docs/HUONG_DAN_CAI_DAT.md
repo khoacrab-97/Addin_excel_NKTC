@@ -19,10 +19,19 @@
 2. Mở <https://khoacrab-97.github.io/Addin_excel_NKTC/> → **Tải bộ cài (Windows)** → chạy `NhatKyThiCong_Setup.exe`.
 3. Nếu Windows hiện **"Windows protected your PC"** (SmartScreen): bấm **More info** → **Run anyway**. Cảnh báo này xuất hiện vì bộ cài chưa có chữ ký số thương mại.
 4. Bấm **Cài đặt**. Ở trang cuối giữ dấu tích **Mở Excel và kích hoạt add-in** → **Hoàn tất**.
-5. Excel mở workbook `NhatKyThiCong_BatDau.xlsx` kèm khung add-in. Lần đầu Excel có thể hỏi tin cậy add-in → chọn **Trust** / **Tin cậy**. Từ đó tab **Home** có nhóm **Nhật ký thi công**; mở bất kỳ file nào cũng dùng được.
-6. Kiểm tra: tab **Tiện ích** hiển thị phiên bản add-in, phiên bản Office và mức **ExcelApi tối đa**.
+5. Excel mở workbook `NhatKyThiCong_BatDau.xlsx` kèm khung chào mừng (chỉ hiện lần này, đóng được). Lần đầu Excel có thể hỏi tin cậy add-in → chọn **Trust** / **Tin cậy**. Từ đó thanh Ribbon có tab **Nhật ký thi công**; mở bất kỳ file nào cũng dùng được.
+6. Kiểm tra: tab **Nhật ký thi công** → nút **Phiên bản** hiển thị phiên bản add-in, phiên bản Office và mức **ExcelApi tối đa**.
 
-Nếu không thấy nút trên tab Home: **Start menu** → **Nhật ký thi công (Excel)** (mở lại workbook kích hoạt), hoặc **Insert** (Chèn) → **My Add-ins** → thẻ **Developer Add-ins** (hoặc **MY ADD-INS**) → chọn **Nhật ký thi công** → **Add**.
+Tab **Nhật ký thi công** (từ 1.3.0, không còn khung bên phải):
+
+| Nhóm | Nút |
+|---|---|
+| Xuất nhật ký | Xuất theo ngày |
+| Form mẫu | Vùng nguồn · Gán cột · Danh sách gán |
+| Chuyển ngày | Ngày đầu · Ngày trước · Ngày sau · Ngày cuối · Đến ngày… |
+| Tiện ích | Hướng dẫn · Phiên bản |
+
+Nếu không thấy tab **Nhật ký thi công**: **Start menu** → **Nhật ký thi công (Excel)** (mở lại workbook kích hoạt), hoặc **Insert** (Chèn) → **My Add-ins** → thẻ **Developer Add-ins** (hoặc **MY ADD-INS**) → chọn **Nhật ký thi công** → **Add**.
 
 > Vì sao cần bước kích hoạt: bộ cài đăng ký add-in trong registry; Excel chỉ nạp add-in đã đăng ký khi mở một workbook có tham chiếu tới add-in (cách `npm start` của Microsoft cũng dùng) hoặc khi người dùng thêm từ **My Add-ins**. Bản 1.2.0 thiếu bước này.
 
@@ -39,8 +48,8 @@ Bộ cài thực hiện (chỉ trong phạm vi tài khoản người dùng):
 
 | Loại cập nhật | Cách nhận |
 |---|---|
-| Sửa lỗi / thêm chức năng (thường gặp) | **Tự động**: mỗi lần mở khung add-in, Excel tải bản mới nhất từ máy chủ phát hành. Khi có bản mới, add-in hiện thông báo "Đã có phiên bản mới" đầu khung; tab **Tiện ích** → **Kiểm tra cập nhật** để kiểm tra bất cứ lúc nào. |
-| Có thay đổi manifest (thông báo ghi rõ "cần cài lại") | Đóng Excel → tải và chạy lại `NhatKyThiCong_Setup.exe` (cài đè, không cần gỡ trước) → mở lại Excel. |
+| Sửa lỗi / thêm chức năng (thường gặp) | **Tự động**: mỗi lần Excel nạp add-in, mã add-in được tải bản mới nhất từ máy chủ phát hành. Nút **Phiên bản** kiểm tra và hướng dẫn nếu còn chạy bản cũ. |
+| Có thay đổi manifest (ghi rõ "cần cài lại" trong Release; ví dụ **1.3.0** chuyển sang tab Ribbon) | Đóng Excel → tải và chạy lại bộ cài mới nhất (cài đè, không cần gỡ trước) → mở lại Excel. Nếu vẫn thấy giao diện cũ: đóng Excel, xóa nội dung thư mục `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\`, mở lại Excel. |
 
 ## 4. Gỡ cài đặt
 
@@ -69,9 +78,10 @@ Dùng khi máy không chạy được bộ cài (chính sách công ty chặn fi
 | Hiện tượng | Cách xử lý |
 |---|---|
 | Bộ cài báo "Excel đang mở" | Đóng mọi cửa sổ Excel (kiểm tra cả biểu tượng Excel trên thanh tác vụ) → **Retry**. |
-| Cài xong không thấy nút trên tab Home | Đóng Excel → **Start menu → Nhật ký thi công (Excel)**; hoặc **Insert → My Add-ins → Developer Add-ins** (mục 2). Vẫn không có → dùng cách cài mục 5 và báo lại cho người phát triển (kèm phiên bản Excel: **File → Account → About Excel**). |
+| Cài xong không thấy tab **Nhật ký thi công** | Đóng Excel → **Start menu → Nhật ký thi công (Excel)**; hoặc **Insert → My Add-ins → Developer Add-ins** (mục 2). Vẫn không có → dùng cách cài mục 5 và báo lại cho người phát triển (kèm phiên bản Excel: **File → Account → About Excel**). |
 | Không thấy thẻ **SHARED FOLDER** (cách cài mục 5) | Đã tích **Show in Menu** và đã khởi động lại Excel; đường dẫn phải là đường dẫn mạng `\\...`. |
-| Khung add-in trắng / báo lỗi tải | Kiểm tra Internet; thử mở <https://khoacrab-97.github.io/Addin_excel_NKTC/taskpane.html> bằng trình duyệt. |
+| Bấm nút trên tab không thấy gì / hộp thoại trắng | Kiểm tra Internet; thử mở <https://khoacrab-97.github.io/Addin_excel_NKTC/> bằng trình duyệt. Nếu báo "Đang có một hộp thoại khác của add-in mở" → đóng hộp thoại đó. |
+| Vẫn thấy khung bên phải kiểu cũ (bản ≤ 1.2.1) | Chạy lại bộ cài 1.3.0 trở lên; nếu vẫn còn, xóa nội dung `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` rồi mở lại Excel. |
 | Đã cập nhật nhưng vẫn thấy bản cũ | Đóng Excel → xóa toàn bộ nội dung thư mục `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` → mở lại Excel. |
 | Nút trên giao diện không có biểu tượng | Mạng chặn CDN biểu tượng của Microsoft; chức năng vẫn dùng bình thường (các nút điều hướng ngày dùng ký tự « ‹ › »). |
 

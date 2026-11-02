@@ -36,6 +36,29 @@ export async function getSelectedRangeRef(): Promise<RangeRef> {
 }
 
 /**
+ * Vùng dữ liệu cho lệnh trên Ribbon: vùng đang chọn; nếu chỉ chọn 1 ô thì lấy toàn bộ vùng có dữ liệu
+ * của sheet (used range) — người dùng chỉ cần đặt con trỏ trong bảng.
+ */
+export async function getSelectedTableRef(): Promise<RangeRef> {
+  return Excel.run(async (context) => {
+    const range = context.workbook.getSelectedRange();
+    range.load(["address", "rowCount", "columnCount"]);
+    range.worksheet.load("name");
+    await context.sync();
+    if (range.address.includes(",")) {
+      throw new UserFacingError("Vui lòng chỉ chọn một vùng dữ liệu liên tục.");
+    }
+    if (range.rowCount > 1 || range.columnCount > 1) {
+      return { sheetName: range.worksheet.name, address: stripSheetName(range.address) };
+    }
+    const used = range.worksheet.getUsedRange();
+    used.load("address");
+    await context.sync();
+    return { sheetName: range.worksheet.name, address: stripSheetName(used.address) };
+  });
+}
+
+/**
  * Đọc giá trị mới nhất của vùng (CLAUDE.md §4: không dùng dữ liệu cache).
  * Vùng được cắt theo used range để tránh tải hàng triệu ô khi người dùng chọn nguyên cột.
  */
