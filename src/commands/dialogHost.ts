@@ -41,7 +41,10 @@ function addinOrigin(): string {
 
 /** URL thư mục chứa function file (dialog.html nằm cùng thư mục, cùng domain — yêu cầu của Dialog API). */
 function baseUrl(): string {
-  return window.location.href.replace(/[?#].*$/, "").replace(/[^/]*$/, "");
+  const href = window.location.href;
+  const cut = [href.indexOf("?"), href.indexOf("#")].filter((index) => index !== -1);
+  const path = cut.length > 0 ? href.slice(0, Math.min(...cut)) : href;
+  return path.slice(0, path.lastIndexOf("/") + 1);
 }
 
 function dialogErrorMessage(code: number): string {

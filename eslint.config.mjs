@@ -53,7 +53,12 @@ export default tseslint.config(
     languageOptions: { globals: globals.browser, sourceType: "script" },
   },
   {
-    files: ["scripts/smoke/run-*.js", "scripts/smoke/harness.js", "scripts/build-installer.js"],
+    files: [
+      "scripts/smoke/run-*.js",
+      "scripts/smoke/harness.js",
+      "scripts/smoke/fixtures.js",
+      "scripts/build-installer.js",
+    ],
     languageOptions: { globals: globals.node, sourceType: "commonjs" },
   },
   {

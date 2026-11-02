@@ -3,16 +3,18 @@
  * Dữ liệu: test/fixtures/demo_f2.json (sinh từ demo_f2.xlsx) + demo_f2.targets.json (ô đích của từng cột).
  * Mỗi bước có kiểm tra; sai → exit code 1.
  *
- *   node scripts/smoke/run-f2.js [fixture.json] [--api 1]
+ *   node scripts/smoke/run-f2.js [tên file trong test/fixtures] [--api 1]
  */
 const fs = require("fs");
 const path = require("path");
 const assert = require("assert/strict");
 const { chromium } = require("playwright");
+const { fixturePath: resolveFixture } = require("./fixtures");
 const { openWorkbook } = require("./harness");
 
-const fixturePath =
-  process.argv[2] && !process.argv[2].startsWith("--") ? process.argv[2] : "test/fixtures/demo_f2.json";
+const fixturePath = resolveFixture(
+  process.argv[2] && !process.argv[2].startsWith("--") ? process.argv[2] : "demo_f2.json",
+);
 const apiIndex = process.argv.indexOf("--api");
 const apiMinor = apiIndex === -1 ? 1 : Number(process.argv[apiIndex + 1]);
 const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));

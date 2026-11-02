@@ -2,11 +2,13 @@
  * Smoke test F1 (nút "Xuất theo ngày" trên Ribbon) trên bundle production với Excel giả lập.
  * Yêu cầu: đã chạy `npm run build`; có Playwright + Chromium trong môi trường.
  *
- *   node scripts/smoke/run-f1.js <fixture.json> [--api 1] [--existing NK_TheoNgay]
+ *   node scripts/smoke/run-f1.js <tên file trong test/fixtures> [--api 1] [--existing NK_TheoNgay]
+ * Log chỉ in tên bước và số liệu, không in nội dung dữ liệu test.
  */
 const fs = require("fs");
 const path = require("path");
 const assert = require("assert/strict");
+const { readFixture } = require("./fixtures");
 const { openWorkbook } = require("./harness");
 
 function arg(name, fallback) {
@@ -18,7 +20,7 @@ const steps = [];
 const pass = (name, detail = "") => steps.push(`  ✔ ${name}${detail ? ` — ${detail}` : ""}`);
 
 async function main() {
-  const fixture = JSON.parse(fs.readFileSync(process.argv[2], "utf8"));
+  const fixture = readFixture(process.argv[2] ?? "tdtc-real.json");
   const apiMinor = Number(arg("--api", "1"));
   const existing = arg("--existing", "");
   const outDir = path.join(process.cwd(), "smoke-output");
@@ -41,7 +43,7 @@ async function main() {
   }
   assert.ok(await d.page.getByRole("button", { name: "Xuất nhật ký" }).isEnabled());
   await d.page.screenshot({ path: path.join(outDir, "f1-columns.png") });
-  pass("Hộp thoại chọn cột", `vùng ${fixture.sheetName}!${fixture.address} (đặt con trỏ 1 ô), 3 cột nhận diện sẵn`);
+  pass("Hộp thoại chọn cột", "đặt con trỏ 1 ô → lấy cả vùng dữ liệu; 3 cột nhận diện sẵn");
 
   // 2. Xuất → sheet mới không trùng tên, thông báo kết quả + xem trước 5 ngày.
   await d.click("Xuất nhật ký");
@@ -59,7 +61,7 @@ async function main() {
   fs.writeFileSync(path.join(outDir, "f1-result.json"), JSON.stringify({ sheetName: created, rows }, null, 1));
   await d.click("Đóng");
   await done();
-  pass("Xuất nhật ký", `${text.split("\n").find((l) => l.startsWith("Đã tạo"))}`);
+  pass("Xuất nhật ký", `sheet mới không trùng tên, ${rows.length - 1} ngày, xem trước 5 ngày`);
 
   // 3. Hủy → không tạo sheet.
   const before = (await sheetNames()).length;
