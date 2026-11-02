@@ -1,6 +1,7 @@
 import { Link, MessageBar, MessageBarType, Stack } from "@fluentui/react";
 import type { JSX } from "react";
 import type { DialogPayloads, DialogReplies, MessageTone } from "../../core/dialog/protocol";
+import { LINKS } from "../../version/links";
 import { DialogFrame } from "../components/DialogFrame";
 
 const TONES: Readonly<Record<MessageTone, MessageBarType>> = {
@@ -43,9 +44,9 @@ export function MessageView({ payload, reply }: Props): JSX.Element {
           ))}
         </Stack>
       )}
-      {payload.link && (
-        <Link href={payload.link.href} target="_blank" rel="noopener noreferrer">
-          {payload.link.text}
+      {payload.link === "form-template" && (
+        <Link href={LINKS.formTemplate} target="_blank" rel="noopener noreferrer">
+          Tải biểu mẫu Mau_NKTC.xlsx
         </Link>
       )}
       {payload.table && (

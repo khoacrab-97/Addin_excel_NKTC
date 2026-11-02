@@ -27,10 +27,7 @@ describe("parsePayload", () => {
       ),
     ).toBeUndefined();
     expect(
-      parsePayload(
-        "message",
-        JSON.stringify({ title: "x", tone: "info", lines: [], link: { text: "x", href: "https://evil.test" } }),
-      ),
+      parsePayload("message", JSON.stringify({ title: "x", tone: "info", lines: [], link: "https://evil.test" })),
     ).toBeUndefined();
     expect(parsePayload("confirm", JSON.stringify([]))).toBeUndefined();
   });

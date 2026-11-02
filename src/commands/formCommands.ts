@@ -18,7 +18,7 @@ import {
   headerHasMergedCells,
 } from "../excel/rangeReader";
 import { loadMappingConfig, saveMappingConfig } from "../excel/settingsStore";
-import { FORM_SHEET_NAME, FORM_TEMPLATE_PATH, canInsertTemplate, insertFormTemplate } from "../excel/templateInserter";
+import { FORM_SHEET_NAME, canInsertTemplate, insertFormTemplate } from "../excel/templateInserter";
 import { DIALOG_SIZE, openDialog } from "./dialogHost";
 import { showMessage } from "./messages";
 import { refText, resolveRangeRef, tryReadRange } from "./rangePick";
@@ -39,7 +39,7 @@ export async function insertTemplateCommand(): Promise<void> {
         'Cách làm thay thế: tải biểu mẫu bên dưới → mở file → chuột phải tab sheet "Mẫu NKTC" → Move or Copy… → chọn file nhật ký, tích Create a copy → OK.',
       ],
       undefined,
-      { text: "Tải biểu mẫu Mau_NKTC.xlsx", href: FORM_TEMPLATE_PATH },
+      "form-template",
     );
     return;
   }

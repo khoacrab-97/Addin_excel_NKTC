@@ -2,6 +2,7 @@
  * Smoke test F2 (nhóm Form mẫu + Chuyển ngày trên Ribbon) trên bundle production với Excel giả lập:
  * Chèn form mẫu, hộp thoại chung "Xuất vào form" (vùng nguồn + dòng gán + Gán), chuyển ngày.
  * Dữ liệu: test/fixtures/demo_f2.json + demo_f2.targets.json (ô đích của từng cột).
+ * Log chỉ in tên bước và số liệu, không in nội dung dữ liệu test.
  *
  *   node scripts/smoke/run-f2.js [tên file trong test/fixtures]
  */
@@ -109,7 +110,7 @@ async function main() {
   assert.ok(inserted.base64Length > 1000, "base64 của Mau_NKTC.xlsx");
   text = await pressExpectMessage("nktcInsertTemplate");
   assert.match(text, /đã có sheet "Mẫu NKTC"/);
-  pass("Chèn form mẫu", `sheet "${SHEET}" từ templates/Mau_NKTC.xlsx; lần 2 báo đã có, không ghi đè`);
+  pass("Chèn form mẫu", "thêm sheet biểu mẫu từ templates/Mau_NKTC.xlsx; lần 2 báo đã có, không ghi đè");
 
   // 2. Xuất vào form: vùng nguồn tự nhận diện = sheet NK_TheoNgay; cột Ngày nhận diện; 1 dòng gán trống.
   await select(SHEET, "A1");
@@ -124,7 +125,7 @@ async function main() {
     ),
   );
   assert.equal(await d.page.getByRole("row").count(), 2); // tiêu đề + 1 dòng gán
-  pass("Mở Xuất vào form", `vùng nguồn NK_TheoNgay!${sourceAddress} (gồm cột đã thêm), cột Ngày A, 200 ngày`);
+  pass("Mở Xuất vào form", "vùng nguồn = cả sheet NK_TheoNgay (gồm cột đã thêm), cột Ngày nhận diện, số ngày đúng");
 
   // 3. Gán từng dòng: chọn cột (trái), chọn ô trên form rồi bấm ⬆ (phải; ô gộp → ô trên-trái); + Thêm.
   for (let i = 0; i < MAPPINGS.length; i++) {
@@ -138,7 +139,7 @@ async function main() {
     assert.equal(await targetField(d, row).inputValue(), `${SHEET}!${m.cell}`);
   }
   await d.page.screenshot({ path: path.join("smoke-output", "f2-export-form.png"), fullPage: true });
-  pass(`Gán ${MAPPINGS.length} dòng`, MAPPINGS.map((m) => `${m.column}→${m.cell}`).join(", "));
+  pass("Gán từng dòng", `${MAPPINGS.length} dòng: cột nguồn + ô trên form chọn bằng nút ⬆ (ô gộp → ô trên-trái)`);
 
   // 4. Dòng thừa: + Thêm rồi chọn dòng → Delete; ô trùng → báo lỗi theo dòng, không ghi.
   await d.page.getByRole("button", { name: "+ Thêm" }).click();

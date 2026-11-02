@@ -26,6 +26,9 @@ export interface ColumnOption {
 
 export type MessageTone = "info" | "success" | "warning" | "error";
 
+/** File tải về có sẵn trong add-in. */
+export type DownloadKey = "form-template";
+
 export interface CreateTablePayload {
   /** Sheet đang mở và ô đang chọn — gợi ý vị trí bảng trên sheet hiện tại. */
   sheetName: string;
@@ -51,8 +54,11 @@ export interface MessagePayload {
   title: string;
   tone: MessageTone;
   lines: string[];
-  /** Liên kết tải về (đường dẫn cùng domain với add-in, ví dụ `templates/Mau_NKTC.xlsx`). */
-  link?: { text: string; href: string };
+  /**
+   * Liên kết tải về: chỉ là MÃ của file có sẵn trong add-in; hộp thoại tự đổi mã thành đường dẫn cố định
+   * (không nhận đường dẫn từ dữ liệu truyền vào hộp thoại).
+   */
+  link?: DownloadKey;
   /** Bảng xem trước (ví dụ 5 ngày đầu của nhật ký vừa xuất). */
   table?: { headers: string[]; rows: string[][] };
 }
@@ -207,14 +213,7 @@ function isOptionalAddress(value: unknown): value is string | undefined {
 }
 
 function isLink(value: unknown): boolean {
-  return (
-    value === undefined ||
-    (isRecord(value) &&
-      isText(value.text) &&
-      typeof value.href === "string" &&
-      // Chỉ đường dẫn tương đối trong add-in (không mở trang ngoài từ dữ liệu hộp thoại).
-      /^templates\/[\w.-]+\.xlsx$/.test(value.href))
-  );
+  return value === undefined || value === "form-template";
 }
 
 function isConfirmCell(value: unknown): value is ConfirmCell {
