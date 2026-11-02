@@ -94,3 +94,14 @@
 | P6.6 | Kiểm thử tab Ribbon + hộp thoại trên Excel Desktop Windows (Microsoft 365, Excel 2016) theo `docs/KIEM_THU_NGHIEM_THU.md` | Not Started |
 
 > P6.1–P6.5 **Tested** = unit test (`core/dialog/protocol`, `core/mapping/navigation`, `confirmedKey`) + smoke test: F1 5 bước, F2 14 bước, F3 10 bước — bấm nút bằng cách gọi hàm của function file, thao tác hộp thoại ở trang riêng với Office/Excel/Dialog API giả lập. Manifest được kiểm tra bằng dịch vụ Microsoft trong CI. Chưa Verified cho tới khi chạy trên Excel thật (P6.6).
+
+## Phase 7 — F4 Tạo bảng nhập tiến độ
+
+| ID | Hạng mục | Trạng thái |
+|---|---|---|
+| P7.1 | `core/inputTable`: vị trí bảng, kiểm tra ô bắt đầu/số dòng, liệt kê ô có dữ liệu (R4.2, R4.4) + unit test | Tested |
+| P7.2 | `excel/inputTableWriter`: Excel Table 4 cột, STT, định dạng, sheet mới không trùng tên, không ghi đè (R4.1, R4.3, R4.4) | Tested |
+| P7.3 | Nút **Tạo bảng** (nhóm Tiến độ) + hộp thoại chọn sheet / ô bắt đầu / số dòng | Tested |
+| P7.4 | Kiểm thử trên Excel Desktop Windows (`docs/KIEM_THU_NGHIEM_THU.md` mục A') | Not Started |
+
+> P7.1–P7.3 **Tested** = unit test (`layout.test.ts`, giao thức hộp thoại) + smoke F4 5 bước (sheet mới mặc định, sheet hiện tại ô B3, vùng có dữ liệu không ghi, kiểm tra nhập liệu, điền bảng → Xuất theo ngày) với Excel giả lập có Excel Table. Chưa Verified cho tới khi chạy trên Excel thật (P7.4).

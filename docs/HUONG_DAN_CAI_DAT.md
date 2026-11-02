@@ -26,7 +26,7 @@ Tab **Nhật ký thi công** (từ 1.3.0, không còn khung bên phải):
 
 | Nhóm | Nút |
 |---|---|
-| Xuất nhật ký | Xuất theo ngày |
+| Tiến độ | Tạo bảng · Xuất theo ngày |
 | Form mẫu | Vùng nguồn · Gán cột · Danh sách gán |
 | Chuyển ngày | Ngày đầu · Ngày trước · Ngày sau · Ngày cuối · Đến ngày… |
 | Tiện ích | Hướng dẫn · Phiên bản |

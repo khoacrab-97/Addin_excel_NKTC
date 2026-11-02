@@ -1,4 +1,5 @@
 import { getHostEnvironment } from "../excel/environment";
+import { createTableCommand } from "./createTableCommand";
 import { exportDailyLogCommand } from "./dailyLogCommand";
 import { DIALOG_SIZE, openDialog } from "./dialogHost";
 import { showError } from "./messages";
@@ -15,6 +16,7 @@ type CommandHandler = () => Promise<void>;
 
 /** Tên hàm phải trùng `<FunctionName>` trong manifest.xml. */
 export const COMMANDS: Readonly<Record<string, CommandHandler>> = {
+  nktcCreateTable: createTableCommand,
   nktcExportDaily: exportDailyLogCommand,
   nktcSetSource: setSourceCommand,
   nktcAssignCell: assignCellCommand,

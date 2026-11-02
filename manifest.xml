@@ -5,7 +5,7 @@
            xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
            xsi:type="TaskPaneApp">
   <Id>2b55386a-bc23-4f8d-81e4-137b8271b9ea</Id>
-  <Version>1.3.0.0</Version>
+  <Version>1.4.0.0</Version>
   <ProviderName>khoacrab-97</ProviderName>
   <DefaultLocale>vi-VN</DefaultLocale>
   <DisplayName DefaultValue="Nhật ký thi công"/>
@@ -46,6 +46,21 @@
                     <bt:Image size="32" resid="Icon.export.32"/>
                     <bt:Image size="80" resid="Icon.export.80"/>
                   </Icon>
+                  <Control xsi:type="Button" id="NKTC.CreateTable">
+                    <Label resid="CreateTable.Label"/>
+                    <Supertip>
+                      <Title resid="CreateTable.Label"/>
+                      <Description resid="CreateTable.Tip"/>
+                    </Supertip>
+                    <Icon>
+                      <bt:Image size="16" resid="Icon.table.16"/>
+                      <bt:Image size="32" resid="Icon.table.32"/>
+                      <bt:Image size="80" resid="Icon.table.80"/>
+                    </Icon>
+                    <Action xsi:type="ExecuteFunction">
+                      <FunctionName>nktcCreateTable</FunctionName>
+                    </Action>
+                  </Control>
                   <Control xsi:type="Button" id="NKTC.ExportDaily">
                     <Label resid="ExportDaily.Label"/>
                     <Supertip>
@@ -247,6 +262,9 @@
         <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
         <bt:Image id="Icon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
         <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
+        <bt:Image id="Icon.table.16" DefaultValue="https://localhost:3000/assets/ribbon/table-16.png"/>
+        <bt:Image id="Icon.table.32" DefaultValue="https://localhost:3000/assets/ribbon/table-32.png"/>
+        <bt:Image id="Icon.table.80" DefaultValue="https://localhost:3000/assets/ribbon/table-80.png"/>
         <bt:Image id="Icon.export.16" DefaultValue="https://localhost:3000/assets/ribbon/export-16.png"/>
         <bt:Image id="Icon.export.32" DefaultValue="https://localhost:3000/assets/ribbon/export-32.png"/>
         <bt:Image id="Icon.export.80" DefaultValue="https://localhost:3000/assets/ribbon/export-80.png"/>
@@ -288,10 +306,11 @@
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="Nhật ký thi công đã sẵn sàng"/>
         <bt:String id="Tab.Label" DefaultValue="Nhật ký thi công"/>
-        <bt:String id="GroupExport.Label" DefaultValue="Xuất nhật ký"/>
+        <bt:String id="GroupExport.Label" DefaultValue="Tiến độ"/>
         <bt:String id="GroupForm.Label" DefaultValue="Form mẫu"/>
         <bt:String id="GroupDays.Label" DefaultValue="Chuyển ngày"/>
         <bt:String id="GroupUtilities.Label" DefaultValue="Tiện ích"/>
+        <bt:String id="CreateTable.Label" DefaultValue="Tạo bảng"/>
         <bt:String id="ExportDaily.Label" DefaultValue="Xuất theo ngày"/>
         <bt:String id="SetSource.Label" DefaultValue="Vùng nguồn"/>
         <bt:String id="AssignCell.Label" DefaultValue="Gán cột"/>
@@ -306,6 +325,7 @@
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="Mở tab Nhật ký thi công trên thanh Ribbon để bắt đầu."/>
+        <bt:String id="CreateTable.Tip" DefaultValue="Tạo bảng nhập tiến độ STT | Nội dung công việc | Bắt đầu | Kết thúc (sheet mới hoặc sheet hiện tại, mặc định 10 dòng) để tự điền dữ liệu."/>
         <bt:String id="ExportDaily.Tip" DefaultValue="Chọn bảng tiến độ (hoặc đặt con trỏ trong sheet tiến độ), xác nhận 3 cột rồi tạo sheet NK_TheoNgay."/>
         <bt:String id="SetSource.Tip" DefaultValue="Đặt con trỏ trong bảng nhật ký theo ngày (NK_TheoNgay) rồi bấm để làm nguồn dữ liệu cho biểu mẫu."/>
         <bt:String id="AssignCell.Tip" DefaultValue="Chọn một ô (hoặc ô merge) trên biểu mẫu rồi bấm để chọn cột ghi vào ô đó."/>

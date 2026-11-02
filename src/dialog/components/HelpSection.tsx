@@ -12,7 +12,18 @@ export function HelpSection(): JSX.Element {
         Mọi chức năng nằm trên tab <strong>Nhật ký thi công</strong> của thanh Ribbon.
       </Text>
 
-      <Text variant="mediumPlus">1. Xuất nhật ký theo ngày (nhóm Xuất nhật ký)</Text>
+      <Text variant="mediumPlus">0. Tạo bảng nhập tiến độ (nhóm Tiến độ)</Text>
+      <ol style={listStyle}>
+        <li>
+          Bấm &quot;Tạo bảng&quot; → chọn sheet mới hoặc sheet hiện tại (nhập ô bắt đầu), số dòng (mặc định 10) →
+          &quot;Tạo bảng&quot;.
+        </li>
+        <li>
+          Điền Nội dung công việc, ngày Bắt đầu, ngày Kết thúc (dd/mm/yyyy). Gõ ngay dưới dòng cuối, bảng tự mở rộng.
+        </li>
+      </ol>
+
+      <Text variant="mediumPlus">1. Xuất nhật ký theo ngày (nhóm Tiến độ)</Text>
       <ol style={listStyle}>
         <li>
           Bôi chọn bảng tiến độ (gồm dòng tiêu đề: Nội dung công việc, Ngày bắt đầu, Ngày kết thúc) — hoặc chỉ cần đặt

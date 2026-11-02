@@ -18,10 +18,20 @@
 | # | Bước | Kết quả mong đợi | Kết quả |
 |---|---|---|---|
 | A1 | Đóng Excel → chạy `NhatKyThiCong_Setup_<phiên bản>.exe` → giữ tích "Mở Excel và kích hoạt add-in" → Hoàn tất | Excel mở, khung chào mừng hiện một lần; Ribbon có tab **Nhật ký thi công** | |
-| A2 | Đóng khung chào mừng; đóng Excel, mở một file bất kỳ | Tab **Nhật ký thi công** vẫn còn, có 4 nhóm: Xuất nhật ký / Form mẫu / Chuyển ngày / Tiện ích; **không** có khung bên phải | |
+| A2 | Đóng khung chào mừng; đóng Excel, mở một file bất kỳ | Tab **Nhật ký thi công** vẫn còn, có 4 nhóm: Tiến độ / Form mẫu / Chuyển ngày / Tiện ích; **không** có khung bên phải | |
 | A3 | Nút **Phiên bản** | Hộp thoại: phiên bản add-in = phiên bản trên trang phát hành; "Bạn đang dùng phiên bản mới nhất" | |
 | A4 | Nút **Hướng dẫn** | Hộp thoại hướng dẫn; link tải biểu mẫu mở được | |
 | A5 | Cài đè bản mới; gỡ qua Settings → Apps | Cài đè không lỗi; gỡ xong tab Ribbon biến mất sau khi mở lại Excel | |
+
+## A'. F4 – Tạo bảng (P7.4)
+
+| # | Bước | Kết quả mong đợi | Kết quả |
+|---|---|---|---|
+| T1 | File mới → **Tạo bảng** → giữ "Sheet mới", 10 dòng → Tạo bảng | Sheet `TienDo`, bảng A1:D11 có màu, tiêu đề STT/Nội dung công việc/Bắt đầu/Kết thúc, STT 1..10, con trỏ ở B2 | |
+| T2 | Gõ 2 công việc (ngày dd/mm/yyyy); gõ thêm ở dòng 12 | Ngày hiển thị dd/mm/yyyy; dòng 12 tự vào bảng | |
+| T3 | Sheet khác: chọn ô C5 → **Tạo bảng** → "Sheet hiện tại", 5 dòng | Bảng C5:F10 | |
+| T4 | **Tạo bảng** lần nữa tại C5 (vùng đã có bảng) | Báo vùng đang có dữ liệu, không ghi | |
+| T5 | Đặt con trỏ trong bảng T2 → **Xuất theo ngày** | 3 cột tự nhận diện; xuất đúng các ngày | |
 
 ## B. F1 – Xuất nhật ký theo ngày (P1.6) — file `test_addin_xuat_nktc.xlsx`
 

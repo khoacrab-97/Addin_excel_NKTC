@@ -19,6 +19,20 @@ describe("parsePayload", () => {
 });
 
 describe("parseReply", () => {
+  it("Tạo bảng: nhận lựa chọn hợp lệ, từ chối số dòng/vị trí sai", () => {
+    expect(
+      parseReply("create-table", JSON.stringify({ action: "create", target: "new", cell: "A1", rows: 10 })),
+    ).toEqual({ action: "create", target: "new", cell: "A1", rows: 10 });
+    expect(parseReply("create-table", JSON.stringify({ action: "create", target: "x", cell: "A1", rows: 10 }))).toEqual(
+      {
+        action: "cancel",
+      },
+    );
+    expect(
+      parseReply("create-table", JSON.stringify({ action: "create", target: "current", cell: "A1", rows: 0 })),
+    ).toEqual({ action: "cancel" });
+  });
+
   it("nhận kết quả hợp lệ", () => {
     expect(parseReply("assign", JSON.stringify({ action: "assign", column: 3 }))).toEqual({
       action: "assign",

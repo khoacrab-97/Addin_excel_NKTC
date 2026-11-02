@@ -56,7 +56,7 @@ npm run stop
 | Loại | Lệnh | Ghi chú |
 |---|---|---|
 | Unit test + hồi quy | `npm test` | Gồm hồi quy F1 trên `test/fixtures/tdtc-sample.json` (dữ liệu mẫu tự tạo, mô phỏng bảng tiến độ phân cấp). |
-| Smoke test F1 + F2 + F3 | `npm run smoke` (hoặc `smoke:f1`, `smoke:f2`, `smoke:f3`) | Chạy bundle production trong Chromium với Excel + Dialog API giả lập (`scripts/smoke/fake-excel.js`): bấm nút Ribbon (gọi hàm của function file), thao tác trong hộp thoại ở trang riêng. Cần Playwright + Chromium có sẵn trong môi trường (không phải dependency của dự án). |
+| Smoke test F1 + F2 + F3 + F4 | `npm run smoke` (hoặc `smoke:f1`, `smoke:f2`, `smoke:f3`, `smoke:f4`) | Chạy bundle production trong Chromium với Excel + Dialog API giả lập (`scripts/smoke/fake-excel.js`): bấm nút Ribbon (gọi hàm của function file), thao tác trong hộp thoại ở trang riêng. Cần Playwright + Chromium có sẵn trong môi trường (không phải dependency của dự án). |
 | Dữ liệu test | `test/fixtures/test_addin_xuat_nktc.xlsx` (tiến độ thật của chủ dự án), `test/fixtures/demo_f2.xlsx` (tiến độ thật + NK_TheoNgay có cột phụ mẫu + biểu mẫu `Mẫu NKTC`) | Sinh lại: `python3 -I scripts/fixtures/make_nktc_workbooks.py test/fixtures/test_addin_xuat_nktc.xlsx` rồi `python3 -I scripts/fixtures/xlsx_to_fixture.py test/fixtures/demo_f2.xlsx test/fixtures/demo_f2.json --all`. Dữ liệu riêng tư để trong `test/fixtures/local/` (git bỏ qua). |
 
 Kiểm thử trên Excel thật (Verified) vẫn phải chạy trên Excel Desktop Windows.
