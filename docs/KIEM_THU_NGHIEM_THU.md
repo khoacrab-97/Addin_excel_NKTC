@@ -38,7 +38,7 @@
 | # | Bước | Kết quả mong đợi | Kết quả |
 |---|---|---|---|
 | B1 | Sheet TDTC: đặt con trỏ 1 ô trong bảng → **Xuất theo ngày** | Hộp thoại: ô Vùng dữ liệu `TDTC!A1:C23`, 3 cột "Cột A – …", "Cột B – …", "Cột C – …" | |
-| B1b | Kéo chọn `A1:C10` trên sheet (hộp thoại vẫn mở) → bấm ⬆ | Ô Vùng dữ liệu đổi thành `TDTC!A1:C10` | |
+| B1b | Bấm ⬆ ở ô Vùng dữ liệu → hộp thoại nhỏ hiện → kéo chọn `A1:C10` trên sheet → OK | Hộp thoại chính mở lại, ô Vùng dữ liệu = `TDTC!A1:C10` | |
 | B2 | **Xuất nhật ký** | Sheet mới `NK_TheoNgay`, 200 dòng + tiêu đề, cột Ngày dd/mm/yyyy; hộp thoại kết quả "200 ngày, từ 15/06/2026 đến 31/12/2026", "22 công việc hợp lệ", xem trước 5 ngày | |
 | B3 | Kiểm tra ngày 06/08/2026 | Ô Nội dung có 13 dòng, giữ nguyên nội dung (không tự thêm "- "), **không** báo lỗi công thức (#NAME?) | |
 | B4 | Xuất lần 2 | Tạo `NK_TheoNgay_2`, sheet cũ giữ nguyên | |
@@ -50,12 +50,12 @@
 |---|---|---|---|
 | C0 | File chưa có biểu mẫu → **Chèn form mẫu** (Microsoft 365 / Excel 2021+) | Thêm sheet "Mẫu NKTC" ở cuối; bấm lần 2 → báo đã có. Excel cũ → hướng dẫn tải file mẫu | |
 | C1 | **Xuất vào form** | Vùng nguồn tự nhận diện `NK_TheoNgay!A1:I201`; Cột ngày = Cột A – Ngày; 200 ngày | |
-| C2 | Gán theo bảng BUSINESS_SPEC §F2.3: mỗi dòng chọn cột (trái); chọn ô merge trên "Mẫu NKTC" rồi bấm ⬆ (phải); + Thêm; chọn dòng thừa → Delete → **Gán** | Ô gộp lấy ô trên-trái; biểu mẫu hiện ngày 15/06/2026 | |
+| C2 | Gán theo bảng BUSINESS_SPEC §F2.3: mỗi dòng chọn cột (trái); bên phải bấm ⬆ → chọn ô merge trên "Mẫu NKTC" → OK; + Thêm; chọn dòng thừa → Delete → **Gán** | Ô gộp lấy ô trên-trái; biểu mẫu hiện ngày 15/06/2026 | |
 | C2b | Thử vùng nguồn có dòng tiêu đề bị gộp (merge) | Báo không chọn được, phải gỡ merge | |
 | C3 | **Ngày sau** rồi **Ngày đầu** | Biểu mẫu hiển thị "Ngày 15 tháng 06 năm 2026", thời tiết, nhân lực, nội dung | |
 | C4 | Ô nội dung 3.1 | Hiển thị đúng các dòng "- …", **không** thấy dấu `'` ở đầu (R2.11) | |
 | C5 | Ô tích thời tiết | Tích đúng theo ghi chú (Nắng / Mưa / Bình thường) | |
-| C6 | **Ngày sau**, **Ngày trước**, **Ngày cuối**, **Đến ngày…** 05/08/2026 | Biểu mẫu đổi theo ngày, không hiện hộp thoại; mục 4, 5 có nội dung sự cố / kiến nghị; ở ngày cuối bấm Ngày sau → báo "Đang ở ngày cuối cùng" | |
+| C6 | **Bảng chuyển ngày**: Sau ▶, gõ 05/08/2026 + Enter, Cuối ▶|; nút Ribbon **Ngày trước** | Bảng hiện thứ + ngày đang xem; dòng ngày của biểu mẫu = "Ngày dd tháng mm năm yyyy"; Biểu mẫu đổi theo ngày, không hiện hộp thoại; mục 4, 5 có nội dung sự cố / kiến nghị; ở ngày cuối bấm Ngày sau → báo "Đang ở ngày cuối cùng" | |
 | C7 | Sửa ô Thời tiết trong NK_TheoNgay → **Ngày sau** rồi **Ngày trước** | Biểu mẫu nhận giá trị mới | |
 | C8 | Lưu file, đóng, mở lại → **Ngày sau** | Cấu hình gán cột còn nguyên; ghi luôn, không hỏi lại | |
 | C9 | **File → Print** (Xem trước bản in) | A4 đứng, 2 trang, ngắt trước mục 4 | |

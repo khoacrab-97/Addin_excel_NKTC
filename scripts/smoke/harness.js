@@ -56,6 +56,13 @@ async function openWorkbook(input, options = {}) {
 
   const commands = await context.newPage();
   watchErrors(commands, pageErrors, "commands");
+  /** Trang hộp thoại đang mở — nhận tin messageChild (DialogApi 1.2) từ function file. */
+  let currentDialogPage;
+  await commands.exposeFunction("__toChild", async (message) => {
+    if (currentDialogPage && !currentDialogPage.isClosed()) {
+      await currentDialogPage.evaluate((m) => globalThis.__parentHandler?.({ message: m }), message);
+    }
+  });
   await commands.goto("https://local.test/commands.html");
   await commands.waitForFunction(() => typeof globalThis.nktcExportDaily === "function");
 
@@ -84,6 +91,7 @@ async function openWorkbook(input, options = {}) {
     await commands.waitForFunction(() => globalThis.__smoke.openDialog() !== null);
     const info = await smoke(() => globalThis.__smoke.openDialog());
     const page = await context.newPage();
+    currentDialogPage = page;
     watchErrors(page, pageErrors, "dialog");
     await page.exposeFunction("__toParent", (message) =>
       commands.evaluate((m) => globalThis.__smoke.deliver(m), message),
@@ -112,10 +120,29 @@ async function openWorkbook(input, options = {}) {
         .first()
         .click();
     };
-    return { page, info, click, act, text, choose };
+    /** Bấm nút mà hộp thoại vẫn mở (bảng chuyển ngày, DialogApi 1.2). */
+    const press = (name) => page.getByRole("button", { name, exact: true }).click();
+    /** Đóng trang hộp thoại khi add-in đã đóng hộp thoại (ví dụ bảng chuyển ngày trên bản cũ / khi hỏi xác nhận). */
+    const closedByAddin = async () => {
+      await commands.waitForFunction((index) => globalThis.__smoke.dialogClosed(index), info.index);
+      if (!page.isClosed()) await page.close();
+    };
+    return { page, info, click, act, press, closedByAddin, text, choose };
   }
 
-  return { browser, context, commands, pageErrors, smoke, press, dialog };
+  /**
+   * Nút ⬆ của ô chọn vùng: hộp thoại chính đóng → hộp thoại nhỏ "chọn rồi OK" → chọn trên sheet → OK →
+   * hộp thoại chính mở lại. `select` = [sheet, address] cần chọn (bỏ qua → giữ vùng đang chọn).
+   */
+  async function pickVia(d, buttonName, select, confirm = true) {
+    await d.act((page) => page.getByRole("button", { name: buttonName }).click());
+    const small = await dialog();
+    if (select) await smoke(([s, a]) => globalThis.__smoke.select(s, a), select);
+    await small.click(confirm ? "OK" : "Hủy");
+    return dialog();
+  }
+
+  return { browser, context, commands, pageErrors, smoke, press, dialog, pickVia };
 }
 
 module.exports = { openWorkbook };

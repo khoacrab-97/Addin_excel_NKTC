@@ -1,5 +1,6 @@
 import { parseRangeReference } from "../core/address/reference";
 import { UserFacingError, toUserMessage } from "../excel/errors";
+import { DIALOG_SIZE, openDialog } from "./dialogHost";
 import {
   type RangeRef,
   type RangeSnapshot,
@@ -32,4 +33,13 @@ export async function tryReadRange(ref: RangeRef): Promise<SnapshotResult> {
 
 export function refText(ref: RangeRef): string {
   return `${ref.sheetName}!${ref.address}`;
+}
+
+/**
+ * Nút ⬆ của ô chọn vùng: hộp thoại chính đã đóng (ẩn); mở hộp thoại nhỏ "chọn trên sheet rồi bấm OK".
+ * OK → `true` (bên gọi đọc vùng/ô đang chọn); Hủy/đóng → `false` (giữ nguyên giá trị cũ).
+ */
+export async function pickOnSheet(kind: "range" | "cell", label: string): Promise<boolean> {
+  const reply = await openDialog("pick", { kind, label }, DIALOG_SIZE.pick);
+  return reply.action === "ok";
 }

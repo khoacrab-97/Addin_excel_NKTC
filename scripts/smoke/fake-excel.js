@@ -474,7 +474,11 @@
   };
   window.Office = {
     AsyncResultStatus: { Succeeded: "succeeded", Failed: "failed" },
-    EventType: { DialogMessageReceived: "dialogMessageReceived", DialogEventReceived: "dialogEventReceived" },
+    EventType: {
+      DialogMessageReceived: "dialogMessageReceived",
+      DialogEventReceived: "dialogEventReceived",
+      DialogParentMessageReceived: "dialogParentMessageReceived",
+    },
     onReady: function () {
       return Promise.resolve({ host: "Excel", platform: "PC" });
     },
@@ -511,6 +515,10 @@
             addEventHandler: function (type, handler) {
               dialog.handlers[type] = handler;
             },
+            messageChild: function (message) {
+              log.push({ op: "messageChild" });
+              window.__toChild(message);
+            },
             close: function () {
               dialog.closed = true;
             },
@@ -524,10 +532,16 @@
         messageParent: function (message) {
           window.__toParent(message);
         },
+        /** Trang hộp thoại: nhận tin từ add-in (DialogApi 1.2). */
+        addHandlerAsync: function (type, handler) {
+          window.__parentHandler = handler;
+        },
       },
       requirements: {
         isSetSupported: function (name, version) {
-          return name === "ExcelApi" && Number(String(version).split(".")[1]) <= input.apiMinor;
+          var minor = Number(String(version).split(".")[1]);
+          if (name === "DialogApi") return minor <= (input.dialogApiMinor === undefined ? 2 : input.dialogApiMinor);
+          return name === "ExcelApi" && minor <= input.apiMinor;
         },
       },
     },

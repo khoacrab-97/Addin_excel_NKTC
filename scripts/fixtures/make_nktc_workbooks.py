@@ -31,6 +31,7 @@ LAST = get_column_letter(COLUMNS)
 
 DOTTED = Side(style="dotted")
 DATE_FORMAT = '"Ngày "dd" tháng "mm" năm "yyyy'
+DATE_PLACEHOLDER = "Ngày ..... tháng ..... năm .........."
 
 
 class FormBuilder:
@@ -109,10 +110,12 @@ def build_form(ws):
     f = FormBuilder(ws)
 
     f.text("TÌNH HÌNH THI CÔNG HÀNG NGÀY", bold=True, size=13, align="center")
-    # Ngày: ô đích nhận Excel serial date; định dạng số hiển thị "Ngày dd tháng mm năm yyyy".
+    # Ngày: ô mẫu chữ "Ngày ..... tháng ..... năm ......" — add-in rải ngày/tháng/năm vào sau từng chữ (R2.15).
+    # Định dạng số giữ lại để ô vẫn hiển thị "Ngày dd tháng mm năm yyyy" nếu người dùng nhập ngày dạng số.
     r = f.row
     ws.merge_cells(f"E{r}:{LAST}{r}")
     date_cell = ws[f"E{r}"]
+    date_cell.value = DATE_PLACEHOLDER
     date_cell.number_format = DATE_FORMAT
     f.font(date_cell, italic=True)
     date_cell.alignment = Alignment(horizontal="right")

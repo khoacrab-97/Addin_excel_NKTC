@@ -77,14 +77,26 @@ async function main() {
     await done();
     assert.equal(await wb.smoke(() => globalThis.__smoke.dialogCount()), count, `${name} mở hộp thoại ngoài dự kiến`);
   }
-  async function assertDayOnForm(label) {
-    const row = sourceRowForDate(label);
-    for (const m of MAPPINGS) {
-      const expected = row[COLUMN_LETTERS.indexOf(m.column)];
+  /** Giá trị mong đợi trên form: cột Ngày ở ô mẫu "Ngày … tháng … năm …" → chữ đã rải ngày (R2.15). */
+  function expectedOnForm(m, label) {
+    const value = sourceRowForDate(label)[COLUMN_LETTERS.indexOf(m.column)];
+    if (m.column !== "A") return value;
+    const [dd, mm, yyyy] = label.split("/");
+    return `Ngày ${dd} tháng ${mm} năm ${yyyy}`;
+  }
+  async function assertDayOnForm(label, mappings = MAPPINGS) {
+    for (const m of mappings) {
+      const expected = expectedOnForm(m, label);
       const actual = (await cell(m.cell))?.value ?? "";
       assert.deepEqual(actual, expected, `${SHEET}!${m.cell} (cột ${m.column} – ${m.header}) ngày ${label}`);
     }
   }
+  /** Chờ bảng chuyển ngày hiển thị ngày `label`. */
+  const waitPanelDay = (d, label) =>
+    d.page.waitForFunction(
+      (l) => globalThis.document.querySelector('[data-testid="current-day"]')?.textContent?.includes(l),
+      label,
+    );
   const sourceField = (d) => d.page.getByRole("textbox", { name: "Vùng nguồn" });
   const targetField = (d, row) => d.page.getByRole("textbox", { name: `Ô trên form dòng ${row}` });
   async function chooseColumn(d, row, letter) {
@@ -132,14 +144,14 @@ async function main() {
     const m = MAPPINGS[i];
     const row = i + 1;
     if (i > 0) await d.page.getByRole("button", { name: "+ Thêm" }).click();
+    assert.equal(await targetField(d, row).inputValue(), "", "dòng mới: ô trên form để trống");
     await chooseColumn(d, row, m.column);
-    await select(SHEET, m.select);
-    await d.act((page) => page.getByRole("button", { name: `Chọn Ô trên form dòng ${row} trên sheet` }).click());
-    d = await wb.dialog();
+    // ⬆ → hộp thoại tạm ẩn → hộp thoại nhỏ → chọn ô trên biểu mẫu → OK → hộp thoại mở lại.
+    d = await wb.pickVia(d, `Chọn Ô trên form dòng ${row} trên sheet`, [SHEET, m.select]);
     assert.equal(await targetField(d, row).inputValue(), `${SHEET}!${m.cell}`);
   }
   await d.page.screenshot({ path: path.join("smoke-output", "f2-export-form.png"), fullPage: true });
-  pass("Gán từng dòng", "cột nguồn + ô trên form chọn bằng nút ⬆ (ô gộp → ô trên-trái)");
+  pass("Gán từng dòng", "dòng mới để trống; ⬆ → hộp thoại nhỏ → chọn ô trên biểu mẫu → OK (ô gộp → ô trên-trái)");
 
   // 4. Dòng thừa: + Thêm rồi chọn dòng → Delete; ô trùng → báo lỗi theo dòng, không ghi.
   await d.page.getByRole("button", { name: "+ Thêm" }).click();
@@ -178,7 +190,11 @@ async function main() {
   assert.equal((await cell(meta.formulaCell)).formula, formSheet.formulas[meta.formulaCell]);
   assert.equal((await cell("A1")).value, "TÌNH HÌNH THI CÔNG HÀNG NGÀY");
   assert.equal((await config()).mappings.length, MAPPINGS.length);
-  pass("Gán", "form nhận ngày đầu; chỉ ghi đúng các ô đích; ô công thức giữ nguyên");
+  assert.equal((await cell(MAPPINGS[0].cell)).value, "Ngày 15 tháng 06 năm 2026");
+  pass(
+    "Gán",
+    "form nhận ngày đầu, dòng ngày thành 'Ngày 15 tháng 06 năm 2026'; chỉ ghi ô đích; ô công thức giữ nguyên",
+  );
 
   // 6. Chuyển ngày sau khi gán: không mở hộp thoại; biên → thông báo.
   await pressSilently("nktcDayNext");
@@ -194,13 +210,42 @@ async function main() {
   await wb.smoke(() => globalThis.__smoke.setValue("NK_TheoNgay", "C3", "Mưa to (sửa sau khi xuất)"));
   await pressSilently("nktcDayNext");
   assert.equal((await cell(MAPPINGS[2].cell)).value, "Mưa to (sửa sau khi xuất)");
-  done = await wb.press("nktcGoToDay");
+  pass("Đọc lại nguồn", "sửa NK_TheoNgay!C3 → form cập nhật");
+
+  // 7b. Bảng chuyển ngày nổi (DialogApi 1.2): hiện ngày đang xem; nút và ô gõ ngày cập nhật tại chỗ, bảng không đóng.
+  done = await wb.press("nktcDayPanel");
   d = await wb.dialog();
-  await d.page.getByRole("textbox", { name: "Ngày (dd/mm/yyyy)" }).fill("05/08/2026");
-  await d.click("Đi tới");
-  await done();
+  const currentDay = () => d.page.getByTestId("current-day").innerText();
+  assert.equal(await currentDay(), "Thứ Ba, 16/06/2026");
+  assert.match(await d.text(), /Ngày 2 \/ 200/);
+  await d.page.screenshot({ path: path.join("smoke-output", "f2-day-panel.png") });
+  await d.press("Sau ▶");
+  await waitPanelDay(d, "17/06/2026");
+  await assertDayOnForm("17/06/2026");
+  const dateBox = d.page.getByRole("textbox", { name: "Đến ngày (gõ rồi Enter)" });
+  await dateBox.fill("05/08/2026");
+  await dateBox.press("Enter");
+  await waitPanelDay(d, "05/08/2026");
   await assertDayOnForm("05/08/2026");
-  pass("Đọc lại nguồn + Đến ngày", "sửa NK_TheoNgay!C3 → form cập nhật; 05/08/2026");
+  await d.press("Cuối ▶|");
+  await waitPanelDay(d, "31/12/2026");
+  await d.press("Sau ▶");
+  await d.page.waitForSelector("text=Đang ở ngày cuối cùng");
+  await dateBox.fill("05/08/2026");
+  await dateBox.press("Enter");
+  await waitPanelDay(d, "05/08/2026");
+  assert.ok((await wb.smoke(() => globalThis.__smoke.log)).some((e) => e.op === "messageChild"));
+  assert.equal((await wb.smoke(() => globalThis.__smoke.openDialog())) !== null, true, "bảng vẫn mở");
+  // Bấm nút khác trên Ribbon khi bảng đang mở → bảng đóng, lệnh mới chạy.
+  const next = await wb.press("nktcDayPrev");
+  await d.closedByAddin();
+  await done();
+  await next();
+  await assertDayOnForm("04/08/2026");
+  pass(
+    "Bảng chuyển ngày",
+    "hiện thứ + ngày + vị trí; Sau / gõ ngày + Enter / Cuối cập nhật tại chỗ; biên báo trong bảng; nút Ribbon khác đóng bảng",
+  );
 
   // 8. Mở lại Xuất vào form: hiện cấu hình đã gán; sửa (bỏ 1 dòng) → Gán lại ghi ngày đầu.
   done = await wb.press("nktcExportForm");
@@ -219,9 +264,8 @@ async function main() {
   await done();
   assert.equal((await config()).mappings.length, MAPPINGS.length - 1);
   const firstRow = sourceRowForDate("15/06/2026");
-  for (const m of MAPPINGS.slice(0, -1)) {
-    assert.deepEqual((await cell(m.cell))?.value ?? "", firstRow[COLUMN_LETTERS.indexOf(m.column)], m.cell);
-  }
+  assert.ok(firstRow);
+  await assertDayOnForm("15/06/2026", MAPPINGS.slice(0, -1));
   pass("Sửa cấu hình đã gán", "mở lại hiện 9 dòng; bỏ 1 dòng → Gán → xác nhận ghi đè → ngày đầu");
 
   // 9. Mở lại workbook: cấu hình còn; chuyển ngày không hỏi lại.
@@ -234,8 +278,42 @@ async function main() {
     { browser },
   );
   await pressSilently("nktcDayNext");
-  assert.equal((await cell(MAPPINGS[0].cell)).value, sourceRowForDate("16/06/2026")[0]);
+  assert.equal((await cell(MAPPINGS[0].cell)).value, "Ngày 16 tháng 06 năm 2026");
   pass("Mở lại workbook", "giữ gán cột và xác nhận → Ngày sau ghi 16/06 không hỏi lại");
+
+  // 9b. Bảng chuyển ngày trên Excel cũ (DialogApi 1.1) + cần xác nhận ghi đè: bảng đóng → hỏi → mở lại.
+  const settingsOld = await wb.smoke(() => globalThis.__smoke.settings());
+  delete settingsOld[SETTINGS_KEY].confirmedKey;
+  const sheetsOld = await wb.smoke(() => globalThis.__smoke.exportSheets());
+  errors.push(...wb.pageErrors);
+  await wb.context.close();
+  wb = await openWorkbook(
+    {
+      sheets: sheetsOld,
+      selection: { sheet: SHEET, address: "A1" },
+      apiMinor: 13,
+      dialogApiMinor: 1,
+      settings: settingsOld,
+    },
+    { browser },
+  );
+  const dialogCount = () => wb.smoke(() => globalThis.__smoke.dialogCount());
+  const base = await dialogCount();
+  done = await wb.press("nktcDayPanel");
+  d = await wb.dialog();
+  await d.press("Sau ▶");
+  await d.closedByAddin();
+  d = await wb.dialog();
+  assert.match(await d.text(), /sẽ bị ghi đè/);
+  await d.click("Ghi đè");
+  // Bảng mở lại sau xác nhận, rồi mở lại lần nữa với ngày mới (DialogApi 1.1 không cập nhật tại chỗ).
+  await wb.commands.waitForFunction((n) => globalThis.__smoke.dialogCount() >= n, base + 4);
+  d = await wb.dialog();
+  assert.equal(await d.page.getByTestId("current-day").innerText(), "Thứ Tư, 17/06/2026");
+  await d.click("Đóng");
+  await done();
+  assert.equal((await cell(MAPPINGS[0].cell)).value, "Ngày 17 tháng 06 năm 2026");
+  pass("Bảng chuyển ngày (Excel cũ)", "không cập nhật tại chỗ → đóng & mở lại; cần xác nhận → hỏi rồi mở lại bảng");
 
   // 10. Vùng nguồn có dòng tiêu đề bị gộp (merge) → báo không chọn được, phải gỡ merge.
   const merged = await openWorkbook(

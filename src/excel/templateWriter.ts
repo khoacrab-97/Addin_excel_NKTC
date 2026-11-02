@@ -8,6 +8,8 @@ export interface TargetState {
   target: TargetCell;
   hasFormula: boolean;
   hasValue: boolean;
+  /** Nội dung nếu ô đang chứa chữ (dùng để rải ngày vào mẫu "Ngày … tháng … năm …"). */
+  text?: string;
 }
 
 function isInvalidAddressError(error: unknown): boolean {
@@ -37,11 +39,13 @@ export async function inspectTargets(targets: readonly TargetCell[]): Promise<Ta
       const range = ranges[index];
       const formula: unknown = range?.formulas[0]?.[0];
       const value: unknown = range?.values[0]?.[0];
-      return {
+      const state: TargetState = {
         target,
         hasFormula: typeof formula === "string" && formula.startsWith("="),
         hasValue: value !== "" && value !== null && value !== undefined,
       };
+      if (typeof value === "string" && value !== "") state.text = value;
+      return state;
     });
   });
 }

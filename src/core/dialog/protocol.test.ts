@@ -71,13 +71,18 @@ describe("parseReply", () => {
     expect(parseReply("f1-columns", JSON.stringify({ action: "ok", columns: { content: 0 } }))).toEqual({
       action: "cancel",
     });
-    expect(parseReply("goto", "not json")).toEqual({ action: "cancel" });
+    expect(parseReply("day-panel", "not json")).toEqual({ action: "cancel" });
+    expect(parseReply("day-panel", JSON.stringify({ action: "nav", kind: "sideways" }))).toEqual({ action: "cancel" });
+    expect(parseReply("day-panel", JSON.stringify({ action: "nav", kind: "next" }))).toEqual({
+      action: "nav",
+      kind: "next",
+    });
   });
 });
 
 describe("tiện ích", () => {
   it("isDialogView", () => {
-    expect(isDialogView("goto")).toBe(true);
+    expect(isDialogView("day-panel")).toBe(true);
     expect(isDialogView("taskpane")).toBe(false);
   });
 

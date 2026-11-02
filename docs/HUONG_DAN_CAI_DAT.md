@@ -28,7 +28,7 @@ Tab **Nhật ký thi công** (từ 1.3.0, không còn khung bên phải):
 |---|---|
 | Tiến độ | Tạo bảng · Xuất theo ngày |
 | Form mẫu | Chèn form mẫu · Xuất vào form |
-| Chuyển ngày | Ngày đầu · Ngày trước · Ngày sau · Ngày cuối · Đến ngày… |
+| Chuyển ngày | Bảng chuyển ngày · Ngày đầu · Ngày trước · Ngày sau · Ngày cuối |
 | Tiện ích | Hướng dẫn · Phiên bản |
 
 Nếu không thấy tab **Nhật ký thi công**: **Start menu** → **Nhật ký thi công (Excel)** (mở lại workbook kích hoạt), hoặc **Insert** (Chèn) → **My Add-ins** → thẻ **Developer Add-ins** (hoặc **MY ADD-INS**) → chọn **Nhật ký thi công** → **Add**.

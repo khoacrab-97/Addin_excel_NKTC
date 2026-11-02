@@ -5,11 +5,12 @@ import { type LoadedDialog, loadDialog } from "./payload";
 import { AboutView } from "./views/AboutView";
 import { ConfirmView } from "./views/ConfirmView";
 import { CreateTableView } from "./views/CreateTableView";
+import { DayPanelView } from "./views/DayPanelView";
 import { ExportFormView } from "./views/ExportFormView";
 import { F1ColumnsView } from "./views/F1ColumnsView";
-import { GotoView } from "./views/GotoView";
 import { HelpView } from "./views/HelpView";
 import { MessageView } from "./views/MessageView";
+import { PickView } from "./views/PickView";
 
 /** Gửi kết quả về nút lệnh trên Ribbon; function file đóng hộp thoại khi nhận được. */
 function reply(value: object): void {
@@ -26,8 +27,10 @@ function DialogApp({ dialog }: { dialog: LoadedDialog }): JSX.Element {
       return <MessageView payload={dialog.payload} reply={reply} />;
     case "export-form":
       return <ExportFormView payload={dialog.payload} reply={reply} />;
-    case "goto":
-      return <GotoView payload={dialog.payload} reply={reply} />;
+    case "day-panel":
+      return <DayPanelView payload={dialog.payload} reply={reply} />;
+    case "pick":
+      return <PickView payload={dialog.payload} reply={reply} />;
     case "confirm":
       return <ConfirmView payload={dialog.payload} reply={reply} />;
     case "help":

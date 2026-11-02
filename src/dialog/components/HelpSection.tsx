@@ -30,8 +30,8 @@ export function HelpSection(): JSX.Element {
           con trỏ trong sheet tiến độ.
         </li>
         <li>
-          Bấm &quot;Xuất theo ngày&quot;; kiểm tra Vùng dữ liệu (chọn lại: kéo chọn vùng rồi bấm ⬆) và 3 cột được nhận
-          diện, chỉnh lại nếu cần → &quot;Xuất nhật ký&quot;.
+          Bấm &quot;Xuất theo ngày&quot;; kiểm tra Vùng dữ liệu (chọn lại: bấm ⬆ → chọn vùng trên sheet → OK) và 3 cột
+          được nhận diện, chỉnh lại nếu cần → &quot;Xuất nhật ký&quot;.
         </li>
         <li>
           Add-in tạo sheet mới <strong>NK_TheoNgay</strong> (không ghi đè sheet có sẵn) và báo kết quả, các dòng lỗi.
@@ -53,13 +53,15 @@ export function HelpSection(): JSX.Element {
           không được có ô gộp (merge).
         </li>
         <li>
-          Mỗi dòng gán: chọn cột nguồn (trái); chọn ô trên biểu mẫu rồi bấm ⬆ (phải). &quot;+ Thêm&quot; để gán tiếp;
-          chọn dòng thừa → Delete (hoặc Xóa dòng).
+          Mỗi dòng gán: chọn cột nguồn (trái); bên phải bấm ⬆ → chọn ô trên biểu mẫu → OK. &quot;+ Thêm&quot; để gán
+          tiếp; chọn dòng thừa → Delete (hoặc Xóa dòng).
         </li>
         <li>Bấm &quot;Gán&quot;: biểu mẫu nhận dữ liệu ngày đầu tiên. Cấu hình được lưu trong file Excel.</li>
         <li>
-          Sau khi gán: &quot;Ngày đầu&quot;, &quot;Ngày trước&quot;, &quot;Ngày sau&quot;, &quot;Ngày cuối&quot;,
-          &quot;Đến ngày…&quot; để chuyển ngày. Chưa gán thì các nút này chỉ hiện hướng dẫn.
+          Sau khi gán: &quot;Bảng chuyển ngày&quot; (cửa sổ nhỏ hiện ngày đang xem, gõ ngày + Enter, Đầu / Trước / Sau /
+          Cuối) hoặc các nút &quot;Ngày đầu&quot;, &quot;Ngày trước&quot;, &quot;Ngày sau&quot;, &quot;Ngày cuối&quot;.
+          Chưa gán thì các nút này chỉ hiện hướng dẫn. Gán cột Ngày vào dòng &quot;Ngày … tháng … năm …&quot; của biểu
+          mẫu: add-in tự điền ngày, tháng, năm sau từng chữ.
         </li>
       </ol>
 

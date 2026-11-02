@@ -118,3 +118,14 @@
 | P8.6 | Kiểm thử trên Excel Desktop Windows: nút ⬆ khi hộp thoại đang mở, chèn form mẫu, Xuất vào form (`docs/KIEM_THU_NGHIEM_THU.md` mục B, C) | Not Started |
 
 > P8.1–P8.5 **Tested** = unit test (`reference`, `formRows`, giao thức, `buildDailyLog`) + smoke: F1 7 bước, F2 13 bước (ExcelApi 1.13 và 1.1), F3 10 bước, F4 5 bước — Excel giả lập có ô gộp, chèn sheet, Dialog API. Chưa Verified (P8.6): nút ⬆ giả định hộp thoại Office không chặn thao tác trên sheet (non-modal) — cần xác nhận trên Excel thật.
+
+## Phase 9 — Phản hồi thử nghiệm 1.5.0 (bản 1.6.0)
+
+| ID | Hạng mục | Trạng thái |
+|---|---|---|
+| P9.1 | Biểu mẫu có dòng "Ngày ..... tháng ..... năm ....."; cột Ngày rải ngày/tháng/năm vào sau từng chữ (R2.15) | Tested |
+| P9.2 | Bảng chuyển ngày nổi: ngày đang xem (thứ, vị trí), gõ ngày + Enter, Đầu/Trước/Sau/Cuối (R2.16); bỏ nút Đến ngày…; thứ tự nút Ribbon Đầu · Trước · Sau · Cuối | Tested |
+| P9.3 | Nút ⬆: hộp thoại chính ẩn → hộp thoại nhỏ chọn trên sheet → OK → mở lại (R0.4); dòng gán mới để trống | Tested |
+| P9.4 | Kiểm thử trên Excel Desktop Windows: bảng chuyển ngày (thời gian mở dài, cập nhật tại chỗ), hộp thoại nhỏ chọn ô | Not Started |
+
+> P9.1–P9.3 **Tested** = unit test (`datePattern`, `writePlan`, giao thức) + smoke F1 7, F2 15 bước (DialogApi 1.2 cập nhật tại chỗ và 1.1 đóng/mở lại; xác nhận ghi đè khi bảng đang mở; nút Ribbon khác đóng bảng). Chưa Verified (P9.4): kích thước nút trên Ribbon do Excel tự co giãn theo độ rộng cửa sổ — add-in không ép được; nút lệnh giữ kết nối trong lúc bảng mở (cần xác nhận Excel không ngắt sau thời gian dài).
