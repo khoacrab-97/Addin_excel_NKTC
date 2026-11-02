@@ -98,7 +98,8 @@ jobs:
 
           1. Lưu và **đóng Excel**.
           2. Tải file `.exe` bên dưới và chạy. Không cần quyền quản trị. Nếu Windows hiện *"Windows protected your PC"*: bấm **More info → Run anyway**.
-          3. Mở Excel → tab **Home** → nút **Nhật ký thi công**.
+          3. Ở trang cuối giữ dấu tích **Mở Excel và kích hoạt add-in** → **Hoàn tất**. Excel mở kèm khung add-in (nếu được hỏi tin cậy add-in → **Trust**). Từ đó dùng nút **Nhật ký thi công** trên tab **Home**.
+          4. Không thấy nút: **Start menu → Nhật ký thi công (Excel)**, hoặc **Insert → My Add-ins → Developer Add-ins → Nhật ký thi công → Add**.
 
           ## Cập nhật
 

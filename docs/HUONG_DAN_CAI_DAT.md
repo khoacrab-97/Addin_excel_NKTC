@@ -18,17 +18,20 @@
 1. **Đóng hẳn Excel** (bộ cài sẽ nhắc nếu Excel còn mở).
 2. Mở <https://khoacrab-97.github.io/Addin_excel_NKTC/> → **Tải bộ cài (Windows)** → chạy `NhatKyThiCong_Setup.exe`.
 3. Nếu Windows hiện **"Windows protected your PC"** (SmartScreen): bấm **More info** → **Run anyway**. Cảnh báo này xuất hiện vì bộ cài chưa có chữ ký số thương mại.
-4. Bấm **Cài đặt** → **Hoàn tất**.
-5. Mở Excel → tab **Home** xuất hiện nhóm **Nhật ký thi công** → bấm nút để mở khung làm việc.
+4. Bấm **Cài đặt**. Ở trang cuối giữ dấu tích **Mở Excel và kích hoạt add-in** → **Hoàn tất**.
+5. Excel mở workbook `NhatKyThiCong_BatDau.xlsx` kèm khung add-in. Lần đầu Excel có thể hỏi tin cậy add-in → chọn **Trust** / **Tin cậy**. Từ đó tab **Home** có nhóm **Nhật ký thi công**; mở bất kỳ file nào cũng dùng được.
 6. Kiểm tra: tab **Tiện ích** hiển thị phiên bản add-in, phiên bản Office và mức **ExcelApi tối đa**.
 
-Nếu không thấy nút trên tab Home: **Insert** (Chèn) → **My Add-ins** → thẻ **Developer Add-ins** (hoặc **MY ADD-INS**) → chọn **Nhật ký thi công** → **Add**.
+Nếu không thấy nút trên tab Home: **Start menu** → **Nhật ký thi công (Excel)** (mở lại workbook kích hoạt), hoặc **Insert** (Chèn) → **My Add-ins** → thẻ **Developer Add-ins** (hoặc **MY ADD-INS**) → chọn **Nhật ký thi công** → **Add**.
+
+> Vì sao cần bước kích hoạt: bộ cài đăng ký add-in trong registry; Excel chỉ nạp add-in đã đăng ký khi mở một workbook có tham chiếu tới add-in (cách `npm start` của Microsoft cũng dùng) hoặc khi người dùng thêm từ **My Add-ins**. Bản 1.2.0 thiếu bước này.
 
 Bộ cài thực hiện (chỉ trong phạm vi tài khoản người dùng):
 
 | Hạng mục | Vị trí |
 |---|---|
-| Chép `manifest.xml`, icon, trình gỡ cài đặt | `%LOCALAPPDATA%\NhatKyThiCong\` |
+| Chép `manifest.xml`, icon, workbook kích hoạt `NhatKyThiCong_BatDau.xlsx`, trình gỡ cài đặt | `%LOCALAPPDATA%\NhatKyThiCong\` |
+| Lối tắt **Nhật ký thi công (Excel)** (mở workbook kích hoạt) | Start menu của người dùng |
 | Đăng ký add-in với Office | `HKCU\Software\Microsoft\Office\16.0\Wef\Developer` (tên giá trị = ID add-in, dữ liệu = đường dẫn `manifest.xml`) |
 | Mục gỡ cài đặt trong Windows | `HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall\NhatKyThiCong` |
 
@@ -66,7 +69,7 @@ Dùng khi máy không chạy được bộ cài (chính sách công ty chặn fi
 | Hiện tượng | Cách xử lý |
 |---|---|
 | Bộ cài báo "Excel đang mở" | Đóng mọi cửa sổ Excel (kiểm tra cả biểu tượng Excel trên thanh tác vụ) → **Retry**. |
-| Cài xong không thấy nút trên tab Home | Đóng hẳn Excel và mở lại; nếu vẫn không thấy → **Insert → My Add-ins → Developer Add-ins** (mục 2). Vẫn không có → dùng cách cài mục 5 và báo lại cho người phát triển. |
+| Cài xong không thấy nút trên tab Home | Đóng Excel → **Start menu → Nhật ký thi công (Excel)**; hoặc **Insert → My Add-ins → Developer Add-ins** (mục 2). Vẫn không có → dùng cách cài mục 5 và báo lại cho người phát triển (kèm phiên bản Excel: **File → Account → About Excel**). |
 | Không thấy thẻ **SHARED FOLDER** (cách cài mục 5) | Đã tích **Show in Menu** và đã khởi động lại Excel; đường dẫn phải là đường dẫn mạng `\\...`. |
 | Khung add-in trắng / báo lỗi tải | Kiểm tra Internet; thử mở <https://khoacrab-97.github.io/Addin_excel_NKTC/taskpane.html> bằng trình duyệt. |
 | Đã cập nhật nhưng vẫn thấy bản cũ | Đóng Excel → xóa toàn bộ nội dung thư mục `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` → mở lại Excel. |
