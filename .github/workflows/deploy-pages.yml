@@ -25,8 +25,11 @@ jobs:
       contents: read
     outputs:
       version: ${{ steps.version.outputs.version }}
+      sha256: ${{ steps.version.outputs.sha256 }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
         with:
           node-version: 22
@@ -43,9 +46,15 @@ jobs:
         id: version
         run: |
           VERSION=$(node -p "require('./package.json').version")
-          echo "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'
+          # Kiểm tra toàn chuỗi (không chấp nhận chuỗi nhiều dòng).
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           cp dist/NhatKyThiCong_Setup.exe "NhatKyThiCong_Setup_$VERSION.exe"
+          # Mã SHA-256 của bộ cài: đăng trong Release và trên trang phát hành để người dùng đối chiếu.
+          SHA256=$(sha256sum dist/NhatKyThiCong_Setup.exe | cut -d' ' -f1)
+          [[ "$SHA256" =~ ^[0-9a-f]{64}$ ]]
+          echo "$SHA256  NhatKyThiCong_Setup.exe" > dist/NhatKyThiCong_Setup.exe.sha256
+          echo "sha256=$SHA256" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: installer
@@ -88,12 +97,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           VERSION: ${{ needs.build.outputs.version }}
+          SHA256: ${{ needs.build.outputs.sha256 }}
         run: |
           if gh release view "v$VERSION" > /dev/null 2>&1; then
             echo "Release v$VERSION đã tồn tại — bỏ qua (tăng version trong package.json để phát hành bản mới)."
             exit 0
           fi
           cat > notes.md << 'NOTES'
+          **Bản phát hành chính thức** của add-in Excel "Nhật ký thi công" — lập nhật ký thi công theo ngày từ bảng tiến độ và xuất dữ liệu từng ngày vào biểu mẫu.
+
+          - Tạo bảng tiến độ, **Xuất theo ngày** (sheet NK_TheoNgay).
+          - **Chèn form mẫu**, **Xuất vào form**: gán cột theo tên tiêu đề, dòng "Ngày … tháng … năm …" tự điền.
+          - Chuyển ngày bằng 4 nút **Ngày đầu · Ngày trước · Ngày sau · Ngày cuối**.
+          - Chọn vùng/ô kiểu Excel (thu gọn hộp thoại, viền nháy quanh vùng chọn).
+
           ## Cài đặt
 
           1. Lưu và **đóng Excel**.
@@ -111,5 +128,15 @@ jobs:
 
           Hướng dẫn chi tiết: https://github.com/khoacrab-97/Addin_excel_NKTC/blob/main/docs/HUONG_DAN_CAI_DAT.md
           NOTES
+          {
+            echo
+            echo "## Kiểm tra tính toàn vẹn"
+            echo
+            echo "SHA-256 của \`NhatKyThiCong_Setup_$VERSION.exe\`:"
+            echo
+            echo "\`$SHA256\`"
+            echo
+            echo "Đối chiếu trên Windows (PowerShell): \`Get-FileHash .\\NhatKyThiCong_Setup_$VERSION.exe -Algorithm SHA256\`"
+          } >> notes.md
           gh release create "v$VERSION" "NhatKyThiCong_Setup_$VERSION.exe" \
             --target "$GITHUB_SHA" --title "Nhật ký thi công $VERSION" --notes-file notes.md --latest
