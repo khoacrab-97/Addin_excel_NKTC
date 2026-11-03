@@ -12,7 +12,6 @@ import {
   type RangeRef,
   type RangeSnapshot,
   getActiveSheetName,
-  getSelectedCell,
   getSheetNames,
   getUsedRangeRef,
   headerHasMergedCells,
@@ -179,10 +178,11 @@ export async function exportFormCommand(): Promise<void> {
     state = reply.state;
 
     if (reply.action === "pick-source") {
-      if (reply.address === undefined && !(await pickOnSheet("range", "vùng nguồn (dòng đầu là tiêu đề)"))) continue;
-      pickError = undefined;
       try {
-        ref = await resolveRangeRef(reply.address);
+        const picked = reply.address ?? (await pickOnSheet("range", `${TITLE} – Vùng nguồn`, source.field.value));
+        if (picked === undefined) continue;
+        pickError = undefined;
+        ref = await resolveRangeRef(picked);
       } catch (error) {
         pickError = toUserMessage(error);
       }
@@ -192,19 +192,13 @@ export async function exportFormCommand(): Promise<void> {
     if (reply.action === "pick-target") {
       const row = state.rows[reply.row];
       if (!row) continue;
-      if (reply.address === undefined && !(await pickOnSheet("cell", `ô trên form cho dòng ${reply.row + 1}`))) {
-        continue;
-      }
       try {
-        let text: string;
-        if (reply.address === undefined) {
-          const cell = await getSelectedCell();
-          text = formatReference(cell.sheetName, cell.address);
-        } else {
-          const cell = parseCellReference(reply.address);
-          if (!cell) throw new UserFacingError(`"${reply.address}" không phải một ô hợp lệ (ví dụ Mẫu NKTC!E2).`);
-          text = formatReference(cell.sheetName ?? defaultFormSheet(state, names, active), cell.address);
-        }
+        const picked =
+          reply.address ?? (await pickOnSheet("cell", `${TITLE} – Ô trên form (dòng ${reply.row + 1})`, row.target));
+        if (picked === undefined) continue;
+        const cell = parseCellReference(picked);
+        if (!cell) throw new UserFacingError(`"${picked}" không phải một ô hợp lệ (ví dụ Mẫu NKTC!E2).`);
+        const text = formatReference(cell.sheetName ?? defaultFormSheet(state, names, active), cell.address);
         state = {
           ...state,
           rows: state.rows.map((item, index) => (index === reply.row ? { ...item, target: text } : item)),
@@ -259,7 +253,7 @@ export async function exportFormCommand(): Promise<void> {
     if (day !== undefined) {
       await showMessage(TITLE, "success", [
         `Đã gán ${built.mappings.length} ô; biểu mẫu đang hiển thị dữ liệu ngày đầu tiên.`,
-        "Dùng các nút Ngày đầu / Ngày trước / Ngày sau / Ngày cuối / Đến ngày… để chuyển ngày.",
+        "Dùng các nút Ngày đầu / Ngày trước / Ngày sau / Ngày cuối (nhóm Chuyển ngày) để chuyển ngày.",
       ]);
     }
     return;

@@ -5,14 +5,13 @@
  */
 
 export type DialogView =
-  "create-table" | "f1-columns" | "message" | "export-form" | "day-panel" | "pick" | "confirm" | "help" | "about";
+  "create-table" | "f1-columns" | "message" | "export-form" | "pick" | "confirm" | "help" | "about";
 
 export const DIALOG_VIEWS: readonly DialogView[] = [
   "create-table",
   "f1-columns",
   "message",
   "export-form",
-  "day-panel",
   "pick",
   "confirm",
   "help",
@@ -89,19 +88,14 @@ export interface ExportFormPayload {
   rowError?: { row: number; message: string };
 }
 
-/** Bảng chuyển ngày nổi: ngày đang xem, khoảng ngày, thông báo của lần bấm trước. */
-export interface DayPanelPayload {
-  current?: { label: string; value: string; position?: number };
-  range?: { first: string; last: string; count: number };
-  message?: { tone: MessageTone; text: string };
-  /** Chưa gán / lỗi nguồn → khóa các nút. */
-  disabled?: boolean;
-}
-
-/** Hộp thoại nhỏ "chọn trên sheet rồi bấm OK" (nút ⬆ của ô chọn vùng). */
+/**
+ * Thanh chọn (giống ô chọn vùng của Excel khi thu gọn hộp thoại): tiêu đề + ô nhập + nút mũi tên.
+ * `value` = vùng/ô đang chọn trên sheet; add-in gửi giá trị mới mỗi khi người dùng chọn lại (DialogApi 1.2).
+ */
 export interface PickPayload {
   kind: "range" | "cell";
-  label: string;
+  title: string;
+  value: string;
 }
 
 export interface ConfirmCell {
@@ -126,7 +120,6 @@ export interface DialogPayloads {
   "f1-columns": F1ColumnsPayload;
   message: MessagePayload;
   "export-form": ExportFormPayload;
-  "day-panel": DayPanelPayload;
   pick: PickPayload;
   confirm: ConfirmPayload;
   help: Record<string, never>;
@@ -148,9 +141,8 @@ export interface DialogReplies {
     | { action: "pick-target"; row: number; address?: string; state: ExportFormState }
     | { action: "assign"; state: ExportFormState }
     | CancelReply;
-  "day-panel":
-    { action: "nav"; kind: "first" | "prev" | "next" | "last" } | { action: "goto"; text: string } | CancelReply;
-  pick: { action: "ok" } | CancelReply;
+  /** `typed` = người dùng tự gõ địa chỉ (không lấy từ vùng đang chọn trên sheet). */
+  pick: { action: "ok"; text: string; typed: boolean } | CancelReply;
   confirm: { action: "ok" } | CancelReply;
   help: { action: "ok" } | CancelReply;
   about: { action: "ok" } | CancelReply;
@@ -262,17 +254,7 @@ const PAYLOAD_GUARDS: Guards = {
     isFormState(p.state) &&
     (p.errors === undefined || isTextList(p.errors)) &&
     (p.rowError === undefined || (isRecord(p.rowError) && isIndex(p.rowError.row) && isText(p.rowError.message))),
-  "day-panel": (p) =>
-    (p.current === undefined ||
-      (isRecord(p.current) &&
-        isText(p.current.label) &&
-        isText(p.current.value) &&
-        (p.current.position === undefined || isPositiveCount(p.current.position)))) &&
-    (p.range === undefined ||
-      (isRecord(p.range) && isText(p.range.first) && isText(p.range.last) && typeof p.range.count === "number")) &&
-    (p.message === undefined || (isRecord(p.message) && isTone(p.message.tone) && isText(p.message.text))) &&
-    (p.disabled === undefined || typeof p.disabled === "boolean"),
-  pick: (p) => (p.kind === "range" || p.kind === "cell") && isText(p.label),
+  pick: (p) => (p.kind === "range" || p.kind === "cell") && isText(p.title) && isText(p.value),
   confirm: (p) => isText(p.day) && isList(p.cells, isConfirmCell),
   help: () => true,
   about: (p) => isText(p.platform) && isText(p.officeVersion) && isText(p.maxExcelApi),
@@ -298,10 +280,7 @@ const REPLY_GUARDS: Guards = {
     ((r.action === "pick-source" && isOptionalAddress(r.address)) ||
       (r.action === "pick-target" && isIndex(r.row) && isOptionalAddress(r.address)) ||
       r.action === "assign"),
-  "day-panel": (r) =>
-    (r.action === "nav" && (r.kind === "first" || r.kind === "prev" || r.kind === "next" || r.kind === "last")) ||
-    (r.action === "goto" && typeof r.text === "string" && r.text.length <= 20),
-  pick: (r) => r.action === "ok",
+  pick: (r) => r.action === "ok" && typeof r.text === "string" && r.text.length <= 80 && typeof r.typed === "boolean",
   confirm: (r) => r.action === "ok",
   help: (r) => r.action === "ok",
   about: (r) => r.action === "ok",

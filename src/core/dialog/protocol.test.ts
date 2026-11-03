@@ -71,18 +71,23 @@ describe("parseReply", () => {
     expect(parseReply("f1-columns", JSON.stringify({ action: "ok", columns: { content: 0 } }))).toEqual({
       action: "cancel",
     });
-    expect(parseReply("day-panel", "not json")).toEqual({ action: "cancel" });
-    expect(parseReply("day-panel", JSON.stringify({ action: "nav", kind: "sideways" }))).toEqual({ action: "cancel" });
-    expect(parseReply("day-panel", JSON.stringify({ action: "nav", kind: "next" }))).toEqual({
-      action: "nav",
-      kind: "next",
+    expect(parseReply("pick", "not json")).toEqual({ action: "cancel" });
+    expect(parseReply("pick", JSON.stringify({ action: "ok", text: "A1" }))).toEqual({ action: "cancel" });
+    expect(parseReply("pick", JSON.stringify({ action: "ok", text: "x".repeat(81), typed: true }))).toEqual({
+      action: "cancel",
+    });
+    expect(parseReply("pick", JSON.stringify({ action: "ok", text: "Mẫu NKTC!E2", typed: false }))).toEqual({
+      action: "ok",
+      text: "Mẫu NKTC!E2",
+      typed: false,
     });
   });
 });
 
 describe("tiện ích", () => {
   it("isDialogView", () => {
-    expect(isDialogView("day-panel")).toBe(true);
+    expect(isDialogView("pick")).toBe(true);
+    expect(isDialogView("day-panel")).toBe(false);
     expect(isDialogView("taskpane")).toBe(false);
   });
 

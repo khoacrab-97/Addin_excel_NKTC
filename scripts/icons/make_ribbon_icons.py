@@ -38,13 +38,6 @@ def arrow_right(d, x, y, length, color=BLUE, width=30):
     d.polygon([(x + length, y), (x + length - 70, y - 55), (x + length - 70, y + 55)], fill=color)
 
 
-def triangle(d, x, y, size, direction, color=BLUE):
-    if direction == "right":
-        d.polygon([(x, y - size), (x, y + size), (x + size * 1.6, y)], fill=color)
-    else:
-        d.polygon([(x, y - size), (x, y + size), (x - size * 1.6, y)], fill=color)
-
-
 def icon_export():
     image, d = canvas()
     grid(d, (30, 40, 200, 280))
@@ -83,43 +76,30 @@ def icon_assign():
     return image
 
 
-def icon_first():
+# Bốn nút chuyển ngày dùng chung một tam giác (cùng cỡ, cùng tâm dọc); Ngày đầu / Ngày cuối thêm vạch đứng.
+# Mỗi icon căn giữa theo chiều ngang để bốn nút trên Ribbon cân đối, ngang hàng.
+NAV_HALF = 85  # nửa chiều cao tam giác
+NAV_TRI = int(NAV_HALF * 1.6)  # chiều rộng tam giác
+NAV_BAR = 32  # chiều rộng vạch đứng
+NAV_GAP = 14
+NAV_Y = S // 2
+
+
+def nav_icon(direction, bar):
     image, d = canvas()
-    d.rectangle((60, 80, 90, 240), fill=BLUE)
-    triangle(d, 250, 160, 80, "left")
-    return image
-
-
-def icon_prev():
-    image, d = canvas()
-    triangle(d, 230, 160, 90, "left")
-    return image
-
-
-def icon_next():
-    image, d = canvas()
-    triangle(d, 90, 160, 90, "right")
-    return image
-
-
-def icon_last():
-    image, d = canvas()
-    triangle(d, 70, 160, 80, "right")
-    d.rectangle((230, 80, 260, 240), fill=BLUE)
-    return image
-
-
-def icon_goto():
-    image, d = canvas()
-    d.rounded_rectangle((30, 50, 290, 290), radius=24, outline=BLUE, width=18)
-    d.rectangle((30, 50, 290, 110), fill=BLUE)
-    for x in (90, 230):
-        d.rectangle((x - 10, 25, x + 10, 75), fill=DARK)
-    for r in range(2):
-        for c in range(4):
-            x = 60 + c * 58
-            y = 140 + r * 65
-            d.rectangle((x, y, x + 36, y + 36), fill=ORANGE if (r, c) == (1, 2) else (150, 150, 150, 255))
+    width = NAV_TRI + (NAV_BAR + NAV_GAP if bar else 0)
+    left = (S - width) // 2
+    top, bottom = NAV_Y - NAV_HALF, NAV_Y + NAV_HALF
+    if direction == "left":
+        if bar:
+            d.rectangle((left, top, left + NAV_BAR - 1, bottom), fill=BLUE)
+            left += NAV_BAR + NAV_GAP
+        d.polygon([(left + NAV_TRI, top), (left + NAV_TRI, bottom), (left, NAV_Y)], fill=BLUE)
+    else:
+        d.polygon([(left, top), (left, bottom), (left + NAV_TRI, NAV_Y)], fill=BLUE)
+        if bar:
+            x = left + NAV_TRI + NAV_GAP
+            d.rectangle((x, top, x + NAV_BAR - 1, bottom), fill=BLUE)
     return image
 
 
@@ -141,11 +121,10 @@ ICONS = {
     "export": icon_export,
     "template": icon_template,
     "assign": icon_assign,
-    "first": icon_first,
-    "prev": icon_prev,
-    "next": icon_next,
-    "last": icon_last,
-    "goto": icon_goto,
+    "first": lambda: nav_icon("left", bar=True),
+    "prev": lambda: nav_icon("left", bar=False),
+    "next": lambda: nav_icon("right", bar=False),
+    "last": lambda: nav_icon("right", bar=True),
     "help": lambda: icon_circle_letter("?"),
     "about": lambda: icon_circle_letter("i"),
 }

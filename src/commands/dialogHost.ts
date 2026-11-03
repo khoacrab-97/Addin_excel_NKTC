@@ -11,10 +11,8 @@ export const DIALOG_SIZE = {
   small: { width: 30, height: 40 },
   medium: { width: 40, height: 60 },
   large: { width: 50, height: 75 },
-  /** Bảng chuyển ngày nổi. */
-  panel: { width: 28, height: 42 },
-  /** Hộp thoại nhỏ "chọn vùng/ô trên sheet rồi bấm OK". */
-  pick: { width: 24, height: 28 },
+  /** Thanh chọn trên sheet (hộp thoại thu gọn): tiêu đề + ô nhập + nút mũi tên. */
+  pick: { width: 30, height: 20 },
 } as const satisfies Record<string, DialogSize>;
 
 /** Tiền tố khóa localStorage chứa dữ liệu đầu vào của hộp thoại. */
@@ -65,6 +63,37 @@ function dialogErrorMessage(code: number): string {
   }
 }
 
+/** Hộp thoại vừa đóng: Excel cần một lúc mới đóng hẳn, mở hộp thoại mới ngay sẽ báo 12007 → chờ rồi thử lại. */
+const BUSY_CODE = 12007;
+const RETRY_DELAY_MS = 150;
+const RETRY_LIMIT = 20;
+
+/** `displayDialogAsync`, tự thử lại khi Excel báo đang có hộp thoại khác (tối đa ~3 giây). */
+function displayDialog(
+  url: string,
+  size: DialogSize,
+  callback: (result: Office.AsyncResult<Office.Dialog>) => void,
+  attempt = 0,
+): void {
+  Office.context.ui.displayDialogAsync(
+    url,
+    { width: size.width, height: size.height, displayInIframe: true },
+    (result) => {
+      if (
+        result.status === Office.AsyncResultStatus.Failed &&
+        result.error.code === BUSY_CODE &&
+        attempt < RETRY_LIMIT
+      ) {
+        window.setTimeout(() => {
+          displayDialog(url, size, callback, attempt + 1);
+        }, RETRY_DELAY_MS);
+        return;
+      }
+      callback(result);
+    },
+  );
+}
+
 function newId(): string {
   return `${String(Date.now())}${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -91,42 +120,40 @@ export function openDialog<V extends DialogView>(
   const url = dialogUrl(view, json, id);
 
   return new Promise((resolve, reject) => {
-    Office.context.ui.displayDialogAsync(
-      url,
-      { width: size.width, height: size.height, displayInIframe: true },
-      (result) => {
-        if (result.status === Office.AsyncResultStatus.Failed) {
-          removePayload(id);
-          reject(new UserFacingError(dialogErrorMessage(result.error.code)));
-          return;
-        }
-        const dialog = result.value;
-        let settled = false;
-        const finish = (reply: DialogReplies[V]): void => {
-          if (settled) return;
-          settled = true;
-          removePayload(id);
-          resolve(reply);
-        };
-        dialog.addEventHandler(Office.EventType.DialogMessageReceived, (args) => {
-          if (!("message" in args)) return;
-          // Chỉ nhận kết quả từ trang hộp thoại của add-in. `origin` không có trên bản Office cũ
-          // (DialogOrigin 1.1) — khi đó Office chỉ chuyển tin từ trang cùng domain đã mở.
-          if (args.origin !== undefined && args.origin !== addinOrigin()) return;
-          dialog.close();
-          finish(parseReply(view, args.message));
-        });
-        // Người dùng đóng hộp thoại (12006) hoặc trang hộp thoại lỗi.
-        dialog.addEventHandler(Office.EventType.DialogEventReceived, () => {
-          finish({ action: "cancel" });
-        });
-      },
-    );
+    displayDialog(url, size, (result) => {
+      if (result.status === Office.AsyncResultStatus.Failed) {
+        removePayload(id);
+        reject(new UserFacingError(dialogErrorMessage(result.error.code)));
+        return;
+      }
+      const dialog = result.value;
+      let settled = false;
+      const finish = (reply: DialogReplies[V]): void => {
+        if (settled) return;
+        settled = true;
+        removePayload(id);
+        resolve(reply);
+      };
+      dialog.addEventHandler(Office.EventType.DialogMessageReceived, (args) => {
+        if (!("message" in args)) return;
+        // Chỉ nhận kết quả từ trang hộp thoại của add-in. `origin` không có trên bản Office cũ
+        // (DialogOrigin 1.1) — khi đó Office chỉ chuyển tin từ trang cùng domain đã mở.
+        if (args.origin !== undefined && args.origin !== addinOrigin()) return;
+        dialog.close();
+        finish(parseReply(view, args.message));
+      });
+      // Người dùng đóng hộp thoại (12006) hoặc trang hộp thoại lỗi.
+      dialog.addEventHandler(Office.EventType.DialogEventReceived, () => {
+        finish({ action: "cancel" });
+      });
+    });
   });
 }
 
-/** Hộp thoại mở liên tục (bảng chuyển ngày): nhận nhiều tin, cập nhật nội dung tại chỗ khi được. */
+/** Hộp thoại mở liên tục (thanh chọn trên sheet): nhận nhiều tin, cập nhật nội dung tại chỗ khi được. */
 export interface PersistentDialog<V extends DialogView> {
+  /** `true` → `update` gửi được nội dung mới vào hộp thoại đang mở (DialogApi 1.2). */
+  canUpdate: boolean;
   /** Tin kế tiếp từ hộp thoại; người dùng đóng hộp thoại → `{ action: "cancel" }`. */
   next: () => Promise<DialogReplies[V]>;
   /** Gửi nội dung mới vào hộp thoại (DialogApi 1.2). `false` → bản Office cũ, cần đóng rồi mở lại. */
@@ -150,59 +177,56 @@ export function openPersistentDialog<V extends DialogView>(
   const canUpdate = Office.context.requirements.isSetSupported("DialogApi", "1.2");
 
   return new Promise((resolve, reject) => {
-    Office.context.ui.displayDialogAsync(
-      url,
-      { width: size.width, height: size.height, displayInIframe: true },
-      (result) => {
-        if (result.status === Office.AsyncResultStatus.Failed) {
-          removePayload(id);
-          reject(new UserFacingError(dialogErrorMessage(result.error.code)));
-          return;
+    displayDialog(url, size, (result) => {
+      if (result.status === Office.AsyncResultStatus.Failed) {
+        removePayload(id);
+        reject(new UserFacingError(dialogErrorMessage(result.error.code)));
+        return;
+      }
+      const dialog = result.value;
+      const queue: DialogReplies[V][] = [];
+      let waiting: ((reply: DialogReplies[V]) => void) | undefined;
+      let ended = false;
+      const push = (reply: DialogReplies[V]): void => {
+        if (waiting) {
+          const resume = waiting;
+          waiting = undefined;
+          resume(reply);
+        } else {
+          queue.push(reply);
         }
-        const dialog = result.value;
-        const queue: DialogReplies[V][] = [];
-        let waiting: ((reply: DialogReplies[V]) => void) | undefined;
-        let ended = false;
-        const push = (reply: DialogReplies[V]): void => {
-          if (waiting) {
-            const resume = waiting;
-            waiting = undefined;
-            resume(reply);
-          } else {
-            queue.push(reply);
-          }
-        };
-        const end = (): void => {
+      };
+      const end = (): void => {
+        if (ended) return;
+        ended = true;
+        removePayload(id);
+        push({ action: "cancel" });
+      };
+      dialog.addEventHandler(Office.EventType.DialogMessageReceived, (args) => {
+        if (!("message" in args)) return;
+        if (args.origin !== undefined && args.origin !== addinOrigin()) return;
+        push(parseReply(view, args.message));
+      });
+      dialog.addEventHandler(Office.EventType.DialogEventReceived, end);
+      resolve({
+        canUpdate,
+        next: () =>
+          new Promise((done) => {
+            const queued = queue.shift();
+            if (queued) done(queued);
+            else waiting = done;
+          }),
+        update: (next) => {
+          if (!canUpdate || ended) return false;
+          dialog.messageChild(JSON.stringify(next));
+          return true;
+        },
+        close: () => {
           if (ended) return;
-          ended = true;
-          removePayload(id);
-          push({ action: "cancel" });
-        };
-        dialog.addEventHandler(Office.EventType.DialogMessageReceived, (args) => {
-          if (!("message" in args)) return;
-          if (args.origin !== undefined && args.origin !== addinOrigin()) return;
-          push(parseReply(view, args.message));
-        });
-        dialog.addEventHandler(Office.EventType.DialogEventReceived, end);
-        resolve({
-          next: () =>
-            new Promise((done) => {
-              const queued = queue.shift();
-              if (queued) done(queued);
-              else waiting = done;
-            }),
-          update: (next) => {
-            if (!canUpdate || ended) return false;
-            dialog.messageChild(JSON.stringify(next));
-            return true;
-          },
-          close: () => {
-            if (ended) return;
-            dialog.close();
-            end();
-          },
-        });
-      },
-    );
+          dialog.close();
+          end();
+        },
+      });
+    });
   });
 }

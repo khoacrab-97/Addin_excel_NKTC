@@ -20,16 +20,16 @@
 3. Nếu Windows hiện **"Windows protected your PC"** (SmartScreen): bấm **More info** → **Run anyway**. Cảnh báo này xuất hiện vì bộ cài chưa có chữ ký số thương mại.
 4. Bấm **Cài đặt**. Ở trang cuối giữ dấu tích **Mở Excel và kích hoạt add-in** → **Hoàn tất**.
 5. Excel mở workbook `NhatKyThiCong_BatDau.xlsx` kèm khung chào mừng (chỉ hiện lần này, đóng được). Lần đầu Excel có thể hỏi tin cậy add-in → chọn **Trust** / **Tin cậy**. Từ đó thanh Ribbon có tab **Nhật ký thi công**; mở bất kỳ file nào cũng dùng được.
-6. Kiểm tra: tab **Nhật ký thi công** → nút **Phiên bản** hiển thị phiên bản add-in, phiên bản Office và mức **ExcelApi tối đa**.
+6. Kiểm tra: tab **Nhật ký thi công** → **Tiện ích ▾** → **Phiên bản** hiển thị phiên bản add-in, phiên bản Office và mức **ExcelApi tối đa**.
 
-Tab **Nhật ký thi công** (từ 1.3.0, không còn khung bên phải):
+Tab **Nhật ký thi công** (từ 1.3.0, không còn khung bên phải; bố cục từ 1.7.0):
 
 | Nhóm | Nút |
 |---|---|
 | Tiến độ | Tạo bảng · Xuất theo ngày |
 | Form mẫu | Chèn form mẫu · Xuất vào form |
-| Chuyển ngày | Bảng chuyển ngày · Ngày đầu · Ngày trước · Ngày sau · Ngày cuối |
-| Tiện ích | Hướng dẫn · Phiên bản |
+| Chuyển ngày | Ngày đầu · Ngày trước · Ngày sau · Ngày cuối |
+| Tiện ích | Menu **Tiện ích ▾**: Hướng dẫn · Phiên bản |
 
 Nếu không thấy tab **Nhật ký thi công**: **Start menu** → **Nhật ký thi công (Excel)** (mở lại workbook kích hoạt), hoặc **Insert** (Chèn) → **My Add-ins** → thẻ **Developer Add-ins** (hoặc **MY ADD-INS**) → chọn **Nhật ký thi công** → **Add**.
 
@@ -48,8 +48,8 @@ Bộ cài thực hiện (chỉ trong phạm vi tài khoản người dùng):
 
 | Loại cập nhật | Cách nhận |
 |---|---|
-| Sửa lỗi / thêm chức năng (thường gặp) | **Tự động**: mỗi lần Excel nạp add-in, mã add-in được tải bản mới nhất từ máy chủ phát hành. Nút **Phiên bản** kiểm tra và hướng dẫn nếu còn chạy bản cũ. |
-| Có thay đổi manifest (ghi rõ "cần cài lại" trong Release; ví dụ **1.3.0** chuyển sang tab Ribbon) | Đóng Excel → tải và chạy lại bộ cài mới nhất (cài đè, không cần gỡ trước) → mở lại Excel. Nếu vẫn thấy giao diện cũ: đóng Excel, xóa nội dung thư mục `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\`, mở lại Excel. |
+| Sửa lỗi / thêm chức năng (thường gặp) | **Tự động**: mỗi lần Excel nạp add-in, mã add-in được tải bản mới nhất từ máy chủ phát hành. **Tiện ích ▾ → Phiên bản** kiểm tra và hướng dẫn nếu còn chạy bản cũ. |
+| Có thay đổi manifest (ghi rõ "cần cài lại" trong Release; ví dụ **1.3.0** chuyển sang tab Ribbon, **1.7.0** đổi nút trên Ribbon) | Đóng Excel → tải và chạy lại bộ cài mới nhất (cài đè, không cần gỡ trước) → mở lại Excel. Nếu vẫn thấy giao diện cũ: đóng Excel, xóa nội dung thư mục `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\`, mở lại Excel. |
 
 ## 4. Gỡ cài đặt
 

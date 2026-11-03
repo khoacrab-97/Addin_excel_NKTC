@@ -5,7 +5,6 @@ import { type LoadedDialog, loadDialog } from "./payload";
 import { AboutView } from "./views/AboutView";
 import { ConfirmView } from "./views/ConfirmView";
 import { CreateTableView } from "./views/CreateTableView";
-import { DayPanelView } from "./views/DayPanelView";
 import { ExportFormView } from "./views/ExportFormView";
 import { F1ColumnsView } from "./views/F1ColumnsView";
 import { HelpView } from "./views/HelpView";
@@ -27,8 +26,6 @@ function DialogApp({ dialog }: { dialog: LoadedDialog }): JSX.Element {
       return <MessageView payload={dialog.payload} reply={reply} />;
     case "export-form":
       return <ExportFormView payload={dialog.payload} reply={reply} />;
-    case "day-panel":
-      return <DayPanelView payload={dialog.payload} reply={reply} />;
     case "pick":
       return <PickView payload={dialog.payload} reply={reply} />;
     case "confirm":

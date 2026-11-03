@@ -8,9 +8,9 @@
 
 | Mã | Quy tắc |
 |---|---|
-| R0.1 | Chức năng nằm trên tab Ribbon riêng **Nhật ký thi công**: nhóm **Tiến độ** (Tạo bảng, Xuất theo ngày — từ 1.4.0), **Form mẫu** (Chèn form mẫu, Xuất vào form — từ 1.5.0), **Chuyển ngày** (Bảng chuyển ngày, Ngày đầu, Ngày trước, Ngày sau, Ngày cuối — từ 1.6.0), **Tiện ích** (Hướng dẫn, Phiên bản). Không có khung làm việc bên phải (theo yêu cầu chủ dự án 02/11/2026). |
+| R0.1 | Chức năng nằm trên tab Ribbon riêng **Nhật ký thi công**: nhóm **Tiến độ** (Tạo bảng, Xuất theo ngày — từ 1.4.0), **Form mẫu** (Chèn form mẫu, Xuất vào form — từ 1.5.0), **Chuyển ngày** (Ngày đầu, Ngày trước, Ngày sau, Ngày cuối — cùng cỡ icon, ngang hàng; từ 1.7.0), **Tiện ích ▾** (menu thả xuống: Hướng dẫn, Phiên bản — từ 1.7.0). Không có khung làm việc bên phải (theo yêu cầu chủ dự án 02/11/2026). |
 | R0.2 | Bước cần nhập liệu/xác nhận dùng hộp thoại (Office Dialog API 1.1 — có từ Excel 2016) mở giữa màn hình và tự đóng khi xong. Dữ liệu vào hộp thoại qua URL/localStorage (cùng domain), kết quả trả về qua `messageParent` — chỉ nhận tin có origin của add-in (khi Office cung cấp origin); hai phía kiểm tra dữ liệu nhận được, dữ liệu sai coi như Hủy. |
-| R0.4 | Ô chọn vùng (giống ô chọn vùng của Excel): ô hiển thị vùng tự nhận diện; nút **⬆** ở cuối ô → hộp thoại chính tạm đóng (ẩn) → hộp thoại nhỏ "Chọn … rồi bấm OK" → người dùng chọn vùng/ô trên sheet → **OK**: hộp thoại nhỏ đóng, hộp thoại chính mở lại với vùng/ô vừa chọn (**Hủy** giữ giá trị cũ) — từ 1.6.0. Có thể gõ địa chỉ `Sheet!A1:D20` rồi Enter. Vùng không dùng được → báo lỗi dưới ô, khóa nút thực hiện. |
+| R0.4 | Ô chọn vùng (giống ô chọn vùng của Excel, ví dụ hộp thoại New Formatting Rule) — từ 1.7.0: ô hiển thị vùng tự nhận diện; nút **⬆** ở cuối ô → hộp thoại chính đóng, thay bằng **thanh chọn** nhỏ gồm tiêu đề (`<chức năng> – <tên ô>`), ô nhập địa chỉ và nút **⬇** ở cuối. Người dùng chọn vùng/ô trên sheet → địa chỉ **hiện ngay** trong ô nhập (chọn 1 ô ở ô Vùng → cả vùng có dữ liệu; chọn ô gộp → ô trên-trái); có thể gõ địa chỉ. Bấm **⬇** hoặc **Enter** → thanh đóng, hộp thoại ban đầu mở lại với địa chỉ vừa chọn, các giá trị khác giữ nguyên. Đóng thanh bằng **X** → giữ giá trị cũ. Excel 2016/2019 (không có DialogApi 1.2): ô nhập không tự cập nhật; bấm ⬇ lấy vùng/ô đang chọn trên sheet lúc đó. Áp dụng cho Vùng dữ liệu (Xuất theo ngày), Vùng nguồn và Ô trên form (Xuất vào form). Ngoài ra có thể gõ địa chỉ `Sheet!A1:D20` trực tiếp trong hộp thoại rồi Enter. Vùng không dùng được → báo lỗi dưới ô, khóa nút thực hiện. |
 | R0.5 | Office.js chỉ làm mờ (disable) được nút Ribbon khi add-in chạy shared runtime (không có trên Excel 2016). Vì vậy các nút Chuyển ngày luôn bấm được; khi chưa gán, nút chỉ hiện hướng dẫn "bấm Xuất vào form", không ghi gì. |
 | R0.3 | Khung bên phải chỉ hiện **một lần** khi bộ cài kích hoạt add-in (trang chào mừng), người dùng đóng được. |
 
@@ -73,7 +73,7 @@ Output:
    - **Cột ngày** (dùng để chuyển ngày): tự nhận diện (R2.13), chọn lại được; hiển thị số ngày hợp lệ.
    - **Dòng gán**: bên trái chọn cột nguồn (`Cột A – <tiêu đề>`), bên phải ô trên form (ô chọn vùng: chọn ô/ô gộp trên biểu mẫu rồi bấm ⬆, hoặc gõ `Mẫu NKTC!E2`; ô không ghi tên sheet thuộc sheet của dòng gán khác → `Mẫu NKTC` → sheet đang mở). **+ Thêm** để thêm dòng; chọn dòng → **Delete** (hoặc **Xóa dòng**) để xóa.
    - **Gán**: kiểm tra từng dòng (thiếu cột/ô, ô sai, ô trùng — báo theo dòng), lưu cấu hình, rồi ghi **dữ liệu ngày đầu tiên** lên form (xác nhận ghi đè theo R2.5). Mở lại hộp thoại → hiện cấu hình đã gán để sửa.
-4. Nhóm **Chuyển ngày**: **Bảng chuyển ngày** (R2.16), **Ngày đầu**, **Ngày trước**, **Ngày sau**, **Ngày cuối** (nút Đến ngày… bỏ từ 1.6.0 — gõ ngày trong bảng chuyển ngày). Chỉ hoạt động sau khi đã Gán (R0.5). Phạm vi = các ngày hợp lệ trong vùng nguồn, tăng dần; mỗi lần bấm đọc lại vùng nguồn và ghi các ô đích; không mở hộp thoại trừ khi cần xác nhận, đã ở ngày đầu/cuối, hoặc có lỗi.
+4. Nhóm **Chuyển ngày**: **Ngày đầu**, **Ngày trước**, **Ngày sau**, **Ngày cuối** (Bảng chuyển ngày và nút Đến ngày… bỏ từ 1.7.0 — ngày đang xem đọc ở dòng "Ngày … tháng … năm …" trên biểu mẫu). Chỉ hoạt động sau khi đã Gán (R0.5). Phạm vi = các ngày hợp lệ trong vùng nguồn, tăng dần; mỗi lần bấm đọc lại vùng nguồn và ghi các ô đích; không mở hộp thoại trừ khi cần xác nhận, đã ở ngày đầu/cuối, hoặc có lỗi.
 
 ### F2.2 Quy tắc nghiệp vụ
 
@@ -94,7 +94,7 @@ Output:
 | R2.14 | Cấu hình đọc từ workbook vượt giới hạn → bỏ toàn bộ cấu hình (fail closed): tên sheet ≤ 31 ký tự; địa chỉ vùng nguồn phải là một vùng liên tục không kèm tên sheet (`A1:I201`, `A:C`, `3:5`); ≤ 16.384 tiêu đề, mỗi tiêu đề ≤ 32.767 ký tự; ≤ 500 ô đích; chỉ số cột < 16.384. |
 | R2.13 | Nhận diện cột Ngày: tiêu đề `Ngày` → tiêu đề chứa từ "ngày" → cột đầu tiên có toàn bộ ô không trống là ngày hợp lệ. |
 | R2.15 | Cột Ngày gán vào ô đang chứa mẫu chữ **"… Ngày … tháng … năm …"** (không phân biệt hoa/thường; ví dụ dòng ngày của biểu mẫu `Ngày ..... tháng ..... năm ..........`, hoặc `Hà Nội, ngày … tháng … năm …`) → add-in rải **ngày sau chữ "Ngày", tháng sau "tháng", năm sau "năm"** (`Ngày 15 tháng 06 năm 2026`), giữ phần chữ phía trước; mỗi lần chuyển ngày điền lại. Ô dạng này không tính là ghi đè dữ liệu (R2.5). Ô khác nhận ngày dạng số (hiển thị theo định dạng sẵn có). |
-| R2.16 | **Bảng chuyển ngày**: cửa sổ nhỏ nổi, để mở trong lúc làm việc — hiện **thứ, ngày đang xem** và vị trí (`Ngày i / n`, khoảng ngày), ô **Đến ngày** (gõ `dd/mm/yyyy` + Enter), nút **Đầu / Trước / Sau / Cuối**, thông báo (đầu/cuối, lỗi) ngay trong bảng. DialogApi 1.2 (Microsoft 365, Excel 2021+): cập nhật tại chỗ; Excel 2016: bảng đóng và mở lại sau mỗi lần chuyển. Cần xác nhận ghi đè → bảng tạm đóng, hỏi, rồi mở lại. Bấm nút khác trên Ribbon khi bảng đang mở → bảng đóng, lệnh mới chạy. Ribbon không chứa được ô nhập/nhãn động (giới hạn Office.js) nên dùng bảng này. |
+| R2.16 | ~~Bảng chuyển ngày~~ — **bỏ từ 1.7.0** theo yêu cầu chủ dự án (03/11/2026): chuyển ngày chỉ bằng 4 nút trên Ribbon; ngày đang xem hiển thị ở ô ngày của biểu mẫu (R2.15). |
 
 ### F2.3 Biểu mẫu Excel "Tình hình thi công hàng ngày" (`templates/Mau_NKTC.xlsx`)
 
@@ -147,7 +147,7 @@ Sinh lại biểu mẫu: `python3 -I scripts/fixtures/make_nktc_workbooks.py tes
 | Mã | Chức năng | Mô tả |
 |---|---|---|
 | F3.1 | Hướng dẫn | Nút **Hướng dẫn** (nhóm Tiện ích) → hộp thoại: các bước F1, F2 theo nút Ribbon; link tải `templates/Mau_NKTC.xlsx` (biểu mẫu), `templates/Mau_TienDo.xlsx` (danh sách công việc mẫu), bảng ô đích, hướng dẫn cài đặt. |
-| F3.2 | Kiểm tra phiên bản | Nút **Phiên bản** → hộp thoại: phiên bản add-in, nền tảng, phiên bản Office, ExcelApi tối đa; tự kiểm tra `version.json` trên máy chủ phát hành khi mở, nút **Kiểm tra lại** (R3.1–R3.3). |
+| F3.2 | Kiểm tra phiên bản | **Tiện ích ▾ → Phiên bản** → hộp thoại: phiên bản add-in, nền tảng, phiên bản Office, ExcelApi tối đa; tự kiểm tra `version.json` trên máy chủ phát hành khi mở, nút **Kiểm tra lại** (R3.1–R3.3). |
 | F3.3 | Cập nhật | Mã add-in tải từ máy chủ phát hành mỗi lần Excel nạp add-in → tự cập nhật. Có bản mới hơn bản đang chạy → hộp thoại Phiên bản hiển thị các bước cập nhật. |
 
 | Mã | Quy tắc |

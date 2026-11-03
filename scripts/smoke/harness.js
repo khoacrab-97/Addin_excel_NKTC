@@ -131,14 +131,38 @@ async function openWorkbook(input, options = {}) {
   }
 
   /**
-   * Nút ⬆ của ô chọn vùng: hộp thoại chính đóng → hộp thoại nhỏ "chọn rồi OK" → chọn trên sheet → OK →
-   * hộp thoại chính mở lại. `select` = [sheet, address] cần chọn (bỏ qua → giữ vùng đang chọn).
+   * Nút ⬆ của ô chọn vùng (giống Excel): hộp thoại chính đóng → thanh chọn (tiêu đề + ô nhập + nút ⬇) → chọn trên
+   * sheet → địa chỉ hiện ngay trong ô nhập → bấm ⬇ / Enter → hộp thoại chính mở lại.
+   * `select` = [sheet, address] cần chọn (bỏ qua → không chọn lại). Tùy chọn: `shown` = địa chỉ phải hiện trong
+   * thanh sau khi chọn; `type` = gõ địa chỉ vào thanh; `confirm` = "arrow" | "enter" | "close" (X của cửa sổ);
+   * `inspect(bar)` = kiểm tra thêm khi thanh đang mở.
    */
-  async function pickVia(d, buttonName, select, confirm = true) {
+  async function pickVia(d, buttonName, select, options = {}) {
+    const confirm = options.confirm ?? "arrow";
     await d.act((page) => page.getByRole("button", { name: buttonName }).click());
-    const small = await dialog();
+    const bar = await dialog();
+    const box = bar.page.getByRole("textbox", { name: "Địa chỉ đang chọn" });
+    if (options.initial !== undefined) {
+      const initial = await box.inputValue();
+      if (initial !== options.initial) throw new Error(`Thanh chọn mở với "${initial}", cần "${options.initial}"`);
+    }
     if (select) await smoke(([s, a]) => globalThis.__smoke.select(s, a), select);
-    await small.click(confirm ? "OK" : "Hủy");
+    if (options.shown !== undefined) {
+      await bar.page.waitForFunction(
+        (want) => globalThis.document.querySelector('input[aria-label="Địa chỉ đang chọn"]')?.value === want,
+        options.shown,
+      );
+    }
+    if (options.type !== undefined) await box.fill(options.type);
+    if (options.inspect) await options.inspect(bar);
+    if (confirm === "close") {
+      await smoke(() => globalThis.__smoke.dismiss());
+      await bar.page.close();
+    } else if (confirm === "enter") {
+      await bar.act(() => box.press("Enter"));
+    } else {
+      await bar.click("Xác nhận vùng chọn");
+    }
     return dialog();
   }
 
