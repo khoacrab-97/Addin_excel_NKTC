@@ -273,6 +273,58 @@ async function main() {
   assert.equal((await cell(MAPPINGS[2].cell)).value, "Mưa to (sửa sau khi xuất)");
   pass("Đọc lại nguồn", "sửa NK_TheoNgay!C3 → form cập nhật");
 
+  // 7b. Cột nguồn theo tên tiêu đề + vùng nguồn tự mở rộng (R2.17): chèn cột giữa C (cột Thời tiết dịch sang D),
+  // thêm 1 ngày ở cuối → Chuyển ngày vẫn ghi đúng từng cột, không phải chọn lại vùng hay gán lại.
+  const setDaily = (address, value) =>
+    wb.smoke(([a, v]) => globalThis.__smoke.setValue("NK_TheoNgay", a, v), [address, value]);
+  await wb.smoke(() => globalThis.__smoke.insertColumn("NK_TheoNgay", 2));
+  await setDaily("C1", "Ghi chú chèn thêm");
+  const newRow = daily.values.length + 1;
+  const NEW_DAY = 46388; // 01/01/2027
+  const newValues = ["Ngày mới: nội dung", "Nắng", "Ban CH mới", 12, 3, "NT mới", "SC mới", "KN mới"];
+  await setDaily(`A${newRow}`, NEW_DAY);
+  await setDaily(`C${newRow}`, "không gán");
+  for (let i = 0; i < newValues.length; i++)
+    await setDaily(`${COLUMN_LETTERS[i < 1 ? 1 : i + 2]}${newRow}`, newValues[i]);
+  start = await logLength();
+  await pressSilently("nktcDayNext");
+  await assertDayOnForm("17/06/2026");
+  assert.equal((await writesSince(start)).length, MAPPINGS.length, "chỉ ghi các ô đích");
+  const remapped = await config();
+  assert.equal(remapped.headers[2], "Ghi chú chèn thêm");
+  assert.deepEqual(
+    remapped.mappings.map((m) => m.column),
+    MAPPINGS.map((m) => COLUMN_LETTERS.indexOf(m.column) + (COLUMN_LETTERS.indexOf(m.column) >= 2 ? 1 : 0)),
+  );
+  await pressSilently("nktcDayLast");
+  assert.equal((await cell(MAPPINGS[0].cell)).value, "Ngày 01 tháng 01 năm 2027");
+  assert.equal((await cell(MAPPINGS[1].cell)).value, newValues[0]);
+  assert.equal((await cell(MAPPINGS[2].cell)).value, "Nắng");
+  assert.equal((await cell(MAPPINGS[8].cell)).value, "KN mới");
+  pass("Chèn cột / thêm ngày", "cột khớp theo tên tiêu đề, vùng nguồn tự mở rộng tới ngày mới; không gán lại");
+
+  // 7c. Đổi tên tiêu đề cột đã gán → Chuyển ngày chặn, báo rõ cột + ô đích, không ghi ô nào; hộp thoại Xuất vào
+  // form báo dòng cần chọn lại cột. Khôi phục tên (khác hoa/thường, khoảng trắng) → chạy lại bình thường.
+  await setDaily("D1", "Thời tiết (sáng)");
+  start = await logLength();
+  text = await pressExpectMessage("nktcDayPrev");
+  assert.match(text, /Không tìm thấy cột "Thời tiết" \(gán vào Mẫu NKTC!C6\)/);
+  assert.match(text, /Biểu mẫu chưa được ghi/);
+  assert.equal((await writesSince(start)).length, 0);
+  done = await wb.press("nktcExportForm");
+  d = await wb.dialog();
+  assert.match(await d.text(), /Dòng 3: cột "Thời tiết" không còn trong vùng nguồn/);
+  assert.equal(await sourceField(d).inputValue(), `NK_TheoNgay!A1:J${newRow}`);
+  await d.click("Hủy");
+  await done();
+  await setDaily("D1", "  THỜI TIẾT ");
+  await pressSilently("nktcDayPrev");
+  await assertDayOnForm("31/12/2026");
+  pass(
+    "Đổi tên tiêu đề cột",
+    "Chuyển ngày chặn + báo cột/ô; hộp thoại báo dòng cần chọn lại; so tên không phân biệt hoa/thường",
+  );
+
   // 8. Mở lại Xuất vào form: hiện cấu hình đã gán; sửa (bỏ 1 dòng) → Gán lại ghi ngày đầu.
   done = await wb.press("nktcExportForm");
   d = await wb.dialog();

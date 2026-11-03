@@ -51,7 +51,8 @@ export function HelpSection(): JSX.Element {
         </li>
         <li>
           Bấm &quot;Xuất vào form&quot;: kiểm tra Vùng nguồn (tự nhận diện; chọn lại bằng nút ⬆) — dòng đầu là tiêu đề,
-          không được có ô gộp (merge).
+          không được có ô gộp (merge). Vùng nguồn tự mở rộng tới hết dữ liệu của sheet; cột đã gán được nhớ theo tên
+          tiêu đề, nên thêm hay chèn cột, thêm ngày không cần gán lại (chỉ cần không đổi tên tiêu đề cột đã gán).
         </li>
         <li>
           Mỗi dòng gán: chọn cột nguồn (trái); bên phải bấm ⬆ → bấm chọn ô trên biểu mẫu → bấm ⬇ để quay lại. &quot;+

@@ -1,4 +1,4 @@
-import { normalizeCellAddress, stripSheetName } from "../core/address/address";
+import { columnLetter, normalizeCellAddress, stripSheetName } from "../core/address/address";
 import type { TargetCell } from "../core/mapping/types";
 import { UserFacingError } from "./errors";
 import { assertSheetsExist } from "./worksheets";
@@ -83,6 +83,28 @@ export async function readRange(ref: RangeRef): Promise<RangeSnapshot> {
       firstRowNumber: target.rowIndex + 1,
       firstColumnIndex: target.columnIndex,
     };
+  });
+}
+
+/**
+ * Vùng nguồn tự mở rộng (R2.17): chỉ giữ ô đầu (trên-trái) của `ref`; vùng kéo tới dòng/cột cuối cùng có dữ liệu
+ * của sheet — thêm cột (kể cả chèn giữa) hay thêm ngày ở dưới đều được tính, không phải chọn lại vùng.
+ */
+export async function expandSourceRef(ref: RangeRef): Promise<RangeRef> {
+  return Excel.run(async (context) => {
+    await assertSheetsExist(context, [ref.sheetName]);
+    const sheet = context.workbook.worksheets.getItem(ref.sheetName);
+    const anchor = sheet.getRange(ref.address).getCell(0, 0);
+    const used = sheet.getUsedRange();
+    anchor.load(["address", "rowIndex", "columnIndex"]);
+    used.load(["rowIndex", "columnIndex", "rowCount", "columnCount"]);
+    await context.sync();
+    const lastRow = used.rowIndex + used.rowCount - 1;
+    const lastColumn = used.columnIndex + used.columnCount - 1;
+    // Ô đầu nằm ngoài vùng có dữ liệu → giữ nguyên (đọc vùng sẽ báo "không có dữ liệu").
+    if (lastRow < anchor.rowIndex || lastColumn < anchor.columnIndex) return ref;
+    const start = stripSheetName(anchor.address);
+    return { sheetName: ref.sheetName, address: `${start}:${columnLetter(lastColumn)}${String(lastRow + 1)}` };
   });
 }
 

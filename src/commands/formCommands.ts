@@ -2,6 +2,7 @@ import { formatReference, parseCellReference } from "../core/address/reference";
 import { sameHeaders } from "../core/dailyLog/prepareDailyLog";
 import { DAILY_SHEET_BASE_NAME } from "../core/dailyLog/sheetName";
 import type { ColumnOption, ExportFormPayload, ExportFormState, RangeFieldState } from "../core/dialog/protocol";
+import { remapFormState } from "../core/dialog/formRemap";
 import { columnOptions } from "../core/dialog/options";
 import { headerTexts } from "../core/mapping/config";
 import { buildDayIndex, detectDateColumn } from "../core/mapping/days";
@@ -11,6 +12,7 @@ import { UserFacingError, toUserMessage } from "../excel/errors";
 import {
   type RangeRef,
   type RangeSnapshot,
+  expandSourceRef,
   getActiveSheetName,
   getSheetNames,
   getUsedRangeRef,
@@ -49,9 +51,12 @@ export async function insertTemplateCommand(): Promise<void> {
   ]);
 }
 
-/** Vùng nguồn mặc định: cấu hình đã lưu → sheet NK_TheoNgay đang mở hoặc mới nhất → vùng đang chọn. */
+/**
+ * Vùng nguồn mặc định: cấu hình đã lưu → sheet NK_TheoNgay đang mở hoặc mới nhất → vùng đang chọn.
+ * Luôn tự mở rộng từ ô đầu tới hết dữ liệu của sheet (R2.17).
+ */
 async function defaultSourceRef(config: MappingConfig | undefined): Promise<RangeRef> {
-  if (config) return config.source;
+  if (config) return expandSourceRef(config.source);
   const [active, names] = await Promise.all([getActiveSheetName(), getSheetNames()]);
   const daily = DAILY_SHEET.test(active) ? active : names.filter((name) => DAILY_SHEET.test(name)).pop();
   return daily === undefined ? resolveRangeRef(undefined) : getUsedRangeRef(daily);
@@ -140,6 +145,8 @@ export async function exportFormCommand(): Promise<void> {
   };
   let errors: string[] | undefined;
   let rowError: ExportFormPayload["rowError"];
+  /** Dòng tiêu đề mà cột của các dòng gán đang soạn tham chiếu tới (để khớp lại theo tên khi vùng nguồn đổi). */
+  let stateHeaders: string[] | undefined = config?.headers;
 
   for (let round = 0; round < MAX_ROUNDS; round++) {
     const source: SourceCheck = ref
@@ -149,6 +156,13 @@ export async function exportFormCommand(): Promise<void> {
     const snapshot = source.field.error === undefined ? source.snapshot : undefined;
     const options: ColumnOption[] = snapshot ? columnOptions(snapshot.values[0] ?? [], snapshot.firstColumnIndex) : [];
     if (snapshot) {
+      // Vùng nguồn đổi (chọn lại, thêm / chèn / đổi chỗ cột) → giữ dòng gán theo tên tiêu đề (R2.17).
+      if (stateHeaders !== undefined && !sameHeaders(stateHeaders, source.headers)) {
+        const remapped = remapFormState(state, stateHeaders, source.headers);
+        state = remapped.state;
+        if (remapped.lost.length > 0) errors = [...(errors ?? []), ...remapped.lost];
+      }
+      stateHeaders = source.headers;
       state = fitState(state, source.headers.length);
       if (state.dateColumn === undefined) {
         const detected = detectDateColumn(snapshot.values);
@@ -182,7 +196,7 @@ export async function exportFormCommand(): Promise<void> {
         const picked = reply.address ?? (await pickOnSheet("range", `${TITLE} – Vùng nguồn`, source.field.value));
         if (picked === undefined) continue;
         pickError = undefined;
-        ref = await resolveRangeRef(picked);
+        ref = await expandSourceRef(await resolveRangeRef(picked));
       } catch (error) {
         pickError = toUserMessage(error);
       }
@@ -236,11 +250,9 @@ export async function exportFormCommand(): Promise<void> {
       continue;
     }
 
+    // Xác nhận ghi đè gắn với bộ ô đích (R2.5); cột nguồn đổi vị trí không làm mất xác nhận.
     const keepConfirmation =
-      config !== undefined &&
-      config.confirmedKey !== undefined &&
-      config.confirmedKey === mappingKey(built.mappings) &&
-      sameHeaders(source.headers, config.headers);
+      config !== undefined && config.confirmedKey !== undefined && config.confirmedKey === mappingKey(built.mappings);
     await saveMappingConfig({
       version: 1,
       source: snapshot.ref,

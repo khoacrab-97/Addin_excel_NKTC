@@ -1,23 +1,22 @@
-import { sameHeaders } from "../core/dailyLog/prepareDailyLog";
 import { isDatePattern } from "../core/dates/datePattern";
 import { type DayNumber, formatDay } from "../core/dates/excelDate";
 import type { ConfirmPayload, MessageTone } from "../core/dialog/protocol";
 import { headerTexts } from "../core/mapping/config";
+import { type MissingColumn, remapConfig } from "../core/mapping/headerMatch";
 import { buildDayIndex } from "../core/mapping/days";
 import { type DayCommand, resolveDay } from "../core/mapping/navigation";
 import { type MappingConfig, formatTarget, mappingKey, targetKey } from "../core/mapping/types";
 import { validateMappings } from "../core/mapping/validate";
 import { buildWritePlan } from "../core/mapping/writePlan";
 import { UserFacingError } from "../excel/errors";
-import { type RangeSnapshot, readRange } from "../excel/rangeReader";
+import { type RangeSnapshot, expandSourceRef, readRange } from "../excel/rangeReader";
 import { loadMappingConfig, saveMappingConfig } from "../excel/settingsStore";
 import { inspectTargets, writeCells } from "../excel/templateWriter";
 import { DIALOG_SIZE, openDialog } from "./dialogHost";
 import { showMessage } from "./messages";
+import { refText } from "./rangePick";
 
 const TITLE = "Chuyển ngày";
-const HEADERS_CHANGED =
-  'Dòng tiêu đề của vùng nguồn đã thay đổi so với cấu hình. Bấm "Xuất vào form" để chọn lại vùng nguồn và kiểm tra gán cột.';
 const NOT_ASSIGNED =
   'Chưa gán cột vào form. Bấm "Xuất vào form" (nhóm Form mẫu) để chọn vùng nguồn và gán cột trước — chuyển ngày chỉ hoạt động sau khi đã gán.';
 
@@ -27,11 +26,27 @@ function requireConfig(): MappingConfig {
   return config;
 }
 
-/** Đọc lại vùng nguồn (R2.7) và kiểm tra tiêu đề còn khớp cấu hình. */
-async function readSource(config: MappingConfig): Promise<RangeSnapshot> {
-  const fresh = await readRange(config.source);
-  if (!sameHeaders(headerTexts(fresh.values[0] ?? []), config.headers)) throw new UserFacingError(HEADERS_CHANGED);
-  return fresh;
+function missingMessage(missing: readonly MissingColumn[], source: string): string {
+  const items = missing.map((item) =>
+    item.target === undefined
+      ? `cột Ngày "${item.header}"`
+      : `cột "${item.header}" (gán vào ${formatTarget(item.target)})`,
+  );
+  return (
+    `Không tìm thấy ${items.join(", ")} trong dòng tiêu đề của vùng nguồn ${source} — cột có thể đã bị xóa hoặc ` +
+    'đổi tên tiêu đề. Biểu mẫu chưa được ghi. Bấm "Xuất vào form" để chọn lại cột cho các dòng này.'
+  );
+}
+
+/**
+ * Đọc lại vùng nguồn (R2.7) — tự mở rộng tới hết dữ liệu của sheet — và khớp lại cột đã gán theo tên tiêu đề
+ * (R2.17): thêm / chèn / đổi chỗ cột vẫn ghi đúng; cột bị xóa / đổi tên → báo, không ghi.
+ */
+async function readSource(config: MappingConfig): Promise<{ fresh: RangeSnapshot; config: MappingConfig }> {
+  const fresh = await readRange(await expandSourceRef(config.source));
+  const remapped = remapConfig(config, headerTexts(fresh.values[0] ?? []));
+  if (!remapped.ok) throw new UserFacingError(missingMessage(remapped.missing, refText(fresh.ref)));
+  return { fresh, config: remapped.config };
 }
 
 /** Kết quả một lần chuyển ngày. */
@@ -57,8 +72,7 @@ export async function navigateDay(
   command: DayCommand,
   confirm: ConfirmOverwrite = confirmByDialog,
 ): Promise<DayOutcome> {
-  const config = requireConfig();
-  const fresh = await readSource(config);
+  const { fresh, config } = await readSource(requireConfig());
   const errors = validateMappings(config.mappings, config.headers.length);
   if (errors.length > 0) {
     return { kind: "message", tone: "warning", text: `${errors.join(" ")} Bấm "Xuất vào form" để gán cột.` };
