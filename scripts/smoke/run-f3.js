@@ -103,6 +103,30 @@ async function main() {
   errors.push(...welcome.pageErrors);
   pass("Trang chào mừng", `hướng dẫn dùng tab Ribbon, phiên bản ${pkg.version}`);
 
+  // 6b. Đường dẫn ngắn: Office ghi địa chỉ trang lên thanh tiêu đề → hộp thoại mở bằng ".../dialog.html" (không
+  // có ?view=…&id=…). Hộp thoại không đọc được dữ liệu (bộ nhớ không dùng chung) → tự mở lại bằng đường dẫn đầy đủ.
+  const short = await openWorkbook(INPUT, { browser });
+  let shortDone = await short.press("nktcAbout");
+  let sd = await short.dialog();
+  assert.match(sd.info.url, /\/dialog\.html$/, "đường dẫn ngắn");
+  await sd.page.waitForSelector(`text=${pkg.version}`);
+  await sd.click("Đóng");
+  await shortDone();
+  shortDone = await short.press("nktcAbout");
+  await short.commands.waitForFunction(() => globalThis.__smoke.openDialog() !== null);
+  await short.commands.evaluate(() => globalThis.localStorage.removeItem("nktc.dialog.current"));
+  const first = await short.dialog();
+  await short.commands.waitForFunction((index) => globalThis.__smoke.dialogClosed(index), first.info.index);
+  await first.page.close();
+  sd = await short.dialog();
+  assert.match(sd.info.url, /dialog\.html\?view=about&id=/, "mở lại bằng đường dẫn đầy đủ");
+  await sd.page.waitForSelector(`text=${pkg.version}`);
+  await sd.click("Đóng");
+  await shortDone();
+  errors.push(...short.pageErrors);
+  await short.context.close();
+  pass("Đường dẫn hộp thoại ngắn", "mở bằng .../dialog.html; không đọc được dữ liệu → tự mở lại bằng đường dẫn đầy đủ");
+
   // 7. Hộp thoại mở trực tiếp không có dữ liệu → thông báo, không lỗi JS.
   const bad = await welcome.context.newPage();
   bad.on("pageerror", (e) => errors.push(`dialog: ${e.message}`));

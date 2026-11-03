@@ -1,7 +1,8 @@
 import { initializeIcons } from "@fluentui/react";
 import type { JSX } from "react";
 import ReactDOM from "react-dom";
-import { type LoadedDialog, loadDialog } from "./payload";
+import { NO_PAYLOAD_MESSAGE } from "../core/dialog/protocol";
+import { type LoadedDialog, isShortUrl, loadDialog } from "./payload";
 import { AboutView } from "./views/AboutView";
 import { ConfirmView } from "./views/ConfirmView";
 import { CreateTableView } from "./views/CreateTableView";
@@ -43,6 +44,12 @@ Office.onReady()
     const root = document.getElementById("root");
     const dialog = loadDialog();
     if (!dialog) {
+      if (isShortUrl()) {
+        // Bộ nhớ không dùng chung với function file → xin mở lại bằng đường dẫn đầy đủ.
+        if (root) root.textContent = "Đang mở hộp thoại…";
+        Office.context.ui.messageParent(NO_PAYLOAD_MESSAGE);
+        return;
+      }
       if (root) root.textContent = "Không đọc được dữ liệu của hộp thoại. Vui lòng đóng hộp thoại và thử lại.";
       return;
     }

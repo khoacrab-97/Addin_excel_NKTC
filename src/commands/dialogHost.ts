@@ -1,4 +1,13 @@
-import { type DialogPayloads, type DialogReplies, type DialogView, parseReply } from "../core/dialog/protocol";
+import {
+  CURRENT_DIALOG_KEY,
+  type DialogPayloads,
+  type DialogReplies,
+  type DialogView,
+  NO_PAYLOAD_MESSAGE,
+  formatDialogPointer,
+  parseDialogPointer,
+  parseReply,
+} from "../core/dialog/protocol";
 import { UserFacingError } from "../excel/errors";
 
 /** Kích thước hộp thoại (% màn hình). */
@@ -20,17 +29,24 @@ export const PAYLOAD_STORAGE_PREFIX = "nktc.dialog.";
 /** URL hộp thoại trên Internet Explorer 11 (Excel 2016) tối đa ~2.000 ký tự. */
 const MAX_URL_LENGTH = 1_900;
 
-function storePayload(id: string, json: string): void {
+/** Lưu dữ liệu hộp thoại và con trỏ "hộp thoại đang mở"; `true` → mở được bằng đường dẫn ngắn. */
+function storePayload(view: DialogView, id: string, json: string): boolean {
   try {
     window.localStorage.setItem(PAYLOAD_STORAGE_PREFIX + id, json);
+    window.localStorage.setItem(CURRENT_DIALOG_KEY, formatDialogPointer(view, id));
+    return true;
   } catch {
     // localStorage bị chặn: hộp thoại vẫn đọc được dữ liệu từ URL nếu đủ ngắn.
+    return false;
   }
 }
 
 function removePayload(id: string): void {
   try {
     window.localStorage.removeItem(PAYLOAD_STORAGE_PREFIX + id);
+    if (parseDialogPointer(window.localStorage.getItem(CURRENT_DIALOG_KEY))?.id === id) {
+      window.localStorage.removeItem(CURRENT_DIALOG_KEY);
+    }
   } catch {
     // Không ảnh hưởng chức năng.
   }
@@ -98,16 +114,77 @@ function newId(): string {
   return `${String(Date.now())}${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function dialogUrl(view: DialogView, json: string, id: string): string {
+/** Đường dẫn đầy đủ: tên hộp thoại + mã dữ liệu trong query, dữ liệu trong hash (nếu đủ ngắn). */
+function fullDialogUrl(view: DialogView, json: string, id: string): string {
   let url = `${baseUrl()}dialog.html?view=${view}&id=${id}`;
   const hash = encodeURIComponent(json);
   if (url.length + hash.length + 1 <= MAX_URL_LENGTH) url += `#${hash}`;
   return url;
 }
 
+/** Cửa sổ hộp thoại hiện tại (đổi khi phải mở lại bằng đường dẫn đầy đủ). */
+interface DialogWindow {
+  current?: Office.Dialog;
+}
+
+/**
+ * Mở cửa sổ hộp thoại. Office ghi địa chỉ trang lên thanh tiêu đề (không đổi được) → mở bằng đường dẫn ngắn
+ * `…/dialog.html`, dữ liệu qua localStorage. Hộp thoại không đọc được dữ liệu (`NO_PAYLOAD_MESSAGE`) → đóng và
+ * mở lại một lần bằng đường dẫn đầy đủ (cách cũ). `onMessage` chỉ nhận tin từ trang hộp thoại của add-in.
+ */
+function openWindow(
+  view: DialogView,
+  json: string,
+  id: string,
+  size: DialogSize,
+  onMessage: (message: string, dialog: Office.Dialog) => void,
+  onClosed: () => void,
+): Promise<DialogWindow> {
+  const short = storePayload(view, id, json);
+  const win: DialogWindow = {};
+  let fellBack = !short;
+  return new Promise((resolve, reject) => {
+    const show = (url: string, first: boolean): void => {
+      displayDialog(url, size, (result) => {
+        if (result.status === Office.AsyncResultStatus.Failed) {
+          if (first) {
+            removePayload(id);
+            reject(new UserFacingError(dialogErrorMessage(result.error.code)));
+          } else {
+            onClosed();
+          }
+          return;
+        }
+        const dialog = result.value;
+        win.current = dialog;
+        dialog.addEventHandler(Office.EventType.DialogMessageReceived, (args) => {
+          if (!("message" in args)) return;
+          // Chỉ nhận kết quả từ trang hộp thoại của add-in. `origin` không có trên bản Office cũ
+          // (DialogOrigin 1.1) — khi đó Office chỉ chuyển tin từ trang cùng domain đã mở.
+          if (args.origin !== undefined && args.origin !== addinOrigin()) return;
+          if (args.message === NO_PAYLOAD_MESSAGE) {
+            if (fellBack) return;
+            fellBack = true;
+            dialog.close();
+            show(fullDialogUrl(view, json, id), false);
+            return;
+          }
+          onMessage(args.message, dialog);
+        });
+        // Người dùng đóng hộp thoại (12006) hoặc trang hộp thoại lỗi.
+        dialog.addEventHandler(Office.EventType.DialogEventReceived, () => {
+          if (win.current === dialog) onClosed();
+        });
+        if (first) resolve(win);
+      });
+    };
+    show(short ? `${baseUrl()}dialog.html` : fullDialogUrl(view, json, id), true);
+  });
+}
+
 /**
  * Mở hộp thoại (Office Dialog API 1.1) và chờ kết quả. Người dùng đóng hộp thoại bằng nút X → `{ action: "cancel" }`.
- * Dữ liệu đầu vào được gửi qua URL (nếu đủ ngắn) và localStorage (cùng domain với hộp thoại).
+ * Dữ liệu đầu vào được gửi qua localStorage (cùng domain với hộp thoại), dự phòng qua URL.
  */
 export function openDialog<V extends DialogView>(
   view: V,
@@ -116,37 +193,27 @@ export function openDialog<V extends DialogView>(
 ): Promise<DialogReplies[V]> {
   const json = JSON.stringify(payload);
   const id = newId();
-  storePayload(id, json);
-  const url = dialogUrl(view, json, id);
-
   return new Promise((resolve, reject) => {
-    displayDialog(url, size, (result) => {
-      if (result.status === Office.AsyncResultStatus.Failed) {
-        removePayload(id);
-        reject(new UserFacingError(dialogErrorMessage(result.error.code)));
-        return;
-      }
-      const dialog = result.value;
-      let settled = false;
-      const finish = (reply: DialogReplies[V]): void => {
-        if (settled) return;
-        settled = true;
-        removePayload(id);
-        resolve(reply);
-      };
-      dialog.addEventHandler(Office.EventType.DialogMessageReceived, (args) => {
-        if (!("message" in args)) return;
-        // Chỉ nhận kết quả từ trang hộp thoại của add-in. `origin` không có trên bản Office cũ
-        // (DialogOrigin 1.1) — khi đó Office chỉ chuyển tin từ trang cùng domain đã mở.
-        if (args.origin !== undefined && args.origin !== addinOrigin()) return;
+    let settled = false;
+    const finish = (reply: DialogReplies[V]): void => {
+      if (settled) return;
+      settled = true;
+      removePayload(id);
+      resolve(reply);
+    };
+    openWindow(
+      view,
+      json,
+      id,
+      size,
+      (message, dialog) => {
         dialog.close();
-        finish(parseReply(view, args.message));
-      });
-      // Người dùng đóng hộp thoại (12006) hoặc trang hộp thoại lỗi.
-      dialog.addEventHandler(Office.EventType.DialogEventReceived, () => {
+        finish(parseReply(view, message));
+      },
+      () => {
         finish({ action: "cancel" });
-      });
-    });
+      },
+    ).catch(reject);
   });
 }
 
@@ -165,68 +232,64 @@ export interface PersistentDialog<V extends DialogView> {
  * Mở hộp thoại không tự đóng khi nhận tin (khác `openDialog`). DialogApi 1.2 (`messageChild`) cập nhật nội dung
  * tại chỗ; Excel 2016 (1.1) không có → bên gọi đóng và mở lại.
  */
-export function openPersistentDialog<V extends DialogView>(
+export async function openPersistentDialog<V extends DialogView>(
   view: V,
   payload: DialogPayloads[V],
   size: DialogSize,
 ): Promise<PersistentDialog<V>> {
   const json = JSON.stringify(payload);
   const id = newId();
-  storePayload(id, json);
-  const url = dialogUrl(view, json, id);
   const canUpdate = Office.context.requirements.isSetSupported("DialogApi", "1.2");
-
-  return new Promise((resolve, reject) => {
-    displayDialog(url, size, (result) => {
-      if (result.status === Office.AsyncResultStatus.Failed) {
-        removePayload(id);
-        reject(new UserFacingError(dialogErrorMessage(result.error.code)));
-        return;
+  const queue: DialogReplies[V][] = [];
+  let waiting: ((reply: DialogReplies[V]) => void) | undefined;
+  let ended = false;
+  const push = (reply: DialogReplies[V]): void => {
+    if (waiting) {
+      const resume = waiting;
+      waiting = undefined;
+      resume(reply);
+    } else {
+      queue.push(reply);
+    }
+  };
+  const end = (): void => {
+    if (ended) return;
+    ended = true;
+    removePayload(id);
+    push({ action: "cancel" });
+  };
+  const win = await openWindow(
+    view,
+    json,
+    id,
+    size,
+    (message) => {
+      push(parseReply(view, message));
+    },
+    end,
+  );
+  return {
+    canUpdate,
+    next: () =>
+      new Promise((done) => {
+        const queued = queue.shift();
+        if (queued) done(queued);
+        else waiting = done;
+      }),
+    update: (next) => {
+      if (!canUpdate || ended || !win.current) return false;
+      try {
+        win.current.messageChild(JSON.stringify(next));
+        return true;
+      } catch {
+        // Hộp thoại đang được mở lại (đường dẫn đầy đủ) → bỏ qua lần cập nhật này.
+        return false;
       }
-      const dialog = result.value;
-      const queue: DialogReplies[V][] = [];
-      let waiting: ((reply: DialogReplies[V]) => void) | undefined;
-      let ended = false;
-      const push = (reply: DialogReplies[V]): void => {
-        if (waiting) {
-          const resume = waiting;
-          waiting = undefined;
-          resume(reply);
-        } else {
-          queue.push(reply);
-        }
-      };
-      const end = (): void => {
-        if (ended) return;
-        ended = true;
-        removePayload(id);
-        push({ action: "cancel" });
-      };
-      dialog.addEventHandler(Office.EventType.DialogMessageReceived, (args) => {
-        if (!("message" in args)) return;
-        if (args.origin !== undefined && args.origin !== addinOrigin()) return;
-        push(parseReply(view, args.message));
-      });
-      dialog.addEventHandler(Office.EventType.DialogEventReceived, end);
-      resolve({
-        canUpdate,
-        next: () =>
-          new Promise((done) => {
-            const queued = queue.shift();
-            if (queued) done(queued);
-            else waiting = done;
-          }),
-        update: (next) => {
-          if (!canUpdate || ended) return false;
-          dialog.messageChild(JSON.stringify(next));
-          return true;
-        },
-        close: () => {
-          if (ended) return;
-          dialog.close();
-          end();
-        },
-      });
-    });
-  });
+    },
+    close: () => {
+      if (ended) return;
+      win.current?.close();
+      end();
+    },
+  };
 }

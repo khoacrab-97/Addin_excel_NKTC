@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { isDialogView, parsePayload, parseReply, shortLabel } from "./protocol";
+import {
+  formatDialogPointer,
+  isDialogView,
+  parseDialogPointer,
+  parsePayload,
+  parseReply,
+  shortLabel,
+} from "./protocol";
 
 describe("parsePayload", () => {
   it("nhận payload hợp lệ", () => {
@@ -94,5 +101,23 @@ describe("tiện ích", () => {
   it("shortLabel gọn khoảng trắng và cắt nhãn dài", () => {
     expect(shortLabel("  Nội   dung \n công việc ")).toBe("Nội dung công việc");
     expect(shortLabel("x".repeat(100))).toHaveLength(60);
+  });
+});
+
+describe("con trỏ hộp thoại (đường dẫn ngắn)", () => {
+  it("ghi rồi đọc lại đúng tên hộp thoại và mã dữ liệu", () => {
+    expect(parseDialogPointer(formatDialogPointer("about", "1793697036792m1ws21"))).toEqual({
+      view: "about",
+      id: "1793697036792m1ws21",
+    });
+  });
+
+  it("dữ liệu sai → undefined", () => {
+    expect(parseDialogPointer(null)).toBeUndefined();
+    expect(parseDialogPointer("{")).toBeUndefined();
+    expect(parseDialogPointer(JSON.stringify({ view: "taskpane", id: "1" }))).toBeUndefined();
+    expect(parseDialogPointer(JSON.stringify({ view: "about", id: "../x" }))).toBeUndefined();
+    expect(parseDialogPointer(JSON.stringify({ view: "about", id: "x".repeat(41) }))).toBeUndefined();
+    expect(parseDialogPointer("x".repeat(201))).toBeUndefined();
   });
 });
