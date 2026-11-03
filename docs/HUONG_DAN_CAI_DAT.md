@@ -17,7 +17,7 @@
 
 1. **Đóng hẳn Excel** (bộ cài sẽ nhắc nếu Excel còn mở).
 2. Mở <https://khoacrab-97.github.io/Addin_excel_NKTC/> → **Tải bộ cài (Windows)** → chạy `NhatKyThiCong_Setup.exe`.
-3. Nếu Windows hiện **"Windows protected your PC"** (SmartScreen): bấm **More info** → **Run anyway**. Cảnh báo này xuất hiện vì bộ cài chưa có chữ ký số thương mại.
+3. Nếu Windows hiện **"Windows protected your PC"** (SmartScreen): bấm **More info** → **Run anyway**. Cảnh báo này xuất hiện vì bộ cài chưa có chữ ký số thương mại. Muốn chắc chắn file tải về không bị thay đổi: mở PowerShell tại thư mục chứa file, chạy `Get-FileHash .\NhatKyThiCong_Setup.exe -Algorithm SHA256` và so với mã SHA-256 ghi trong Release (hoặc link **mã SHA-256** trên trang tải).
 4. Bấm **Cài đặt**. Ở trang cuối giữ dấu tích **Mở Excel và kích hoạt add-in** → **Hoàn tất**.
 5. Excel mở workbook `NhatKyThiCong_BatDau.xlsx` kèm khung chào mừng (chỉ hiện lần này, đóng được). Lần đầu Excel có thể hỏi tin cậy add-in → chọn **Trust** / **Tin cậy**. Từ đó thanh Ribbon có tab **Nhật ký thi công**; mở bất kỳ file nào cũng dùng được.
 6. Kiểm tra: tab **Nhật ký thi công** → **Tiện ích ▾** → **Phiên bản** hiển thị phiên bản add-in, phiên bản Office và mức **ExcelApi tối đa**.

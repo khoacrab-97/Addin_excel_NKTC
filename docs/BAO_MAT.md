@@ -2,7 +2,12 @@
 
 ## 1. Kết quả kiểm tra và biện pháp đã áp dụng
 
-Kiểm tra toàn diện bằng skill `security-audit` (mức `quick`, commit `3b1004e`): **0 lỗ hổng**; 5/6 hạng mục độ phủ "covered", 1 hạng mục "blocked" (tình trạng CVE của thư viện — cần tra cứu trực tuyến bằng `npm audit`).
+| Lần | Commit / bản | Kết quả |
+|---|---|---|
+| run-1 | `3b1004e` (1.1.x), mức `quick` | **0 lỗ hổng**; 5/6 hạng mục "covered", 1 "blocked" (tình trạng CVE thư viện — cần tra cứu trực tuyến) |
+| run-2 (03/11/2026, trước bản chính thức 2.0.0) | `8d29a95` (1.8.0), mức `quick` | **0 lỗ hổng**; 8/9 hạng mục "covered" (cấu hình workbook, dữ liệu ô → ghi ô, khung viền nháy, tin nhắn/dữ liệu hộp thoại, metadata cập nhật & trang tĩnh, bộ cài NSIS, quyền manifest/Ribbon, CI/phát hành), 1 "blocked" (tra cứu CVE ngoại tuyến — bù bằng `npm audit --omit=dev` trong CI). Critic cuối: không thiếu hạng mục. Đây là lượt kiểm tra một phần (mức `quick`), không khẳng định đã phủ hết mọi lỗi. |
+
+Biện pháp bổ sung ở bản 2.0.0 (từ ghi chú củng cố của run-2): mã **SHA-256** của bộ cài đăng trong mỗi GitHub Release và trên trang phát hành (`NhatKyThiCong_Setup.exe.sha256`); kiểm tra số phiên bản toàn chuỗi trong workflow phát hành; `actions/checkout` không lưu token (`persist-credentials: false`).
 
 | Biện pháp (phiên bản 1.1.1) | Vị trí |
 |---|---|
@@ -67,5 +72,6 @@ Hệ quả: mọi thay đổi vào `main` (cũng là phát hành) phải đi qua
 |---|---|
 | Xác nhận CSP trên Excel Desktop Windows (WebView2) | Sau khi cài 1.3.0: bấm thử các nút trên tab Ribbon. Nếu hộp thoại trắng hoặc mất icon → báo Claude để nới policy. Excel 2016/2019 (IE11) không áp dụng CSP. |
 | `npm audit` toàn bộ (gồm công cụ phát triển) | Còn cảnh báo trong công cụ `office-addin-*` của Microsoft và `minimatch` (ESLint); không nằm trong bản phát hành. Theo dõi bản cập nhật. |
-| Bộ cài chưa ký số (code signing) | Windows SmartScreen cảnh báo khi chạy lần đầu (More info → Run anyway). Chỉ tải bộ cài từ trang phát hành chính thức. Có thể mua chứng chỉ ký mã nếu phát hành rộng. |
+| Bộ cài chưa ký số (code signing) | Windows SmartScreen cảnh báo khi chạy lần đầu (More info → Run anyway). Chỉ tải bộ cài từ trang phát hành chính thức và đối chiếu mã SHA-256 (từ 2.0.0). Có thể mua chứng chỉ ký mã nếu phát hành rộng. |
+| Ghi chú củng cố còn mở (run-2, không phải lỗ hổng) | Xác nhận ghi đè lưu trong workbook có thể được file nhận từ người khác đặt sẵn (chỉ áp dụng cho ô đích do chính file đó định nghĩa); origin `khoacrab-97.github.io` dùng chung cho các trang Pages của tài khoản (tên miền riêng sẽ tách biệt hơn); dọn dữ liệu tạm `localStorage nktc.dialog.*` còn sót khi Excel bị đóng đột ngột; `npm ci --ignore-scripts` cho job build; ghim phiên bản NSIS. |
 | Kiểm tra lại định kỳ | Chạy skill `security-audit` (mức `standard`) khi có thay đổi lớn. |
