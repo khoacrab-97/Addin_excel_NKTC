@@ -9,8 +9,10 @@ interface Props {
 
 /**
  * Thanh chọn (giống hộp thoại Excel khi thu gọn, ví dụ New Formatting Rule): tiêu đề, ô nhập, nút mũi tên ở cuối.
- * Người dùng chọn trên sheet → add-in gửi địa chỉ mới vào ô nhập (DialogApi 1.2). Bấm mũi tên hoặc Enter → xác
- * nhận, quay lại hộp thoại ban đầu. Đóng thanh (X) → hủy, giữ giá trị cũ.
+ * Người dùng chọn trên sheet → add-in gửi địa chỉ mới vào ô nhập (DialogApi 1.2). Bấm mũi tên → xác nhận, quay lại
+ * hộp thoại ban đầu. Enter chỉ có tác dụng khi đang gõ trong ô nhập: sau khi bấm chọn trên sheet, bàn phím thuộc
+ * về Excel (Enter của Excel chuyển con trỏ xuống ô dưới), add-in không nhận được phím đó.
+ * Đóng thanh (X) → hủy, giữ giá trị cũ.
  */
 export function PickView({ payload, reply }: Props): JSX.Element {
   const [text, setText] = useState(payload.value);
@@ -64,8 +66,8 @@ export function PickView({ payload, reply }: Props): JSX.Element {
       </Stack>
       <Text variant="small">
         {payload.kind === "cell"
-          ? "Bấm chọn ô trên sheet, rồi bấm ⬇ (hoặc Enter) để quay lại."
-          : "Kéo chọn vùng trên sheet, rồi bấm ⬇ (hoặc Enter) để quay lại."}
+          ? "Bấm chọn ô trên sheet, rồi bấm ⬇ để quay lại."
+          : "Kéo chọn vùng trên sheet, rồi bấm ⬇ để quay lại."}
       </Text>
     </Stack>
   );

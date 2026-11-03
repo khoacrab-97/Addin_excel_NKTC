@@ -91,6 +91,27 @@ async function main() {
       assert.deepEqual(actual, expected, `${SHEET}!${m.cell} (cột ${m.column} – ${m.header}) ngày ${label}`);
     }
   }
+  const shapes = () => wb.smoke((name) => globalThis.__smoke.shapes(name), SHEET);
+  /** Chờ đúng 1 viền nháy (khung nét đứt, không nền) bao quanh vùng `address` của sheet biểu mẫu. */
+  async function waitFrame(address) {
+    const [a, b = a] = address.split(":");
+    const col = (ref) => COLUMN_LETTERS.indexOf(ref.replace(/\d+/g, ""));
+    const row = (ref) => Number(ref.replace(/[A-Z]+/g, "")) - 1;
+    const { col: cw, row: rh } = await wb.smoke(() => globalThis.__smoke.geometry);
+    const left = Math.max(0, col(a) * cw - 1.5);
+    const want = { left, top: Math.max(0, row(a) * rh - 1.5), width: (col(b) + 1) * cw + 1.5 - left };
+    await wb.commands.waitForFunction(
+      ([sheet, w]) => {
+        const list = globalThis.__smoke.shapes(sheet);
+        return list.length === 1 && list[0].left === w.left && list[0].top === w.top && list[0].width === w.width;
+      },
+      [SHEET, want],
+    );
+    const [frame] = await shapes();
+    assert.equal(frame.name, "NKTC_VienChon");
+    assert.equal(frame.fill, "none");
+    assert.equal(frame.dash, "Dash");
+  }
   const sourceField = (d) => d.page.getByRole("textbox", { name: "Vùng nguồn" });
   const targetField = (d, row) => d.page.getByRole("textbox", { name: `Ô trên form dòng ${row}` });
   async function chooseColumn(d, row, letter) {
@@ -149,27 +170,48 @@ async function main() {
         i === 0
           ? async (bar) => {
               assert.ok((await bar.text()).includes("Xuất vào form – Ô trên form (dòng 1)"), "tiêu đề thanh chọn");
+              assert.ok(!(await bar.text()).includes("Enter"), "không hướng dẫn bấm Enter (Enter thuộc về Excel)");
               await bar.page.screenshot({ path: path.join("smoke-output", "f2-pick-bar.png") });
+              // Viền nháy quanh cả vùng gộp vừa chọn (E2:I2), đổi màu liên tục.
+              await waitFrame(m.select);
+              await wb.commands.waitForFunction(() =>
+                globalThis.__smoke.log.some((e) => e.op === "shape.color" && e.value === "#FFFFFF"),
+              );
             }
           : undefined,
     });
+    assert.equal((await shapes()).length, 0, "đóng thanh chọn → xóa viền nháy");
     assert.equal(await targetField(d, row).inputValue(), `${SHEET}!${m.cell}`);
   }
   await d.page.screenshot({ path: path.join("smoke-output", "f2-export-form.png"), fullPage: true });
   // Thanh chọn: gõ địa chỉ (không ghi sheet) → sheet biểu mẫu; đóng thanh (X) → giữ ô cũ.
   d = await wb.pickVia(d, "Chọn Ô trên form dòng 2 trên sheet", undefined, { type: "B3", confirm: "enter" });
   assert.equal(await targetField(d, 2).inputValue(), `${SHEET}!B3`);
+  // Viền còn sót từ lần trước (Excel bị đóng giữa chừng) → dọn trước khi vẽ viền mới; shape khác giữ nguyên.
+  await wb.smoke(([s]) => globalThis.__smoke.addShape(s, "NKTC_VienChon"), [SHEET]);
+  await wb.smoke(() => globalThis.__smoke.addShape("NK_TheoNgay", "NKTC_VienChon"));
+  await wb.smoke(() => globalThis.__smoke.addShape("NK_TheoNgay", "Logo"));
+  let start = await logLength();
   d = await wb.pickVia(d, "Chọn Ô trên form dòng 2 trên sheet", [SHEET, MAPPINGS[1].select], {
     initial: `${SHEET}!B3`,
     shown: `${SHEET}!${MAPPINGS[1].cell}`,
+    // Mở thanh chọn → nháy viền ô đang gán (B3); chọn ô khác → viền chuyển sang ô mới (chỉ 1 viền).
+    beforeSelect: () => waitFrame("B3"),
+    inspect: () => waitFrame(MAPPINGS[1].select),
   });
+  assert.equal((await shapes()).length, 0);
+  assert.deepEqual(
+    (await wb.smoke(() => globalThis.__smoke.shapes("NK_TheoNgay"))).map((shape) => shape.name),
+    ["Logo"],
+  );
+  assert.equal((await writesSince(start)).length, 0, "viền nháy không ghi vào ô");
   assert.equal(await targetField(d, 2).inputValue(), `${SHEET}!${MAPPINGS[1].cell}`);
   d = await wb.pickVia(d, "Chọn Ô trên form dòng 2 trên sheet", [SHEET, "A1"], { confirm: "close" });
   assert.equal(await targetField(d, 2).inputValue(), `${SHEET}!${MAPPINGS[1].cell}`);
   assert.equal(await wb.smoke(() => globalThis.__smoke.selectionHandlerCount()), 0, "gỡ sự kiện chọn sau khi xong");
   pass(
     "Gán từng dòng",
-    "dòng mới để trống; ⬆ → thanh chọn, địa chỉ hiện ngay khi chọn → ⬇ / Enter (ô gộp → ô trên-trái); gõ tay; X giữ ô cũ",
+    "dòng mới để trống; ⬆ → thanh chọn, địa chỉ hiện ngay khi chọn, viền nháy quanh ô → ⬇ (ô gộp → ô trên-trái); gõ tay; X giữ ô cũ",
   );
 
   // 4. Dòng thừa: + Thêm rồi chọn dòng → Delete; ô trùng → báo lỗi theo dòng, không ghi.
@@ -182,7 +224,7 @@ async function main() {
   const extra = MAPPINGS.length + 1;
   await chooseColumn(d, extra, "C");
   await targetField(d, extra).fill(`${SHEET}!E2`);
-  let start = await logLength();
+  start = await logLength();
   await d.click("Gán");
   d = await wb.dialog();
   assert.match(await d.text(), new RegExp(`Dòng ${extra}: ô ${SHEET}!E2 đã được gán ở dòng 1`));

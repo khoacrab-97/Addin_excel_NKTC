@@ -38,7 +38,7 @@
 | # | Bước | Kết quả mong đợi | Kết quả |
 |---|---|---|---|
 | B1 | Sheet TDTC: đặt con trỏ 1 ô trong bảng → **Xuất theo ngày** | Hộp thoại: ô Vùng dữ liệu `TDTC!A1:C23`, 3 cột "Cột A – …", "Cột B – …", "Cột C – …" | |
-| B1b | Bấm ⬆ ở ô Vùng dữ liệu → hộp thoại đóng, hiện thanh chọn "Xuất nhật ký theo ngày – Vùng dữ liệu" → kéo chọn `A1:C10` trên sheet → bấm ⬇ ở cuối thanh | Trong lúc kéo chọn, ô nhập của thanh hiện ngay `TDTC!A1:C10`; bấm ⬇ → hộp thoại ban đầu mở lại, ô Vùng dữ liệu = `TDTC!A1:C10`, 3 cột giữ nguyên. Lặp lại nhưng đóng thanh bằng X → giữ vùng cũ | |
+| B1b | Bấm ⬆ ở ô Vùng dữ liệu → hộp thoại đóng, hiện thanh chọn "Xuất nhật ký theo ngày – Vùng dữ liệu" → kéo chọn `A1:C10` trên sheet → bấm ⬇ ở cuối thanh | Trong lúc kéo chọn, ô nhập của thanh hiện ngay `TDTC!A1:C10` và vùng đó có viền nét đứt nháy;  bấm ⬇ → hộp thoại ban đầu mở lại, ô Vùng dữ liệu = `TDTC!A1:C10`, 3 cột giữ nguyên. Lặp lại nhưng đóng thanh bằng X → giữ vùng cũ | |
 | B2 | **Xuất nhật ký** | Sheet mới `NK_TheoNgay`, 200 dòng + tiêu đề, cột Ngày dd/mm/yyyy; hộp thoại kết quả "200 ngày, từ 15/06/2026 đến 31/12/2026", "22 công việc hợp lệ", xem trước 5 ngày | |
 | B3 | Kiểm tra ngày 06/08/2026 | Ô Nội dung có 13 dòng, giữ nguyên nội dung (không tự thêm "- "), **không** báo lỗi công thức (#NAME?) | |
 | B4 | Xuất lần 2 | Tạo `NK_TheoNgay_2`, sheet cũ giữ nguyên | |
@@ -50,7 +50,7 @@
 |---|---|---|---|
 | C0 | File chưa có biểu mẫu → **Chèn form mẫu** (Microsoft 365 / Excel 2021+) | Thêm sheet "Mẫu NKTC" ở cuối; bấm lần 2 → báo đã có. Excel cũ → hướng dẫn tải file mẫu | |
 | C1 | **Xuất vào form** | Vùng nguồn tự nhận diện `NK_TheoNgay!A1:I201`; Cột ngày = Cột A – Ngày; 200 ngày | |
-| C2 | Gán theo bảng BUSINESS_SPEC §F2.3: mỗi dòng chọn cột (trái); bên phải bấm ⬆ → thanh chọn → bấm ô merge trên "Mẫu NKTC" (thanh hiện `Mẫu NKTC!E2`…) → ⬇ / Enter; + Thêm; chọn dòng thừa → Delete → **Gán** | Mỗi lần bấm ⬇ quay lại đúng hộp thoại Xuất vào form, các dòng đã gán giữ nguyên; ô gộp lấy ô trên-trái; dòng 1 (Cột A – Ngày → `Mẫu NKTC!E2`) → ô E2 = "Ngày 15 tháng 06 năm 2026" | |
+| C2 | Gán theo bảng BUSINESS_SPEC §F2.3: mỗi dòng chọn cột (trái); bên phải bấm ⬆ → thanh chọn → bấm ô merge trên "Mẫu NKTC" (thanh hiện `Mẫu NKTC!E2`…, viền nháy quanh cả ô gộp E2:I2) → ⬇; + Thêm; chọn dòng thừa → Delete → **Gán** | Mỗi lần bấm ⬇ quay lại đúng hộp thoại Xuất vào form, viền nháy biến mất (không còn hình nào trên sheet), các dòng đã gán giữ nguyên; ô gộp lấy ô trên-trái; dòng 1 (Cột A – Ngày → `Mẫu NKTC!E2`) → ô E2 = "Ngày 15 tháng 06 năm 2026" | |
 | C2b | Thử vùng nguồn có dòng tiêu đề bị gộp (merge) | Báo không chọn được, phải gỡ merge | |
 | C3 | **Ngày sau** rồi **Ngày đầu** | Biểu mẫu hiển thị "Ngày 15 tháng 06 năm 2026", thời tiết, nhân lực, nội dung | |
 | C4 | Ô nội dung 3.1 | Hiển thị đúng các dòng "- …", **không** thấy dấu `'` ở đầu (R2.11) | |

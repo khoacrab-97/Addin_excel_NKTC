@@ -135,11 +135,21 @@
 | ID | Hạng mục | Trạng thái |
 |---|---|---|
 | P10.1 | Sửa lỗi bấm ⬆ xong hộp thoại đóng, không làm gì được (Excel báo 12007 khi mở hộp thoại ngay sau khi đóng hộp thoại trước → tự thử lại) | Tested |
-| P10.2 | Ô chọn vùng kiểu Excel (R0.4): thanh chọn tiêu đề + ô nhập + nút ⬇; địa chỉ hiện ngay khi chọn trên sheet (DocumentSelectionChanged + DialogApi 1.2); ⬇ / Enter quay lại hộp thoại ban đầu; X giữ giá trị cũ; Excel 2016/2019 lấy vùng đang chọn khi bấm ⬇ | Tested |
+| P10.2 | Ô chọn vùng kiểu Excel (R0.4): thanh chọn tiêu đề + ô nhập + nút ⬇; địa chỉ hiện ngay khi chọn trên sheet (DocumentSelectionChanged + DialogApi 1.2); ⬇ quay lại hộp thoại ban đầu; X giữ giá trị cũ; Excel 2016/2019 lấy vùng đang chọn khi bấm ⬇ | Tested |
 | P10.3 | Gán cột Ngày vào ô "Ngày ..... tháng ..... năm .........." → `Ngày 15 tháng 06 năm 2026` trong cùng ô (R2.15), kiểm tra lại toàn luồng bằng thanh chọn | Tested |
 | P10.4 | Bỏ Bảng chuyển ngày (R2.16); nhóm Chuyển ngày còn 4 nút Ngày đầu · Ngày trước · Ngày sau · Ngày cuối, icon vẽ lại cùng cỡ tam giác, căn giữa | Tested |
 | P10.5 | Gộp Hướng dẫn + Phiên bản thành menu **Tiện ích ▾** (manifest Menu control) | Implemented |
 | P10.6 | Kiểm thử trên Excel Desktop Windows (Microsoft 365 2610): thanh chọn cập nhật địa chỉ khi chọn, 4 nút chuyển ngày cùng cỡ, menu Tiện ích (`docs/KIEM_THU_NGHIEM_THU.md` mục B, C) | Not Started |
 
 > P10.1–P10.4 **Tested** = unit test (giao thức `pick`) + smoke: F1 7, F2 14 bước — Excel giả lập có độ trễ đóng hộp thoại (12007), sự kiện DocumentSelectionChanged, DialogApi 1.1/1.2. P10.5 chỉ kiểm tra được cấu trúc manifest (`npm run validate` nếu có mạng); hiển thị menu cần Excel thật. Chưa Verified (P10.6): cỡ nút trên Ribbon do Excel tự co giãn theo độ rộng cửa sổ; thanh chọn giả định hộp thoại Office không chặn thao tác trên sheet.
+
+### Bản 1.7.1 (phản hồi thử nghiệm 1.7.0)
+
+| ID | Hạng mục | Trạng thái |
+|---|---|---|
+| P10.7 | Thanh chọn: bỏ hướng dẫn "Enter" — sau khi bấm chọn trên sheet, Enter thuộc về Excel (con trỏ nhảy xuống ô dưới), add-in không chặn được; xác nhận bằng nút ⬇ (Enter chỉ dùng khi đang gõ trong ô nhập) | Tested |
+| P10.8 | Viền nháy quanh vùng/ô đang chọn trong lúc thanh chọn mở (R0.6): Shape nét đứt đổi màu, xóa khi bấm ⬇ / X; dọn hình còn sót | Tested |
+| P10.9 | Kiểm thử trên Excel Desktop Windows: viền nháy đúng vị trí (kể cả ô gộp, vùng lớn), không làm thay đổi vùng chọn, không để lại hình sau khi đóng thanh | Not Started |
+
+> P10.7–P10.8 **Tested** = smoke F1 7, F2 14 bước: Excel giả lập có Shape API (vị trí khung theo ô, nét đứt, không nền, đổi màu, xóa sau khi đóng thanh, dọn hình sót, không ghi ô), ExcelApi 1.1 không vẽ. Chưa Verified (P10.9): vị trí Shape theo point của Excel thật và việc vẽ Shape có làm Excel đổi vùng chọn hay không chỉ kiểm chứng được trên Excel Desktop.
 

@@ -67,12 +67,17 @@
   /** Hàm nghe DocumentSelectionChanged (Office.context.document.addHandlerAsync). */
   var selectionHandlers = [];
   var tableCount = 0;
+  var shapeCount = 0;
+  var COL_PT = 48;
+  var ROW_PT = 15;
   function Sheet(name) {
     this.name = name;
     this.cells = {};
     /** Excel Table giả lập: { name, box, style } — báo lỗi khi chồng lên bảng có sẵn (giống Excel). */
     this.tables = [];
     this.merged = [];
+    /** Shape trên sheet: { id, type, name, left, top, width, height, fill, line }. */
+    this.shapes = [];
   }
   Sheet.prototype.cell = function (r, c) {
     var key = r + "," + c;
@@ -146,6 +151,35 @@
         get: function () {
           return box.c2 - box.c1 + 1;
         },
+      });
+      // Vị trí (point) giả lập: cột rộng 48pt, dòng cao 15pt.
+      [
+        [
+          "left",
+          function () {
+            return box.c1 * COL_PT;
+          },
+        ],
+        [
+          "top",
+          function () {
+            return box.r1 * ROW_PT;
+          },
+        ],
+        [
+          "width",
+          function () {
+            return (box.c2 - box.c1 + 1) * COL_PT;
+          },
+        ],
+        [
+          "height",
+          function () {
+            return (box.r2 - box.r1 + 1) * ROW_PT;
+          },
+        ],
+      ].forEach(function (pair) {
+        Object.defineProperty(range, pair[0], { get: pair[1] });
       });
       Object.defineProperty(range, "columnIndex", {
         get: function () {
@@ -225,10 +259,15 @@
       };
       range.getMergedAreasOrNullObject = function () {
         if (input.apiMinor < 13) context.pendingError = { code: "ApiNotFound", message: "cần ExcelApi 1.13" };
-        var hit = sheet.merged.some(function (m) {
+        var hits = sheet.merged.filter(function (m) {
           return !(box.r2 < m.r1 || box.r1 > m.r2 || box.c2 < m.c1 || box.c1 > m.c2);
         });
-        return { load: function () {}, isNullObject: !hit };
+        var address = hits
+          .map(function (m) {
+            return quoteSheet(sheet.name) + "!" + colLetters(m.c1) + (m.r1 + 1) + ":" + colLetters(m.c2) + (m.r2 + 1);
+          })
+          .join(",");
+        return { load: function () {}, isNullObject: hits.length === 0, address: address };
       };
       range.getCell = function (r, c) {
         return makeRange(sheet, { r1: box.r1 + r, c1: box.c1 + c, r2: box.r1 + r, c2: box.c1 + c });
@@ -256,6 +295,69 @@
       return range;
     }
 
+    /** Shape giả lập (ExcelApi 1.9): chỉ phần add-in dùng cho viền nháy. */
+    function shapesApi(sheet) {
+      function wrap(shape) {
+        var api = {
+          load: function () {},
+          isNullObject: false,
+          get id() {
+            return shape.id;
+          },
+          delete: function () {
+            sheet.shapes = sheet.shapes.filter(function (item) {
+              return item !== shape;
+            });
+            log.push({ op: "shape.delete", sheet: sheet.name });
+          },
+          fill: {
+            clear: function () {
+              shape.fill = "none";
+            },
+          },
+          lineFormat: {},
+        };
+        ["name", "left", "top", "width", "height"].forEach(function (p) {
+          Object.defineProperty(api, p, {
+            get: function () {
+              return shape[p];
+            },
+            set: function (v) {
+              shape[p] = v;
+            },
+          });
+        });
+        ["color", "weight", "dashStyle"].forEach(function (p) {
+          Object.defineProperty(api.lineFormat, p, {
+            set: function (v) {
+              shape.line[p] = v;
+              if (p === "color") log.push({ op: "shape.color", sheet: sheet.name, value: v });
+            },
+          });
+        });
+        return api;
+      }
+      return {
+        load: function () {},
+        get items() {
+          return sheet.shapes.map(wrap);
+        },
+        addGeometricShape: function (type) {
+          if (input.apiMinor < 9) context.pendingError = { code: "ApiNotFound", message: "cần ExcelApi 1.9" };
+          var shape = { id: "shape" + ++shapeCount, type: type, line: {}, fill: "solid" };
+          sheet.shapes.push(shape);
+          log.push({ op: "shape.add", sheet: sheet.name, type: type });
+          return wrap(shape);
+        },
+        getItemOrNullObject: function (id) {
+          var found = sheet.shapes.filter(function (item) {
+            return item.id === id;
+          })[0];
+          return found ? wrap(found) : { load: function () {}, isNullObject: true };
+        },
+      };
+    }
+
     function sheetApi(sheet) {
       return {
         load: function () {},
@@ -277,6 +379,7 @@
           activeSheetName = sheet.name;
           log.push({ op: "activate", sheet: sheet.name });
         },
+        shapes: shapesApi(sheet),
         tables: {
           add: function (address, hasHeaders) {
             var box = parseAddress(address);
@@ -474,6 +577,26 @@
     },
     selection: function () {
       return selection;
+    },
+    /** Shape đang có trên sheet (viền nháy): tên, vị trí, kiểu viền. */
+    shapes: function (name) {
+      return findSheet(name).shapes.map(function (shape) {
+        return {
+          name: shape.name,
+          left: shape.left,
+          top: shape.top,
+          width: shape.width,
+          height: shape.height,
+          fill: shape.fill,
+          dash: shape.line.dashStyle,
+          color: shape.line.color,
+        };
+      });
+    },
+    geometry: { col: COL_PT, row: ROW_PT },
+    /** Giả lập viền nháy còn sót (Excel bị đóng khi thanh chọn đang mở). */
+    addShape: function (sheetName, name) {
+      findSheet(sheetName).shapes.push({ id: "left" + ++shapeCount, name: name, line: {}, fill: "none" });
     },
     sheetNames: function () {
       return sheets.map(function (s) {
