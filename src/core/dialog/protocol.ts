@@ -294,6 +294,33 @@ function parseJson(text: string): unknown {
   }
 }
 
+/**
+ * Hộp thoại mở bằng đường dẫn ngắn `dialog.html` (thanh tiêu đề do Office hiện địa chỉ trang — để gọn):
+ * function file ghi `{ view, id }` vào localStorage khóa `CURRENT_DIALOG_KEY`, dữ liệu ở `nktc.dialog.<id>`.
+ * Hộp thoại không đọc được (bộ nhớ không dùng chung) → gửi `NO_PAYLOAD_MESSAGE` để mở lại bằng đường dẫn đầy đủ.
+ */
+export const CURRENT_DIALOG_KEY = "nktc.dialog.current";
+export const NO_PAYLOAD_MESSAGE = '{"action":"no-payload"}';
+const DIALOG_ID = /^[0-9a-z]{1,40}$/;
+
+export function formatDialogPointer(view: DialogView, id: string): string {
+  return JSON.stringify({ view, id });
+}
+
+export function parseDialogPointer(text: string | null | undefined): { view: DialogView; id: string } | undefined {
+  if (typeof text !== "string" || text.length > 200) return undefined;
+  let value: unknown;
+  try {
+    value = JSON.parse(text);
+  } catch {
+    return undefined;
+  }
+  if (!isRecord(value) || !isDialogView(value.view) || typeof value.id !== "string" || !DIALOG_ID.test(value.id)) {
+    return undefined;
+  }
+  return { view: value.view, id: value.id };
+}
+
 export function isDialogView(value: unknown): value is DialogView {
   return typeof value === "string" && (DIALOG_VIEWS as readonly string[]).includes(value);
 }

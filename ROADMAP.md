@@ -170,6 +170,7 @@
 | P11.1 | Kiểm tra bảo mật cuối (`security-audit` run-2, mức `quick`, commit `8d29a95`): 0 lỗ hổng, 8/9 hạng mục covered, 1 blocked (tra cứu CVE ngoại tuyến); critic cuối không thiếu hạng mục (`docs/BAO_MAT.md` mục 1) | Tested |
 | P11.2 | Củng cố phát hành: SHA-256 của bộ cài trong Release và trên trang phát hành; kiểm tra phiên bản toàn chuỗi; `persist-credentials: false` | Implemented |
 | P11.3 | Phiên bản 2.0.0 — bản phát hành chính thức để chia sẻ (ghi chú Release có mô tả tính năng) | Implemented |
+| P11.5 | 2.0.1: hộp thoại mở bằng đường dẫn ngắn `…/dialog.html` (thanh tiêu đề do Office ghi địa chỉ — không ẩn được, chỉ rút gọn); không đọc được dữ liệu → tự mở lại bằng đường dẫn đầy đủ | Tested |
 | P11.4 | Nghiệm thu của chủ dự án trên Excel Desktop Windows: phản hồi "tạm ổn" sau bản 1.7.0 (hai lỗi nhỏ đã sửa ở 1.7.1) và "OK" sau bản 1.8.0 (03/11/2026). Các mục chi tiết P10.6, P10.9, P10.12 giữ nguyên trạng thái cho tới khi có kết quả từng bước trong `docs/KIEM_THU_NGHIEM_THU.md` | Verified |
 
 > P11.2–P11.3 chỉ kiểm chứng được khi workflow phát hành chạy trên `main` (Release v2.0.0 có file `.exe` và mã SHA-256 khớp file tải về).

@@ -1,4 +1,11 @@
-import { type DialogPayloads, type DialogView, isDialogView, parsePayload } from "../core/dialog/protocol";
+import {
+  CURRENT_DIALOG_KEY,
+  type DialogPayloads,
+  type DialogView,
+  isDialogView,
+  parseDialogPointer,
+  parsePayload,
+} from "../core/dialog/protocol";
 
 /** Tiền tố khóa localStorage — trùng với `PAYLOAD_STORAGE_PREFIX` của function file. */
 const PAYLOAD_STORAGE_PREFIX = "nktc.dialog.";
@@ -38,8 +45,28 @@ function readHash(): string | undefined {
 
 export type LoadedDialog = { [V in DialogView]: { view: V; payload: DialogPayloads[V] } }[DialogView];
 
+/** Mở bằng đường dẫn ngắn `dialog.html` (không có `view` trong query): tên hộp thoại và mã dữ liệu ở localStorage. */
+export function isShortUrl(): boolean {
+  return queryParam(window.location.search, "view") === undefined;
+}
+
+function readPointer(): { view: DialogView; id: string } | undefined {
+  try {
+    return parseDialogPointer(window.localStorage.getItem(CURRENT_DIALOG_KEY));
+  } catch {
+    return undefined;
+  }
+}
+
 /** Xác định hộp thoại cần hiển thị và dữ liệu đầu vào (URL trước, localStorage sau). */
 export function loadDialog(): LoadedDialog | undefined {
+  if (isShortUrl()) {
+    const pointer = readPointer();
+    if (!pointer) return undefined;
+    const text = readStored(pointer.id);
+    const payload = text === undefined ? undefined : parsePayload(pointer.view, text);
+    return payload === undefined ? undefined : ({ view: pointer.view, payload } as LoadedDialog);
+  }
   const view = queryParam(window.location.search, "view");
   const id = queryParam(window.location.search, "id") ?? "";
   if (!isDialogView(view)) return undefined;
