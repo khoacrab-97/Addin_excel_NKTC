@@ -31,8 +31,8 @@ export function HelpSection(): JSX.Element {
         </li>
         <li>
           Bấm &quot;Xuất theo ngày&quot;; kiểm tra Vùng dữ liệu (chọn lại: bấm ⬆ → hộp thoại thu gọn thành thanh chọn →
-          kéo chọn vùng trên sheet, địa chỉ hiện trong thanh → bấm ⬇ hoặc Enter) và 3 cột được nhận diện, chỉnh lại nếu
-          cần → &quot;Xuất nhật ký&quot;.
+          kéo chọn vùng trên sheet, địa chỉ hiện trong thanh → bấm ⬇) và 3 cột được nhận diện, chỉnh lại nếu cần →
+          &quot;Xuất nhật ký&quot;.
         </li>
         <li>
           Add-in tạo sheet mới <strong>NK_TheoNgay</strong> (không ghi đè sheet có sẵn) và báo kết quả, các dòng lỗi.
@@ -54,8 +54,8 @@ export function HelpSection(): JSX.Element {
           không được có ô gộp (merge).
         </li>
         <li>
-          Mỗi dòng gán: chọn cột nguồn (trái); bên phải bấm ⬆ → bấm chọn ô trên biểu mẫu → bấm ⬇ (hoặc Enter) để quay
-          lại. &quot;+ Thêm&quot; để gán tiếp; chọn dòng thừa → Delete (hoặc Xóa dòng).
+          Mỗi dòng gán: chọn cột nguồn (trái); bên phải bấm ⬆ → bấm chọn ô trên biểu mẫu → bấm ⬇ để quay lại. &quot;+
+          Thêm&quot; để gán tiếp; chọn dòng thừa → Delete (hoặc Xóa dòng).
         </li>
         <li>Bấm &quot;Gán&quot;: biểu mẫu nhận dữ liệu ngày đầu tiên. Cấu hình được lưu trong file Excel.</li>
         <li>

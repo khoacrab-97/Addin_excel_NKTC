@@ -68,6 +68,10 @@ async function main() {
   });
   assert.equal(await field().inputValue(), full);
   assert.equal(await wb.smoke(() => globalThis.__smoke.selectionHandlerCount()), 0, "gỡ sự kiện chọn sau khi xong");
+  assert.ok(
+    !(await wb.smoke(() => globalThis.__smoke.log)).some((e) => e.op === "shape.add"),
+    "Excel cũ (ExcelApi < 1.9): không vẽ viền nháy",
+  );
   // Chọn vùng khác rồi đóng thanh (X) → giữ vùng cũ.
   d = await wb.pickVia(d, /^Chọn Vùng dữ liệu/, [fixture.sheetName, "A1:B2"], {
     shown: `${fixture.sheetName}!A1:B2`,

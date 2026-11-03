@@ -83,6 +83,7 @@ Dùng khi máy không chạy được bộ cài (chính sách công ty chặn fi
 | Bấm nút trên tab không thấy gì / hộp thoại trắng | Kiểm tra Internet; thử mở <https://khoacrab-97.github.io/Addin_excel_NKTC/> bằng trình duyệt. Nếu báo "Đang có một hộp thoại khác của add-in mở" → đóng hộp thoại đó. |
 | Vẫn thấy khung bên phải kiểu cũ (bản ≤ 1.2.1) | Chạy lại bộ cài 1.3.0 trở lên; nếu vẫn còn, xóa nội dung `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` rồi mở lại Excel. |
 | Đã cập nhật nhưng vẫn thấy bản cũ | Đóng Excel → xóa toàn bộ nội dung thư mục `%LOCALAPPDATA%\Microsoft\Office\16.0\Wef\` → mở lại Excel. |
+| Còn khung viền nét đứt trên sheet sau khi chọn vùng/ô (Excel bị đóng khi thanh chọn đang mở) | Bấm ⬆ chọn lại bất kỳ ô nào — add-in tự xóa; hoặc bấm vào viền rồi nhấn Delete (hình tên `NKTC_VienChon`, không chứa dữ liệu). |
 | Nút trên giao diện không có biểu tượng | Mạng chặn CDN biểu tượng của Microsoft; chức năng vẫn dùng bình thường (các nút điều hướng ngày dùng ký tự « ‹ › »). |
 
 ## 8. Dành cho người phát triển

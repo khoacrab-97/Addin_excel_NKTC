@@ -135,7 +135,7 @@ async function openWorkbook(input, options = {}) {
    * sheet → địa chỉ hiện ngay trong ô nhập → bấm ⬇ / Enter → hộp thoại chính mở lại.
    * `select` = [sheet, address] cần chọn (bỏ qua → không chọn lại). Tùy chọn: `shown` = địa chỉ phải hiện trong
    * thanh sau khi chọn; `type` = gõ địa chỉ vào thanh; `confirm` = "arrow" | "enter" | "close" (X của cửa sổ);
-   * `inspect(bar)` = kiểm tra thêm khi thanh đang mở.
+   * `beforeSelect(bar)` / `inspect(bar)` = kiểm tra thêm khi thanh đang mở (trước / sau khi chọn).
    */
   async function pickVia(d, buttonName, select, options = {}) {
     const confirm = options.confirm ?? "arrow";
@@ -146,6 +146,7 @@ async function openWorkbook(input, options = {}) {
       const initial = await box.inputValue();
       if (initial !== options.initial) throw new Error(`Thanh chọn mở với "${initial}", cần "${options.initial}"`);
     }
+    if (options.beforeSelect) await options.beforeSelect(bar);
     if (select) await smoke(([s, a]) => globalThis.__smoke.select(s, a), select);
     if (options.shown !== undefined) {
       await bar.page.waitForFunction(
