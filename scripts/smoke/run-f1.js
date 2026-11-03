@@ -54,13 +54,30 @@ async function main() {
   });
   d = await wb.dialog();
   assert.equal(await field().inputValue(), `${fixture.sheetName}!A1:C5`);
-  // Nút ⬆: hộp thoại ẩn → hộp thoại nhỏ → chọn trên sheet → OK → hộp thoại mở lại với vùng vừa chọn.
-  d = await wb.pickVia(d, /^Chọn Vùng dữ liệu/, [fixture.sheetName, "B5"]);
-  assert.equal(await field().inputValue(), `${fixture.sheetName}!${fixture.address}`);
-  // Hủy ở hộp thoại nhỏ → giữ vùng cũ.
-  d = await wb.pickVia(d, /^Chọn Vùng dữ liệu/, [fixture.sheetName, "A1:B2"], false);
-  assert.equal(await field().inputValue(), `${fixture.sheetName}!${fixture.address}`);
-  pass("Ô vùng dữ liệu", "gõ địa chỉ + Enter → vùng mới; ⬆ → hộp thoại nhỏ → chọn trên sheet → OK (Hủy giữ vùng cũ)");
+  // Nút ⬆ (giống Excel): hộp thoại chính đóng → thanh chọn; chọn trên sheet → địa chỉ hiện ngay trong thanh
+  // (chọn 1 ô → cả vùng dữ liệu) → bấm ⬇ → hộp thoại chính mở lại với vùng vừa chọn.
+  const full = `${fixture.sheetName}!${fixture.address}`;
+  d = await wb.pickVia(d, /^Chọn Vùng dữ liệu/, [fixture.sheetName, "B5"], {
+    initial: `${fixture.sheetName}!A1:C5`,
+    shown: full,
+    inspect: async (bar) => {
+      assert.ok((await bar.text()).includes("Xuất nhật ký theo ngày – Vùng dữ liệu"), "tiêu đề thanh chọn");
+      assert.ok(bar.info.height <= 20, "thanh chọn thấp (hộp thoại thu gọn)");
+      await bar.page.screenshot({ path: path.join(outDir, "f1-pick-bar.png") });
+    },
+  });
+  assert.equal(await field().inputValue(), full);
+  assert.equal(await wb.smoke(() => globalThis.__smoke.selectionHandlerCount()), 0, "gỡ sự kiện chọn sau khi xong");
+  // Chọn vùng khác rồi đóng thanh (X) → giữ vùng cũ.
+  d = await wb.pickVia(d, /^Chọn Vùng dữ liệu/, [fixture.sheetName, "A1:B2"], {
+    shown: `${fixture.sheetName}!A1:B2`,
+    confirm: "close",
+  });
+  assert.equal(await field().inputValue(), full);
+  pass(
+    "Ô vùng dữ liệu",
+    "gõ địa chỉ + Enter → vùng mới; ⬆ → thanh chọn, địa chỉ hiện ngay khi chọn → ⬇ (X giữ vùng cũ)",
+  );
 
   // 2. Xuất → sheet mới không trùng tên, thông báo kết quả + xem trước 5 ngày.
   await d.click("Xuất nhật ký");

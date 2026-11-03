@@ -57,10 +57,12 @@ export async function exportDailyLogCommand(): Promise<void> {
     );
     if (reply.action === "cancel") return;
     if (reply.action === "pick") {
-      if (reply.address === undefined && !(await pickOnSheet("range", "vùng dữ liệu (gồm dòng tiêu đề)"))) continue;
-      pickError = undefined;
       try {
-        ref = await resolveRangeRef(reply.address);
+        // Gõ địa chỉ trong ô → dùng luôn; bấm mũi tên → thu gọn thành thanh chọn trên sheet (giống Excel).
+        const picked = reply.address ?? (await pickOnSheet("range", `${TITLE} – Vùng dữ liệu`, source.value));
+        if (picked === undefined) continue;
+        pickError = undefined;
+        ref = await resolveRangeRef(picked);
         read = await tryReadRange(ref);
       } catch (error) {
         pickError = toUserMessage(error);

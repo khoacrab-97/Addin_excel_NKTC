@@ -4,7 +4,7 @@ import { exportDailyLogCommand } from "./dailyLogCommand";
 import { DIALOG_SIZE, openDialog } from "./dialogHost";
 import { showError } from "./messages";
 import { exportFormCommand, insertTemplateCommand } from "./formCommands";
-import { dayPanelCommand, interruptDayPanel, showDayCommand } from "./templateCommands";
+import { showDayCommand } from "./templateCommands";
 
 /** Một lệnh của nút trên Ribbon (Action ExecuteFunction trong manifest). */
 type CommandHandler = () => Promise<void>;
@@ -15,7 +15,6 @@ export const COMMANDS: Readonly<Record<string, CommandHandler>> = {
   nktcExportDaily: exportDailyLogCommand,
   nktcInsertTemplate: insertTemplateCommand,
   nktcExportForm: exportFormCommand,
-  nktcDayPanel: dayPanelCommand,
   nktcDayFirst: async () => {
     await showDayCommand({ kind: "first" });
   },
@@ -51,20 +50,11 @@ function run(handler: CommandHandler, event: Office.AddinCommands.Event): void {
 
 function wrap(handler: CommandHandler): (event: Office.AddinCommands.Event) => void {
   return (event) => {
-    const active = current;
-    if (!active) {
-      run(handler, event);
+    if (current) {
+      event.completed();
       return;
     }
-    // Bảng chuyển ngày để mở lâu: bấm nút khác trên Ribbon → đóng bảng rồi chạy lệnh mới.
-    if (interruptDayPanel()) {
-      void active.then(() => {
-        if (current) event.completed();
-        else run(handler, event);
-      });
-      return;
-    }
-    event.completed();
+    run(handler, event);
   };
 }
 

@@ -20,6 +20,9 @@
   var selection = { sheet: input.selection.sheet, address: input.selection.address };
   var settingsStore = JSON.parse(JSON.stringify(input.settings || {}));
   var dialogs = [];
+  /** Thời gian Excel cần để đóng hẳn một hộp thoại (mô phỏng). */
+  var CLOSE_DELAY_MS = input.dialogCloseDelayMs === undefined ? 300 : input.dialogCloseDelayMs;
+  var closingUntil = 0;
   function openDialog() {
     for (var i = dialogs.length - 1; i >= 0; i--) if (!dialogs[i].closed) return dialogs[i];
     return null;
@@ -61,6 +64,8 @@
   }
 
   var activeSheetName = input.selection.sheet;
+  /** Hàm nghe DocumentSelectionChanged (Office.context.document.addHandlerAsync). */
+  var selectionHandlers = [];
   var tableCount = 0;
   function Sheet(name) {
     this.name = name;
@@ -381,9 +386,18 @@
       }
       return rows;
     },
+    /** Người dùng chọn trên sheet → Excel phát sự kiện DocumentSelectionChanged. */
     select: function (sheetName, address) {
       selection = { sheet: sheetName, address: address };
       activeSheetName = sheetName;
+      selectionHandlers.slice().forEach(function (handler) {
+        setTimeout(function () {
+          handler({ type: "documentSelectionChanged" });
+        }, 0);
+      });
+    },
+    selectionHandlerCount: function () {
+      return selectionHandlers.length;
     },
     setValue: function (sheetName, address, value) {
       var box = parseAddress(address);
@@ -443,6 +457,7 @@
       var d = openDialog();
       if (!d) return;
       d.closed = true;
+      closingUntil = Date.now() + CLOSE_DELAY_MS;
       if (d.handlers.dialogEventReceived) d.handlers.dialogEventReceived({ error: 12006 });
     },
     tables: function (name) {
@@ -478,12 +493,27 @@
       DialogMessageReceived: "dialogMessageReceived",
       DialogEventReceived: "dialogEventReceived",
       DialogParentMessageReceived: "dialogParentMessageReceived",
+      DocumentSelectionChanged: "documentSelectionChanged",
     },
     onReady: function () {
       return Promise.resolve({ host: "Excel", platform: "PC" });
     },
     context: {
       document: {
+        addHandlerAsync: function (type, handler, callback) {
+          if (type === "documentSelectionChanged") selectionHandlers.push(handler);
+          log.push({ op: "addHandler", type: type });
+          setTimeout(function () {
+            if (callback) callback({ status: type === "documentSelectionChanged" ? "succeeded" : "failed" });
+          }, 0);
+        },
+        removeHandlerAsync: function (type, options) {
+          var handler = options && options.handler;
+          selectionHandlers = selectionHandlers.filter(function (item) {
+            return item !== handler;
+          });
+          log.push({ op: "removeHandler", type: type });
+        },
         settings: {
           get: function (key) {
             return key in settingsStore ? JSON.parse(JSON.stringify(settingsStore[key])) : null;
@@ -504,7 +534,8 @@
       diagnostics: { platform: "PC", version: "16.0 (giả lập)" },
       ui: {
         displayDialogAsync: function (url, options, callback) {
-          if (openDialog()) {
+          // Giống Excel thật: hộp thoại vừa đóng còn "đang đóng" một lúc → mở hộp thoại mới báo 12007.
+          if (openDialog() || Date.now() < closingUntil) {
             setTimeout(function () {
               callback({ status: "failed", error: { code: 12007, message: "Đang có hộp thoại" } });
             }, 0);
@@ -520,6 +551,7 @@
               window.__toChild(message);
             },
             close: function () {
+              if (!dialog.closed) closingUntil = Date.now() + CLOSE_DELAY_MS;
               dialog.closed = true;
             },
           };

@@ -7,7 +7,7 @@ interface RangeFieldProps {
   value: string;
   error?: string | undefined;
   placeholder?: string;
-  /** Lấy vùng/ô đang chọn trên sheet (`address` không có) hoặc áp dụng địa chỉ gõ tay. */
+  /** Thu gọn để chọn trên sheet (`address` không có) hoặc áp dụng địa chỉ gõ tay. */
   onPick: (address?: string) => void;
   ariaLabel?: string;
   /** Có thì giá trị gõ tay được nhận ngay (không cần Enter), ví dụ ô đích trong danh sách gán. */
@@ -15,8 +15,8 @@ interface RangeFieldProps {
 }
 
 /**
- * Ô chọn vùng giống Excel: hiển thị vùng đang dùng (tự nhận diện), nút mũi tên ở cuối để lấy vùng đang chọn
- * trên sheet. Có thể gõ địa chỉ rồi Enter.
+ * Ô chọn vùng giống Excel: hiển thị vùng đang dùng (tự nhận diện), nút mũi tên ở cuối thu gọn hộp thoại thành
+ * thanh chọn để chọn trên sheet. Có thể gõ địa chỉ rồi Enter.
  */
 export function RangeField({
   label,
@@ -49,7 +49,7 @@ export function RangeField({
       </Stack.Item>
       <DefaultButton
         text="⬆"
-        title="Lấy vùng đang chọn trên sheet"
+        title="Thu gọn hộp thoại để chọn trên sheet"
         ariaLabel={`Chọn ${ariaLabel ?? label} trên sheet`}
         styles={{ root: { minWidth: 36, padding: 0, marginBottom: error || edited ? 22 : 0 } }}
         onClick={() => {
