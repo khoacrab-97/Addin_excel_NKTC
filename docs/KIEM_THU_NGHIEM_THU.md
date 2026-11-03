@@ -60,6 +60,8 @@
 | C8 | Lưu file, đóng, mở lại → **Ngày sau** | Cấu hình gán cột còn nguyên; ghi luôn, không hỏi lại | |
 | C9 | **File → Print** (Xem trước bản in) | A4 đứng, 2 trang, ngắt trước mục 4 | |
 | C10 | Mở bằng Excel 2016 (nếu có) | C1–C9 đạt | |
+| C11 | Sau khi đã gán (C2): trong NK_TheoNgay chèn 1 cột mới giữa cột B và C (đặt tiêu đề), thêm 1 dòng ngày mới ở cuối → bấm **Ngày sau**, **Ngày cuối** | Không cần chọn lại vùng / gán lại; Thời tiết, nhân lực… vẫn hiện đúng cột; **Ngày cuối** hiện ngày vừa thêm | |
+| C12 | Đổi tên tiêu đề cột "Thời tiết" thành "Thời tiết (sáng)" → **Ngày trước**; mở **Xuất vào form** | Báo không tìm thấy cột "Thời tiết" (gán vào Mẫu NKTC!C6), biểu mẫu không đổi; hộp thoại báo dòng 3 cần chọn lại cột. Đổi lại tên (khác hoa/thường vẫn được) → chạy bình thường | |
 
 ## D. Kết luận
 

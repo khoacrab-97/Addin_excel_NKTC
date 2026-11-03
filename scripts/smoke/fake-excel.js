@@ -512,6 +512,16 @@
       var cell = sheet && sheet.peek(box.r1, box.c1);
       return cell ? { value: cell.value, formula: cell.formula } : null;
     },
+    /** Chèn cột trống tại `columnIndex` (0-based) như Insert Column của Excel: các ô từ cột đó dịch sang phải. */
+    insertColumn: function (sheetName, columnIndex) {
+      var sheet = findSheet(sheetName);
+      var moved = {};
+      Object.keys(sheet.cells).forEach(function (key) {
+        var rc = key.split(",").map(Number);
+        moved[rc[0] + "," + (rc[1] >= columnIndex ? rc[1] + 1 : rc[1])] = sheet.cells[key];
+      });
+      sheet.cells = moved;
+    },
     renameSheet: function (from, to) {
       findSheet(from).name = to;
     },

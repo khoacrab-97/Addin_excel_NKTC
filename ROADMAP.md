@@ -153,3 +153,13 @@
 
 > P10.7–P10.8 **Tested** = smoke F1 7, F2 14 bước: Excel giả lập có Shape API (vị trí khung theo ô, nét đứt, không nền, đổi màu, xóa sau khi đóng thanh, dọn hình sót, không ghi ô), ExcelApi 1.1 không vẽ. Chưa Verified (P10.9): vị trí Shape theo point của Excel thật và việc vẽ Shape có làm Excel đổi vùng chọn hay không chỉ kiểm chứng được trên Excel Desktop.
 
+### Bản 1.8.0 — gán cột theo tên tiêu đề
+
+| ID | Hạng mục | Trạng thái |
+|---|---|---|
+| P10.10 | Vùng nguồn tự mở rộng từ ô đầu tới hết dữ liệu của sheet (R2.17a) | Tested |
+| P10.11 | Khớp cột đã gán và cột Ngày theo tên tiêu đề (không phân biệt hoa/thường, khoảng trắng; trùng tên theo thứ tự) khi Chuyển ngày và trong hộp thoại Xuất vào form; cột mất → chặn, báo cột + ô đích (R2.17b–d) | Tested |
+| P10.12 | Kiểm thử trên Excel Desktop Windows: chèn cột giữa, thêm ngày, đổi tên tiêu đề (`docs/KIEM_THU_NGHIEM_THU.md` C11, C12) | Not Started |
+
+> P10.10–P10.11 **Tested** = unit test `headerMatch` (9), `formRemap` (2) + smoke F2 16 bước (chèn cột giữa C + thêm ngày 01/01/2027 → Chuyển ngày ghi đúng theo tên, không gán lại; đổi tên tiêu đề → chặn, không ghi; hộp thoại báo dòng; khôi phục tên khác hoa/thường → chạy). Chưa Verified (P10.12).
+
