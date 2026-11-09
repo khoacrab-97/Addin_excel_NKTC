@@ -46,7 +46,7 @@ Public Function NKTC_RunTests() As String
     Dim names As Variant, k As Long
     mPass = 0: mFail = 0: mLog = ""
     names = Array("TestText", "TestDates", "TestDatePattern", "TestColumns", "TestDailyLog", "TestSheetName", _
-        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate")
+        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers")
     For k = 0 To UBound(names)
         RunOne k, CStr(names(k))
     Next k
@@ -74,6 +74,7 @@ Private Sub RunOne(ByVal idx As Long, ByVal testName As String)
         Case 8: TestHeaderMatch
         Case 9: TestWriteValue
         Case 10: TestValidate
+        Case 11: TestDialogHelpers
     End Select
     Exit Sub
 Loi:
@@ -276,4 +277,25 @@ Private Sub TestValidate()
     Eq MappingKey(maps, 2), U("m\u1eabu nktc!E2|m\u1eabu nktc!E2"), "MappingKey"
     Set errs = ValidateMappings(maps, 0, 5)
     Eq errs.Count, 1, U("ch\u01b0a g\u00e1n")
+End Sub
+
+Private Sub TestDialogHelpers()
+    Dim cc As Long, cs As Long, ce As Long
+    Eq ColumnLetter(0), "A", U("c\u1ed9t A")
+    Eq ColumnLetter(25), "Z", U("c\u1ed9t Z")
+    Eq ColumnLetter(26), "AA", U("c\u1ed9t AA")
+    Eq ColumnLetter(16383), "XFD", U("c\u1ed9t cu\u1ed1i XFD")
+    Eq ColumnOptionLabel(U("  N\u1ed9i dung") & vbLf & U("c\u00f4ng vi\u1ec7c "), 2), U("C\u1ed9t C \u2013 N\u1ed9i dung c\u00f4ng vi\u1ec7c"), U("nh\u00e3n c\u1ed9t")
+    Eq ColumnOptionLabel(Empty, 0), U("C\u1ed9t A \u2013 (kh\u00f4ng c\u00f3 ti\u00eau \u0111\u1ec1)"), U("nh\u00e3n c\u1ed9t tr\u1ed1ng")
+    Eq ColumnOptionLabel(2026, 1), U("C\u1ed9t B \u2013 2026"), U("nh\u00e3n c\u1ed9t s\u1ed1")
+    Eq Len(ShortLabel(String(80, "x"))), 60, U("nh\u00e3n d\u00e0i c\u1eaft c\u00f2n 60")
+    Eq ParseRowCount(" 10 "), 10, U("s\u1ed1 d\u00f2ng 10")
+    Eq ParseRowCount("1000"), 1000, U("s\u1ed1 d\u00f2ng t\u1ed1i \u0111a")
+    Eq ParseRowCount("1001"), 0, U("qu\u00e1 s\u1ed1 d\u00f2ng t\u1ed1i \u0111a")
+    Eq ParseRowCount("0"), 0, U("s\u1ed1 d\u00f2ng 0")
+    Eq ParseRowCount("5a"), 0, U("s\u1ed1 d\u00f2ng c\u00f3 ch\u1eef")
+    Eq ParseRowCount(""), 0, U("s\u1ed1 d\u00f2ng tr\u1ed1ng")
+    ' Bang do Tao bang sinh ra phai duoc Xuat theo ngay nhan dien du 3 cot (R1.12).
+    DetectColumns InputTableHeaders(), cc, cs, ce
+    Check cc = 1 And cs = 2 And ce = 3, U("T\u1ea1o b\u1ea3ng -> nh\u1eadn di\u1ec7n \u0111\u1ee7 c\u1ed9t")
 End Sub

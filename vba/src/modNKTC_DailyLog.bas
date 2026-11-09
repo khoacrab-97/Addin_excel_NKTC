@@ -9,6 +9,11 @@ Public Const DAILY_SHEET_BASE_NAME As String = "NK_TheoNgay"
 Public Const MAX_SPAN_DAYS As Long = 3660       ' R1.10: chặn lỗi nhập năm
 Public Const MAX_CELL_LENGTH As Long = 32767    ' số ký tự tối đa của một ô
 
+' Bảng nhập tiến độ (F4 Tạo bảng).
+Public Const INPUT_SHEET_BASE_NAME As String = "TienDo"
+Public Const DEFAULT_TABLE_ROWS As Long = 10
+Public Const MAX_TABLE_ROWS As Long = 1000
+
 ' Một công việc hợp lệ.
 Public Type NKTC_WorkItem
     RowNumber As Long     ' số dòng trên sheet (để báo lỗi)
@@ -225,4 +230,20 @@ Private Function NameTaken(ByVal existing As Collection, ByVal name As String) A
     For Each v In existing
         If LCase$(v) = LCase$(name) Then NameTaken = True: Exit Function
     Next v
+End Function
+
+' Số dòng của bảng nhập tiến độ: số nguyên 1..MAX_TABLE_ROWS; 0 nếu không hợp lệ.
+Public Function ParseRowCount(ByVal text As String) As Long
+    Dim i As Long
+    text = Trim$(text)
+    If Len(text) = 0 Or Len(text) > 4 Then Exit Function
+    For i = 1 To Len(text)
+        If Mid$(text, i, 1) < "0" Or Mid$(text, i, 1) > "9" Then Exit Function
+    Next i
+    If CLng(text) >= 1 And CLng(text) <= MAX_TABLE_ROWS Then ParseRowCount = CLng(text)
+End Function
+
+' Tiêu đề bảng nhập tiến độ — trùng quy tắc nhận diện cột của F1 (R1.12).
+Public Function InputTableHeaders() As Variant
+    InputTableHeaders = Array("STT", "Nội dung công việc", "Bắt đầu", "Kết thúc")
 End Function

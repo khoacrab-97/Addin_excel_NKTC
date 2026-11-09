@@ -1,0 +1,26 @@
+{
+  "name": "frmTaoBang",
+  "caption": "Tạo bảng nhập tiến độ",
+  "width": 360,
+  "height": 236,
+  "controls": [
+    { "type": "Label", "name": "lblCot", "left": 12, "top": 10, "width": 330, "height": 26, "WordWrap": true,
+      "Caption": "Các cột: STT | Nội dung công việc | Bắt đầu | Kết thúc. STT được đánh sẵn; ngày nhập dạng dd/mm/yyyy." },
+    { "type": "OptionButton", "name": "optMoi", "left": 12, "top": 42, "width": 330, "height": 18,
+      "Caption": "Sheet mới (TienDo), bắt đầu tại ô A1" },
+    { "type": "OptionButton", "name": "optHienTai", "left": 12, "top": 62, "width": 330, "height": 18,
+      "Caption": "Sheet hiện tại" },
+    { "type": "Label", "name": "lblO", "left": 28, "top": 84, "width": 314, "height": 14,
+      "Caption": "Ô bắt đầu (góc trên-trái, ô tiêu đề STT)" },
+    { "type": "RefEdit", "name": "refO", "left": 28, "top": 98, "width": 314, "height": 18 },
+    { "type": "Label", "name": "lblDong", "left": 12, "top": 126, "width": 200, "height": 14,
+      "Caption": "Số dòng (1–1000, mặc định 10)" },
+    { "type": "TextBox", "name": "txtDong", "left": 216, "top": 123, "width": 60, "height": 18 },
+    { "type": "Label", "name": "lblVung", "left": 12, "top": 148, "width": 330, "height": 28, "WordWrap": true,
+      "Caption": "" },
+    { "type": "CommandButton", "name": "cmdTao", "left": 170, "top": 182, "width": 84, "height": 24,
+      "Caption": "Tạo bảng", "Default": true },
+    { "type": "CommandButton", "name": "cmdHuy", "left": 258, "top": 182, "width": 84, "height": 24,
+      "Caption": "Hủy", "Cancel": true }
+  ]
+}

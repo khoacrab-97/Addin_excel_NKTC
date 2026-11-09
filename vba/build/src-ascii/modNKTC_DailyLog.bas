@@ -9,6 +9,11 @@ Public Const DAILY_SHEET_BASE_NAME As String = "NK_TheoNgay"
 Public Const MAX_SPAN_DAYS As Long = 3660       ' R1.10: chan loi nhap nam
 Public Const MAX_CELL_LENGTH As Long = 32767    ' so ky tu toi da cua mot o
 
+' Bang nhap tien do (F4 Tao bang).
+Public Const INPUT_SHEET_BASE_NAME As String = "TienDo"
+Public Const DEFAULT_TABLE_ROWS As Long = 10
+Public Const MAX_TABLE_ROWS As Long = 1000
+
 ' Mot cong viec hop le.
 Public Type NKTC_WorkItem
     RowNumber As Long     ' so dong tren sheet (de bao loi)
@@ -225,4 +230,20 @@ Private Function NameTaken(ByVal existing As Collection, ByVal name As String) A
     For Each v In existing
         If LCase$(v) = LCase$(name) Then NameTaken = True: Exit Function
     Next v
+End Function
+
+' So dong cua bang nhap tien do: so nguyen 1..MAX_TABLE_ROWS; 0 neu khong hop le.
+Public Function ParseRowCount(ByVal text As String) As Long
+    Dim i As Long
+    text = Trim$(text)
+    If Len(text) = 0 Or Len(text) > 4 Then Exit Function
+    For i = 1 To Len(text)
+        If Mid$(text, i, 1) < "0" Or Mid$(text, i, 1) > "9" Then Exit Function
+    Next i
+    If CLng(text) >= 1 And CLng(text) <= MAX_TABLE_ROWS Then ParseRowCount = CLng(text)
+End Function
+
+' Tieu de bang nhap tien do ? trung quy tac nhan dien cot cua F1 (R1.12).
+Public Function InputTableHeaders() As Variant
+    InputTableHeaders = Array("STT", U("N\u1ed9i dung c\u00f4ng vi\u1ec7c"), U("B\u1eaft \u0111\u1ea7u"), U("K\u1ebft th\u00fac"))
 End Function

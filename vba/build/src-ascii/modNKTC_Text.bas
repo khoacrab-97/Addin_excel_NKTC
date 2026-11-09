@@ -80,16 +80,7 @@ End Function
 
 ' Chuan hoa tieu de de khop cot theo ten (R2.17): khong phan biet hoa/thuong, gop khoang trang; giu dau.
 Public Function NormalizeHeaderName(ByVal s As String) As String
-    Dim parts As Variant, i As Long, out As String
-    s = Replace(Replace(Replace(s, vbTab, " "), vbCr, " "), vbLf, " ")
-    parts = Split(Trim$(s), " ")
-    For i = 0 To UBound(parts)
-        If Len(parts(i)) > 0 Then
-            If Len(out) > 0 Then out = out & " "
-            out = out & parts(i)
-        End If
-    Next i
-    NormalizeHeaderName = LCase$(out)
+    NormalizeHeaderName = LCase$(NormalizeSpaces(s))
 End Function
 
 ' Gia tri o thanh chu (giong headerTexts cua ban Office.js): chuoi giu nguyen, so/logic thanh chu, con lai rong.
@@ -106,4 +97,45 @@ End Function
 Public Function IsBlankValue(ByVal v As Variant) As Boolean
     If IsEmpty(v) Then IsBlankValue = True: Exit Function
     If VarType(v) = vbString Then IsBlankValue = (Len(Trim$(v)) = 0)
+End Function
+
+' Chu cot Excel tu chi so 0-based: 0 -> "A", 27 -> "AB".
+Public Function ColumnLetter(ByVal index0 As Long) As String
+    Dim n As Long, out As String
+    n = index0 + 1
+    Do While n > 0
+        out = Chr$(65 + ((n - 1) Mod 26)) & out
+        n = (n - 1) \ 26
+    Loop
+    ColumnLetter = out
+End Function
+
+' Nhan ngan: gop khoang trang, toi da 60 ky tu (giong shortLabel cua ban Office.js).
+Public Function ShortLabel(ByVal s As String) As String
+    Const MAX_LEN As Long = 60
+    s = NormalizeSpaces(s)
+    If Len(s) > MAX_LEN Then s = Left$(s, MAX_LEN - 1) & ChrW(8230)
+    ShortLabel = s
+End Function
+
+' Gop moi khoang trang/xuong dong thanh mot dau cach, bo khoang trang hai dau.
+Public Function NormalizeSpaces(ByVal s As String) As String
+    Dim parts As Variant, i As Long, out As String
+    s = Replace(Replace(Replace(s, vbTab, " "), vbCr, " "), vbLf, " ")
+    parts = Split(Trim$(s), " ")
+    For i = 0 To UBound(parts)
+        If Len(parts(i)) > 0 Then
+            If Len(out) > 0 Then out = out & " "
+            out = out & parts(i)
+        End If
+    Next i
+    NormalizeSpaces = out
+End Function
+
+' Dong trong danh sach chon cot: "Cot C ? Noi dung cong viec". sheetColumn0: chi so cot 0-based tren sheet.
+Public Function ColumnOptionLabel(ByVal header As Variant, ByVal sheetColumn0 As Long) As String
+    Dim label As String
+    label = ShortLabel(CellText(header))
+    If Len(label) = 0 Then label = U("(kh\u00f4ng c\u00f3 ti\u00eau \u0111\u1ec1)")
+    ColumnOptionLabel = U("C\u1ed9t ") & ColumnLetter(sheetColumn0) & U(" \u2013 ") & label
 End Function

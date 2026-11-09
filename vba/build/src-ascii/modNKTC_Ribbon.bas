@@ -1,7 +1,7 @@
 Attribute VB_Name = "modNKTC_Ribbon"
 '==============================================================================
 ' NHAT KY TC ? tab Ribbon "Nhat ky TC": nhan lenh tu cac nut (vba/ribbon/customUI14.xml).
-' Moc 1: chi co Phien ban (kem ket qua kiem thu phan loi); cac chuc nang khac dang chuyen sang VBA.
+' Da chuyen: Tao bang, Xuat theo ngay, Phien ban (kem ket qua kiem thu phan loi); cac nut khac dang chuyen sang VBA.
 '==============================================================================
 Option Explicit
 
@@ -16,6 +16,8 @@ End Sub
 Public Sub RB_Action(ByVal control As Object)
     On Error GoTo Loi
     Select Case control.Id
+        Case "btnTaoBang": CmdTaoBang
+        Case "btnXuatNgay": CmdXuatNgay
         Case "btnPhienBan": ShowAbout
         Case Else
             MsgBox U("Ch\u1ee9c n\u0103ng n\u00e0y \u0111ang \u0111\u01b0\u1ee3c chuy\u1ec3n sang b\u1ea3n VBA. Trong l\u00fac ch\u1edd, anh/ch\u1ecb d\u00f9ng tab ""Nh\u1eadt k\u00fd thi c\u00f4ng"" (b\u1ea3n c\u0169)."), _

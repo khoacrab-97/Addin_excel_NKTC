@@ -1,0 +1,103 @@
+'==============================================================================
+' NHẬT KÝ TC – hộp thoại Tạo bảng nhập tiến độ (F4). Bố cục: vba/forms/frmTaoBang.json.
+'==============================================================================
+Option Explicit
+
+Private mAccepted As Boolean
+Private mStartCell As Range
+Private mRows As Long
+
+Public Sub Init(ByVal sheetName As String, ByVal cellAddress As String)
+    optHienTai.Caption = "Sheet hiện tại (" & sheetName & ")"
+    refO.Value = cellAddress
+    txtDong.Text = CStr(DEFAULT_TABLE_ROWS)
+    optMoi.Value = True
+    UpdateState
+End Sub
+
+Public Property Get Accepted() As Boolean
+    Accepted = mAccepted
+End Property
+
+Public Property Get OnNewSheet() As Boolean
+    OnNewSheet = optMoi.Value
+End Property
+
+Public Property Get StartCell() As Range
+    Set StartCell = mStartCell
+End Property
+
+Public Property Get RowCount() As Long
+    RowCount = mRows
+End Property
+
+' Kiểm tra dữ liệu nhập, hiện vùng bảng sẽ chiếm; bật/tắt nút Tạo bảng.
+Private Sub UpdateState()
+    Dim ok As Boolean, cell As Range, area As String
+    mRows = ParseRowCount(txtDong.Text)
+    refO.Enabled = optHienTai.Value
+    lblO.Enabled = optHienTai.Value
+    Set mStartCell = Nothing
+    lblVung.ForeColor = &H80000012
+    If mRows = 0 Then
+        lblVung.Caption = "Nhập số dòng là số nguyên từ 1 đến " & MAX_TABLE_ROWS & "."
+        lblVung.ForeColor = &HC0&
+    ElseIf optMoi.Value Then
+        lblVung.Caption = "Bảng sẽ chiếm vùng A1:D" & (mRows + 1) & " của sheet mới."
+        ok = True
+    Else
+        Set cell = TryRange(refO.Value)
+        If cell Is Nothing Then
+            lblVung.Caption = "Địa chỉ ô không hợp lệ (ví dụ B3)."
+            lblVung.ForeColor = &HC0&
+        Else
+            Set mStartCell = cell.Cells(1, 1)
+            optHienTai.Caption = "Sheet hiện tại (" & mStartCell.Worksheet.Name & ")"
+            If mStartCell.Row + mRows > mStartCell.Worksheet.Rows.Count Or _
+               mStartCell.Column + 3 > mStartCell.Worksheet.Columns.Count Then
+                lblVung.Caption = "Bảng vượt quá giới hạn sheet của Excel. Chọn ô bắt đầu khác hoặc giảm số dòng."
+                lblVung.ForeColor = &HC0&
+            Else
+                area = mStartCell.Resize(mRows + 1, 4).Address(False, False)
+                lblVung.Caption = "Bảng sẽ chiếm vùng " & area & " — vùng này phải đang trống (add-in không ghi đè dữ liệu)."
+                ok = True
+            End If
+        End If
+    End If
+    cmdTao.Enabled = ok
+End Sub
+
+Private Sub optMoi_Click()
+    UpdateState
+End Sub
+
+Private Sub optHienTai_Click()
+    UpdateState
+End Sub
+
+Private Sub refO_Change()
+    UpdateState
+End Sub
+
+Private Sub txtDong_Change()
+    UpdateState
+End Sub
+
+Private Sub cmdTao_Click()
+    UpdateState
+    If Not cmdTao.Enabled Then Exit Sub
+    mAccepted = True
+    Me.Hide
+End Sub
+
+Private Sub cmdHuy_Click()
+    Me.Hide
+End Sub
+
+' Nút X: ẩn thay vì hủy form để lệnh gọi còn đọc được kết quả (Accepted = False).
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+    If CloseMode = vbFormControlMenu Then
+        Cancel = True
+        Me.Hide
+    End If
+End Sub

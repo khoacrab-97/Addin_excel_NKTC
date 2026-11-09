@@ -50,6 +50,21 @@ class ConvertTests(unittest.TestCase):
             convert_text('ok\nx = "abc', "m.bas")
         self.assertIn("m.bas:2", str(ctx.exception))
 
+    def test_main_converts_form_code_and_skips_other_files(self):
+        import tempfile
+        from pathlib import Path
+
+        from vba_ascii import main
+
+        with tempfile.TemporaryDirectory() as tmp:
+            src, dst = Path(tmp, "src"), Path(tmp, "dst")
+            src.mkdir()
+            Path(src, "frmA.frmcode").write_text('x = "Hủy"\n', encoding="utf-8")
+            Path(src, "ghi-chu.txt").write_text("Ngày", encoding="utf-8")
+            self.assertEqual(main(["vba_ascii.py", str(src), str(dst)]), 0)
+            self.assertEqual(Path(dst, "frmA.frmcode").read_bytes(), b'x = U("H\\u1ee7y")\r\n')
+            self.assertFalse(Path(dst, "ghi-chu.txt").exists())
+
     def test_strip_diacritics(self):
         self.assertEqual(strip_diacritics("Đường đi Nhật ký"), "Duong di Nhat ky")
 

@@ -46,7 +46,7 @@ Public Function NKTC_RunTests() As String
     Dim names As Variant, k As Long
     mPass = 0: mFail = 0: mLog = ""
     names = Array("TestText", "TestDates", "TestDatePattern", "TestColumns", "TestDailyLog", "TestSheetName", _
-        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate")
+        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers")
     For k = 0 To UBound(names)
         RunOne k, CStr(names(k))
     Next k
@@ -74,6 +74,7 @@ Private Sub RunOne(ByVal idx As Long, ByVal testName As String)
         Case 8: TestHeaderMatch
         Case 9: TestWriteValue
         Case 10: TestValidate
+        Case 11: TestDialogHelpers
     End Select
     Exit Sub
 Loi:
@@ -276,4 +277,25 @@ Private Sub TestValidate()
     Eq MappingKey(maps, 2), "mẫu nktc!E2|mẫu nktc!E2", "MappingKey"
     Set errs = ValidateMappings(maps, 0, 5)
     Eq errs.Count, 1, "chưa gán"
+End Sub
+
+Private Sub TestDialogHelpers()
+    Dim cc As Long, cs As Long, ce As Long
+    Eq ColumnLetter(0), "A", "cột A"
+    Eq ColumnLetter(25), "Z", "cột Z"
+    Eq ColumnLetter(26), "AA", "cột AA"
+    Eq ColumnLetter(16383), "XFD", "cột cuối XFD"
+    Eq ColumnOptionLabel("  Nội dung" & vbLf & "công việc ", 2), "Cột C – Nội dung công việc", "nhãn cột"
+    Eq ColumnOptionLabel(Empty, 0), "Cột A – (không có tiêu đề)", "nhãn cột trống"
+    Eq ColumnOptionLabel(2026, 1), "Cột B – 2026", "nhãn cột số"
+    Eq Len(ShortLabel(String(80, "x"))), 60, "nhãn dài cắt còn 60"
+    Eq ParseRowCount(" 10 "), 10, "số dòng 10"
+    Eq ParseRowCount("1000"), 1000, "số dòng tối đa"
+    Eq ParseRowCount("1001"), 0, "quá số dòng tối đa"
+    Eq ParseRowCount("0"), 0, "số dòng 0"
+    Eq ParseRowCount("5a"), 0, "số dòng có chữ"
+    Eq ParseRowCount(""), 0, "số dòng trống"
+    ' Bảng do Tạo bảng sinh ra phải được Xuất theo ngày nhận diện đủ 3 cột (R1.12).
+    DetectColumns InputTableHeaders(), cc, cs, ce
+    Check cc = 1 And cs = 2 And ce = 3, "Tạo bảng -> nhận diện đủ cột"
 End Sub

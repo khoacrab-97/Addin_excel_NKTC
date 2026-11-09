@@ -1,7 +1,8 @@
 ﻿#requires -Version 5.1
 <#
   Build add-in VBA "Nhật ký TC" bằng Excel trên Windows:
-    1. Nạp mã nguồn ASCII (vba/build/src-ascii, sinh từ vba/src bằng vba/tools/vba_ascii.py) vào workbook mới.
+    1. Nạp mã nguồn ASCII (vba/build/src-ascii, sinh từ vba/src bằng vba/tools/vba_ascii.py) vào workbook mới;
+       tạo UserForm theo bố cục vba/forms/<tên>.json và chép mã src-ascii/<tên>.frmcode vào form.
     2. Biên dịch dự án VBA (Debug > Compile). Lỗi biên dịch -> Excel hiện hộp thoại, build dừng.
     3. Lưu thành vba/dist/NhatKyThiCong_Core.xlam, gắn Ribbon (customUI14.xml + ảnh nút).
     4. Mở lại file, chạy kiểm thử phần lõi (modNKTC_Tests.NKTC_RunTests).
@@ -17,6 +18,7 @@ $ErrorActionPreference = 'Stop'
 $vbaDir = Split-Path -Parent $PSScriptRoot
 $repoDir = Split-Path -Parent $vbaDir
 $srcDir = Join-Path $vbaDir 'build\src-ascii'
+$formsDir = Join-Path $vbaDir 'forms'
 $ribbonXml = Join-Path $vbaDir 'ribbon\customUI14.xml'
 $iconDir = Join-Path $repoDir 'assets\ribbon'
 $distDir = Join-Path $vbaDir 'dist'
@@ -81,6 +83,53 @@ function Add-RibbonToPackage([string]$path) {
     }
 }
 
+# Loại ô trong vba/forms/*.json -> ProgID của MSForms / RefEdit (ô chọn vùng gốc của Excel).
+$progIds = @{
+    Label = 'Forms.Label.1'; TextBox = 'Forms.TextBox.1'; ComboBox = 'Forms.ComboBox.1'; ListBox = 'Forms.ListBox.1'
+    CommandButton = 'Forms.CommandButton.1'; OptionButton = 'Forms.OptionButton.1'; CheckBox = 'Forms.CheckBox.1'
+    Frame = 'Forms.Frame.1'; RefEdit = 'RefEdit.Ctrl'
+}
+$specKeys = @('type', 'name', 'left', 'top', 'width', 'height')
+
+function Set-UiFont($target) {
+    try { $target.Font.Name = 'Segoe UI'; $target.Font.Size = 9 } catch { }
+}
+
+function Add-UserForm($project, [string]$specPath) {
+    $spec = Get-Content -Path $specPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    $component = $project.VBComponents.Add(3)   # vbext_ct_MSForm
+    $component.Name = $spec.name
+    $component.Properties.Item('Caption').Value = $spec.caption
+    $component.Properties.Item('Width').Value = $spec.width
+    $component.Properties.Item('Height').Value = $spec.height
+    $designer = $component.Designer
+    Set-UiFont $designer
+    foreach ($c in $spec.controls) {
+        $progId = $progIds[$c.type]
+        if (-not $progId) { throw ('Loại ô không hỗ trợ "' + $c.type + '" trong ' + $specPath) }
+        try {
+            $control = $designer.Controls.Add($progId, $c.name, $true)
+        } catch {
+            throw ('Không thêm được ô ' + $c.type + ' "' + $c.name + '" vào ' + $spec.name + ': ' + $_.Exception.Message)
+        }
+        $control.Left = $c.left; $control.Top = $c.top; $control.Width = $c.width; $control.Height = $c.height
+        Set-UiFont $control
+        foreach ($p in $c.PSObject.Properties) {
+            if ($specKeys -contains $p.Name) { continue }
+            try {
+                $control.($p.Name) = $p.Value
+            } catch {
+                throw ('Không đặt được ' + $c.name + '.' + $p.Name + ' (' + $spec.name + '): ' + $_.Exception.Message)
+            }
+        }
+    }
+    $codePath = Join-Path $srcDir ($spec.name + '.frmcode')
+    if (-not (Test-Path $codePath)) { throw ('Thiếu mã của form: ' + $codePath) }
+    $module = $component.CodeModule
+    if ($module.CountOfLines -gt 0) { $module.DeleteLines(1, $module.CountOfLines) }
+    $module.AddFromString([IO.File]::ReadAllText($codePath))
+}
+
 $excel = $null
 $exitCode = 1
 try {
@@ -102,6 +151,10 @@ try {
     Get-ChildItem -Path $srcDir -Include '*.bas', '*.cls' -File -Recurse | Sort-Object Name | ForEach-Object {
         [void]$project.VBComponents.Import($_.FullName)
         Log ('  + ' + $_.Name)
+    }
+    Get-ChildItem -Path $formsDir -Filter '*.json' -File | Sort-Object Name | ForEach-Object {
+        Add-UserForm $project $_.FullName
+        Log ('  + ' + $_.BaseName + ' (UserForm)')
     }
 
     # Debug > Compile VBAProject (ID 578). Biên dịch xong thì lệnh bị làm mờ.

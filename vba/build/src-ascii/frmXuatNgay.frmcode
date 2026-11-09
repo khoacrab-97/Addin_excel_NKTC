@@ -1,0 +1,128 @@
+'==============================================================================
+' NHAT KY TC ? hop thoai Xuat nhat ky theo ngay (F1). Bo cuc: vba/forms/frmXuatNgay.json.
+' O "Vung du lieu" la RefEdit cua Excel: bam vao roi chon tren sheet, hoac go dia chi.
+'==============================================================================
+Option Explicit
+
+Private mAccepted As Boolean
+Private mSource As Range
+Private mHeaderKey As String
+Private mLoading As Boolean
+
+Public Sub Init(ByVal initialRef As String)
+    refVung.Value = initialRef
+    LoadSource
+End Sub
+
+Public Property Get Accepted() As Boolean
+    Accepted = mAccepted
+End Property
+
+Public Property Get Source() As Range
+    Set Source = mSource
+End Property
+
+Public Property Get ColContent() As Long
+    ColContent = cboNoiDung.ListIndex
+End Property
+
+Public Property Get ColStart() As Long
+    ColStart = cboBatDau.ListIndex
+End Property
+
+Public Property Get ColEnd() As Long
+    ColEnd = cboKetThuc.ListIndex
+End Property
+
+' Doc dong tieu de cua vung, nap danh sach cot va tu nhan dien 3 cot (R1.12).
+Private Sub LoadSource()
+    Dim msg As String, headers As Variant, i As Long, key As String, cc As Long, cs As Long, ce As Long
+    Set mSource = ResolveDataRange(TryRange(refVung.Value), msg)
+    If mSource Is Nothing And Len(Trim$(refVung.Value)) > 0 And Len(msg) = 0 Then msg = U("\u0110\u1ecba ch\u1ec9 v\u00f9ng kh\u00f4ng h\u1ee3p l\u1ec7.")
+    If mSource Is Nothing And Len(msg) = 0 Then msg = U("Ch\u01b0a c\u00f3 v\u00f9ng d\u1eef li\u1ec7u.")
+    lblLoi.Caption = msg
+    If mSource Is Nothing Then
+        mHeaderKey = ""
+        FillCombos Empty
+        UpdateState
+        Exit Sub
+    End If
+
+    headers = HeaderRow(mSource)
+    key = mSource.Worksheet.Name & "|" & mSource.Column
+    For i = 0 To UBound(headers)
+        key = key & "|" & CellText(headers(i))
+    Next i
+    ' Tieu de khong doi (chi them/bot dong) -> giu cac cot nguoi dung da chon.
+    If key <> mHeaderKey Then
+        mHeaderKey = key
+        FillCombos headers
+        DetectColumns headers, cc, cs, ce
+        mLoading = True
+        cboNoiDung.ListIndex = cc
+        cboBatDau.ListIndex = cs
+        cboKetThuc.ListIndex = ce
+        mLoading = False
+    End If
+    UpdateState
+End Sub
+
+Private Sub FillCombos(ByVal headers As Variant)
+    mLoading = True
+    FillOne cboNoiDung, headers
+    FillOne cboBatDau, headers
+    FillOne cboKetThuc, headers
+    mLoading = False
+End Sub
+
+Private Sub FillOne(ByVal combo As Object, ByVal headers As Variant)
+    Dim i As Long
+    combo.Clear
+    If Not IsArray(headers) Then Exit Sub
+    For i = 0 To UBound(headers)
+        combo.AddItem ColumnOptionLabel(headers(i), mSource.Column - 1 + i)
+    Next i
+End Sub
+
+Private Sub UpdateState()
+    Dim ok As Boolean
+    ok = Not mSource Is Nothing
+    If ok Then ok = IsCompleteColumns(cboNoiDung.ListIndex, cboBatDau.ListIndex, cboKetThuc.ListIndex)
+    If mSource Is Nothing Or ok Then lblCanhBao.Caption = "" Else lblCanhBao.Caption = U("Ch\u1ecdn \u0111\u1ee7 3 c\u1ed9t kh\u00e1c nhau.")
+    cmdXuat.Enabled = ok
+End Sub
+
+Private Sub refVung_Change()
+    LoadSource
+End Sub
+
+Private Sub cboNoiDung_Change()
+    If Not mLoading Then UpdateState
+End Sub
+
+Private Sub cboBatDau_Change()
+    If Not mLoading Then UpdateState
+End Sub
+
+Private Sub cboKetThuc_Change()
+    If Not mLoading Then UpdateState
+End Sub
+
+Private Sub cmdXuat_Click()
+    LoadSource
+    If Not cmdXuat.Enabled Then Exit Sub
+    mAccepted = True
+    Me.Hide
+End Sub
+
+Private Sub cmdHuy_Click()
+    Me.Hide
+End Sub
+
+' Nut X: an thay vi huy form de lenh goi con doc duoc ket qua (Accepted = False).
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+    If CloseMode = vbFormControlMenu Then
+        Cancel = True
+        Me.Hide
+    End If
+End Sub

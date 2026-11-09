@@ -80,16 +80,7 @@ End Function
 
 ' Chuẩn hóa tiêu đề để khớp cột theo tên (R2.17): không phân biệt hoa/thường, gộp khoảng trắng; giữ dấu.
 Public Function NormalizeHeaderName(ByVal s As String) As String
-    Dim parts As Variant, i As Long, out As String
-    s = Replace(Replace(Replace(s, vbTab, " "), vbCr, " "), vbLf, " ")
-    parts = Split(Trim$(s), " ")
-    For i = 0 To UBound(parts)
-        If Len(parts(i)) > 0 Then
-            If Len(out) > 0 Then out = out & " "
-            out = out & parts(i)
-        End If
-    Next i
-    NormalizeHeaderName = LCase$(out)
+    NormalizeHeaderName = LCase$(NormalizeSpaces(s))
 End Function
 
 ' Giá trị ô thành chữ (giống headerTexts của bản Office.js): chuỗi giữ nguyên, số/logic thành chữ, còn lại rỗng.
@@ -106,4 +97,45 @@ End Function
 Public Function IsBlankValue(ByVal v As Variant) As Boolean
     If IsEmpty(v) Then IsBlankValue = True: Exit Function
     If VarType(v) = vbString Then IsBlankValue = (Len(Trim$(v)) = 0)
+End Function
+
+' Chữ cột Excel từ chỉ số 0-based: 0 -> "A", 27 -> "AB".
+Public Function ColumnLetter(ByVal index0 As Long) As String
+    Dim n As Long, out As String
+    n = index0 + 1
+    Do While n > 0
+        out = Chr$(65 + ((n - 1) Mod 26)) & out
+        n = (n - 1) \ 26
+    Loop
+    ColumnLetter = out
+End Function
+
+' Nhãn ngắn: gộp khoảng trắng, tối đa 60 ký tự (giống shortLabel của bản Office.js).
+Public Function ShortLabel(ByVal s As String) As String
+    Const MAX_LEN As Long = 60
+    s = NormalizeSpaces(s)
+    If Len(s) > MAX_LEN Then s = Left$(s, MAX_LEN - 1) & ChrW(8230)
+    ShortLabel = s
+End Function
+
+' Gộp mọi khoảng trắng/xuống dòng thành một dấu cách, bỏ khoảng trắng hai đầu.
+Public Function NormalizeSpaces(ByVal s As String) As String
+    Dim parts As Variant, i As Long, out As String
+    s = Replace(Replace(Replace(s, vbTab, " "), vbCr, " "), vbLf, " ")
+    parts = Split(Trim$(s), " ")
+    For i = 0 To UBound(parts)
+        If Len(parts(i)) > 0 Then
+            If Len(out) > 0 Then out = out & " "
+            out = out & parts(i)
+        End If
+    Next i
+    NormalizeSpaces = out
+End Function
+
+' Dòng trong danh sách chọn cột: "Cột C – Nội dung công việc". sheetColumn0: chỉ số cột 0-based trên sheet.
+Public Function ColumnOptionLabel(ByVal header As Variant, ByVal sheetColumn0 As Long) As String
+    Dim label As String
+    label = ShortLabel(CellText(header))
+    If Len(label) = 0 Then label = "(không có tiêu đề)"
+    ColumnOptionLabel = "Cột " & ColumnLetter(sheetColumn0) & " – " & label
 End Function

@@ -14,6 +14,8 @@ import unicodedata
 from pathlib import Path
 
 MAX_LINE = 1023
+# .frmcode: mã của UserForm (bố cục ở vba/forms/<tên>.json); build.ps1 tạo form rồi chép mã này vào.
+SOURCE_SUFFIXES = (".bas", ".cls", ".frmcode")
 
 
 class ConvertError(Exception):
@@ -102,7 +104,7 @@ def main(argv: list) -> int:
     dst.mkdir(parents=True, exist_ok=True)
     count = 0
     for path in sorted(src.iterdir()):
-        if path.suffix.lower() not in (".bas", ".cls"):
+        if path.suffix.lower() not in SOURCE_SUFFIXES:
             continue
         converted = convert_text(path.read_text(encoding="utf-8"), path.name)
         (dst / path.name).write_bytes(converted.encode("ascii"))
