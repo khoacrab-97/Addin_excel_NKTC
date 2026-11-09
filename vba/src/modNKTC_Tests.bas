@@ -8,8 +8,10 @@ Option Explicit
 Private mPass As Long
 Private mFail As Long
 Private mLog As String
+Private mLast As String
 
 Private Sub Check(ByVal ok As Boolean, ByVal name As String)
+    mLast = name
     If ok Then
         mPass = mPass + 1
     Else
@@ -41,18 +43,13 @@ Private Function Grid(ParamArray rows() As Variant) As Variant
 End Function
 
 Public Function NKTC_RunTests() As String
+    Dim names As Variant, k As Long
     mPass = 0: mFail = 0: mLog = ""
-    TestText
-    TestDates
-    TestDatePattern
-    TestColumns
-    TestDailyLog
-    TestSheetName
-    TestDays
-    TestNavigation
-    TestHeaderMatch
-    TestWriteValue
-    TestValidate
+    names = Array("TestText", "TestDates", "TestDatePattern", "TestColumns", "TestDailyLog", "TestSheetName", _
+        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate")
+    For k = 0 To UBound(names)
+        RunOne k, CStr(names(k))
+    Next k
     If mFail = 0 Then
         NKTC_RunTests = "PASS " & mPass
     Else
@@ -60,6 +57,30 @@ Public Function NKTC_RunTests() As String
     End If
     Debug.Print NKTC_RunTests
 End Function
+
+' Chạy một nhóm kiểm thử; lỗi khi chạy được ghi vào kết quả (không hiện hộp thoại) rồi chạy tiếp nhóm sau.
+Private Sub RunOne(ByVal idx As Long, ByVal testName As String)
+    On Error GoTo Loi
+    mLast = "(chưa có phép kiểm tra nào)"
+    Select Case idx
+        Case 0: TestText
+        Case 1: TestDates
+        Case 2: TestDatePattern
+        Case 3: TestColumns
+        Case 4: TestDailyLog
+        Case 5: TestSheetName
+        Case 6: TestDays
+        Case 7: TestNavigation
+        Case 8: TestHeaderMatch
+        Case 9: TestWriteValue
+        Case 10: TestValidate
+    End Select
+    Exit Sub
+Loi:
+    mFail = mFail + 1
+    mLog = mLog & vbLf & "  x " & testName & ": lỗi " & Err.Number & " – " & Err.Description & _
+        " (sau phép kiểm tra: " & mLast & ")"
+End Sub
 
 Private Sub TestText()
     Eq U("Ngày"), "Ngày", "U giải mã"

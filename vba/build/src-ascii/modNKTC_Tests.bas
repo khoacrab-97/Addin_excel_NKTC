@@ -8,8 +8,10 @@ Option Explicit
 Private mPass As Long
 Private mFail As Long
 Private mLog As String
+Private mLast As String
 
 Private Sub Check(ByVal ok As Boolean, ByVal name As String)
+    mLast = name
     If ok Then
         mPass = mPass + 1
     Else
@@ -41,18 +43,13 @@ Private Function Grid(ParamArray rows() As Variant) As Variant
 End Function
 
 Public Function NKTC_RunTests() As String
+    Dim names As Variant, k As Long
     mPass = 0: mFail = 0: mLog = ""
-    TestText
-    TestDates
-    TestDatePattern
-    TestColumns
-    TestDailyLog
-    TestSheetName
-    TestDays
-    TestNavigation
-    TestHeaderMatch
-    TestWriteValue
-    TestValidate
+    names = Array("TestText", "TestDates", "TestDatePattern", "TestColumns", "TestDailyLog", "TestSheetName", _
+        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate")
+    For k = 0 To UBound(names)
+        RunOne k, CStr(names(k))
+    Next k
     If mFail = 0 Then
         NKTC_RunTests = "PASS " & mPass
     Else
@@ -60,6 +57,30 @@ Public Function NKTC_RunTests() As String
     End If
     Debug.Print NKTC_RunTests
 End Function
+
+' Chay mot nhom kiem thu; loi khi chay duoc ghi vao ket qua (khong hien hop thoai) roi chay tiep nhom sau.
+Private Sub RunOne(ByVal idx As Long, ByVal testName As String)
+    On Error GoTo Loi
+    mLast = U("(ch\u01b0a c\u00f3 ph\u00e9p ki\u1ec3m tra n\u00e0o)")
+    Select Case idx
+        Case 0: TestText
+        Case 1: TestDates
+        Case 2: TestDatePattern
+        Case 3: TestColumns
+        Case 4: TestDailyLog
+        Case 5: TestSheetName
+        Case 6: TestDays
+        Case 7: TestNavigation
+        Case 8: TestHeaderMatch
+        Case 9: TestWriteValue
+        Case 10: TestValidate
+    End Select
+    Exit Sub
+Loi:
+    mFail = mFail + 1
+    mLog = mLog & vbLf & "  x " & testName & U(": l\u1ed7i ") & Err.Number & U(" \u2013 ") & Err.Description & _
+        U(" (sau ph\u00e9p ki\u1ec3m tra: ") & mLast & ")"
+End Sub
 
 Private Sub TestText()
     Eq U(U("Ng\u00e0y")), U("Ng\u00e0y"), U("U gi\u1ea3i m\u00e3")

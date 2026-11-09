@@ -11,13 +11,15 @@ Private mBases As String
 
 ' Giải mã chuỗi dạng \uXXXX (do vba_ascii.py sinh ra) thành chữ Unicode.
 Public Function U(ByVal s As String) As String
-    Dim i As Long, n As Long, out As String, hex4 As String
+    Dim i As Long, n As Long, out As String, code As Long
     n = Len(s)
     i = 1
     Do While i <= n
         If Mid$(s, i, 2) = "\u" And i + 5 <= n Then
-            hex4 = Mid$(s, i + 2, 4)
-            out = out & ChrW(CLng("&H" & hex4 & "&"))
+            ' "&HXXXX" đổi sang Integer 16 bit: từ &H8000 trở lên ra số âm -> cộng 65536.
+            code = CLng("&H" & UCase$(Mid$(s, i + 2, 4)))
+            If code < 0 Then code = code + 65536
+            out = out & ChrW(code)
             i = i + 6
         Else
             out = out & Mid$(s, i, 1)
