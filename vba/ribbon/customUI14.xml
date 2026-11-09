@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- Tab "Nhật ký TC" của bản add-in VBA. Ảnh nút: customUI/images/*.png (từ assets/ribbon), gắn qua
+     customUI/_rels/customUI14.xml.rels do vba/build/build.ps1 tạo. Mọi nút cỡ lớn để 4 nút chuyển ngày cùng cỡ. -->
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui" onLoad="RB_OnLoad">
+  <ribbon>
+    <tabs>
+      <tab id="tabNhatKyTC" label="Nhật ký TC">
+        <group id="grpTienDo" label="Tiến độ">
+          <button id="btnTaoBang" label="Tạo bảng" size="large" image="imgTable" onAction="RB_Action"
+                  screentip="Tạo bảng tiến độ"
+                  supertip="Tạo bảng nhập tiến độ STT | Nội dung công việc | Bắt đầu | Kết thúc (sheet mới hoặc sheet hiện tại)."/>
+          <button id="btnXuatNgay" label="Xuất theo ngày" size="large" image="imgExport" onAction="RB_Action"
+                  screentip="Xuất nhật ký theo ngày"
+                  supertip="Chọn bảng tiến độ, xác nhận 3 cột rồi tạo sheet NK_TheoNgay."/>
+        </group>
+        <group id="grpForm" label="Form mẫu">
+          <button id="btnChenForm" label="Chèn form mẫu" size="large" image="imgTemplate" onAction="RB_Action"
+                  screentip="Chèn form mẫu"
+                  supertip="Thêm sheet biểu mẫu &quot;Mẫu NKTC&quot; (Tình hình thi công hàng ngày) vào file."/>
+          <button id="btnXuatForm" label="Xuất vào form" size="large" image="imgAssign" onAction="RB_Action"
+                  screentip="Xuất vào form"
+                  supertip="Chọn vùng nhật ký theo ngày, gán từng cột vào ô của biểu mẫu rồi bấm Gán. Sau khi gán mới dùng được các nút Chuyển ngày."/>
+        </group>
+        <group id="grpNgay" label="Chuyển ngày">
+          <button id="btnNgayDau" label="Ngày đầu" size="large" image="imgFirst" onAction="RB_Action"
+                  screentip="Ngày đầu" supertip="Ghi dữ liệu ngày đầu tiên lên biểu mẫu."/>
+          <button id="btnNgayTruoc" label="Ngày trước" size="large" image="imgPrev" onAction="RB_Action"
+                  screentip="Ngày trước" supertip="Ghi dữ liệu ngày trước đó lên biểu mẫu."/>
+          <button id="btnNgaySau" label="Ngày sau" size="large" image="imgNext" onAction="RB_Action"
+                  screentip="Ngày sau" supertip="Ghi dữ liệu ngày kế tiếp lên biểu mẫu."/>
+          <button id="btnNgayCuoi" label="Ngày cuối" size="large" image="imgLast" onAction="RB_Action"
+                  screentip="Ngày cuối" supertip="Ghi dữ liệu ngày cuối cùng lên biểu mẫu."/>
+        </group>
+        <group id="grpTienIch" label="Tiện ích">
+          <menu id="mnuTienIch" label="Tiện ích" size="large" image="imgHelp"
+                screentip="Tiện ích" supertip="Hướng dẫn sử dụng, phiên bản add-in và kiểm tra cập nhật.">
+            <button id="btnHuongDan" label="Hướng dẫn" image="imgHelp" onAction="RB_Action"/>
+            <button id="btnPhienBan" label="Phiên bản" image="imgAbout" onAction="RB_Action"/>
+            <button id="btnCapNhat" label="Kiểm tra cập nhật" imageMso="RefreshAll" onAction="RB_Action"/>
+          </menu>
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>

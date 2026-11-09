@@ -9,6 +9,15 @@ Bản chuyển đổi từ add-in Office.js sang add-in VBA, cùng kiểu với 
 | `src/*.bas`, `src/*.cls` | Mã nguồn VBA, viết bằng UTF-8 (tiếng Việt có dấu trong chuỗi và chú thích) |
 | `tools/vba_ascii.py` | Đổi mã nguồn sang ASCII trước khi nạp vào trình soạn VBA: chuỗi tiếng Việt → `U("\uXXXX")`, chú thích bỏ dấu |
 | `tools/test_vba_ascii.py` | Kiểm thử công cụ trên (`python3 -m unittest test_vba_ascii`, chạy trong `vba/tools`) |
+| `build/src-ascii/` | Mã ASCII sinh từ `src/` (không sửa tay; CI kiểm tra luôn khớp) |
+| `ribbon/customUI14.xml` | Tab "Nhật ký TC"; ảnh nút lấy từ `assets/ribbon/*-32.png` |
+| `build/build.cmd`, `build/build.ps1` | Build trên Windows có Excel: nạp mã, biên dịch, lưu `dist/NhatKyThiCong_Core.xlam`, gắn Ribbon, chạy kiểm thử; kết quả ở `dist/ket-qua-build.txt` |
+
+## Build (Windows, có Excel)
+
+1. Một lần: Excel → **File → Options → Trust Center → Trust Center Settings → Macro Settings** → tích **Trust access to the VBA project object model**.
+2. Sau khi sửa `src/`: chạy `python3 vba/tools/vba_ascii.py vba/src vba/build/src-ascii` (CI báo lỗi nếu quên).
+3. Nháy đúp `vba/build/build.cmd`. Lỗi biên dịch → Excel hiện hộp thoại báo dòng lỗi.
 
 ## Module
 

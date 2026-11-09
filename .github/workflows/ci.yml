@@ -27,6 +27,12 @@ jobs:
         run: npm audit --omit=dev
       # typecheck → lint → format:check → unit test → build production
       - run: npm run check
+      # Bản VBA: kiểm thử công cụ chuyển mã và bảo đảm mã ASCII (vba/build/src-ascii) khớp vba/src.
+      - name: VBA sources
+        run: |
+          python3 -m unittest discover -s vba/tools -p "test_*.py"
+          python3 vba/tools/vba_ascii.py vba/src vba/build/src-ascii
+          git diff --exit-code -- vba/build/src-ascii
       - name: Validate production manifest (Microsoft validation service)
         run: npx office-addin-manifest validate dist/manifest.xml
       - name: Install NSIS (Windows installer compiler)
