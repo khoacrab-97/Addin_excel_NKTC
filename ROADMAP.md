@@ -179,13 +179,13 @@
 
 ## Phase 12 — Chuyển sang add-in VBA (`.xlam`, bản 3.0.0)
 
-Lý do: bản Office.js cài kiểu nhà phát triển (sideload) mất tab sau khi khởi động lại Excel; bản VBA (giống TienBangChu) có tab luôn hiện, ô chọn vùng RefEdit gốc của Excel, không cần Internet khi dùng. Bản Office.js giữ nguyên cho tới khi chủ dự án nghiệm thu bản VBA. Mã nguồn: `vba/` (xem `vba/README.md`).
+Lý do: bản Office.js cài kiểu nhà phát triển (sideload) mất tab sau khi khởi động lại Excel; bản VBA (giống TienBangChu) có tab luôn hiện, chọn vùng bằng hộp chọn vùng gốc của Excel, không cần Internet khi dùng. Bản Office.js giữ nguyên cho tới khi chủ dự án nghiệm thu bản VBA. Mã nguồn: `vba/` (xem `vba/README.md`).
 
 | ID | Hạng mục | Trạng thái |
 |---|---|---|
 | P12.1 | Quy trình build trên Windows: đổi mã sang ASCII (`vba/tools/vba_ascii.py`), nạp vào Excel, biên dịch, lưu `.xlam`, gắn tab Ribbon "Nhật ký TC" | Tested |
 | P12.2 | Chuyển phần lõi (chữ, ngày, F1 nhận diện cột/trải theo ngày, F2 gán cột/chuyển ngày/khớp tên cột) + bộ kiểm thử VBA: 104/104 PASS trên Excel Windows của chủ dự án (09/11/2026) | Tested |
-| P12.3 | UserForm tạo khi build từ `vba/forms/*.json` + `.frmcode`; nút **Tạo bảng** (F4) và **Xuất theo ngày** (F1) với ô chọn vùng RefEdit | Implemented |
+| P12.3 | UserForm tạo khi build từ `vba/forms/*.json` + `.frmcode`; nút **Tạo bảng** (F4) và **Xuất theo ngày** (F1) với ô chọn vùng = ô nhập + nút **Chọn** (`Application.InputBox`; RefEdit/ActiveX bị Microsoft 365 chặn khi build — 09/11/2026) | Implemented |
 | P12.4 | Nút Chèn form mẫu, Xuất vào form (gán cột, lưu cấu hình trong file), Chuyển ngày, Hướng dẫn | Not Started |
 | P12.5 | Bộ nạp + tự cập nhật hằng ngày (kiểm tra kích thước, chữ ký ZIP, SHA-256), bộ cài, tài liệu, kiểm tra bảo mật, phát hành 3.0.0 | Not Started |
 | P12.6 | Nghiệm thu bản VBA trên Excel Desktop Windows; sau đó gỡ bản Office.js theo yêu cầu chủ dự án | Not Started |

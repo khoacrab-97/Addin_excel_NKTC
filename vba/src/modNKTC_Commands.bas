@@ -33,7 +33,11 @@ Public Sub CmdTaoBang()
     If Not HasWorksheet() Then Exit Sub
     Set f = New frmTaoBang
     f.Init ActiveSheet.Name, ActiveCell.Address(False, False)
-    f.Show
+    Do
+        f.Show
+        If Len(f.PickRequest) = 0 Then Exit Do
+        f.ApplyPick PickRange("Tạo bảng", "Chọn ô bắt đầu của bảng (góc trên-trái, ô tiêu đề STT):", f.PickCurrent)
+    Loop
     If f.Accepted Then
         onNewSheet = f.OnNewSheet
         rows = f.RowCount
@@ -66,7 +70,12 @@ Public Sub CmdXuatNgay()
 
     Set f = New frmXuatNgay
     f.Init initial
-    f.Show
+    Do
+        f.Show
+        If Len(f.PickRequest) = 0 Then Exit Do
+        f.ApplyPick PickRange("Xuất nhật ký theo ngày", _
+            "Chọn vùng dữ liệu (gồm dòng tiêu đề). Chỉ chọn 1 ô = lấy cả vùng có dữ liệu của sheet.", f.PickCurrent)
+    Loop
     If f.Accepted Then
         Set source = f.Source
         cc = f.ColContent: cs = f.ColStart: ce = f.ColEnd

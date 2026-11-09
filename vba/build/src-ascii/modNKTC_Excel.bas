@@ -19,13 +19,27 @@ Public Function RefText(ByVal r As Range) As String
     RefText = "'" & Replace(r.Worksheet.Name, "'", "''") & "'!" & r.Address
 End Function
 
-' Doi chu trong o chon vung (RefEdit hoac go tay) thanh Range; Nothing neu khong hop le.
+' Doi chu trong o chon vung (go tay hoac tu nut Chon) thanh Range; Nothing neu khong hop le.
 Public Function TryRange(ByVal text As String) As Range
     text = Trim$(text)
     If Len(text) = 0 Then Exit Function
     On Error Resume Next
     Set TryRange = Application.Range(text)
     On Error GoTo 0
+End Function
+
+' Hop chon vung cua Excel (Application.InputBox Type:=8; khong dung ActiveX/RefEdit vi bi chan mac dinh
+' tren Microsoft 365 moi). Tra ve dia chi day du; rong neu nguoi dung bam Cancel.
+Public Function PickRange(ByVal title As String, ByVal prompt As String, ByVal current As String) As String
+    Dim r As Range
+    On Error Resume Next
+    If TryRange(current) Is Nothing Then
+        Set r = Application.InputBox(prompt, title, Type:=8)
+    Else
+        Set r = Application.InputBox(prompt, title, current, Type:=8)
+    End If
+    On Error GoTo 0
+    If Not r Is Nothing Then PickRange = RefText(r)
 End Function
 
 ' Vung dang chon tren sheet (Nothing neu dang chon hinh, bieu do?).

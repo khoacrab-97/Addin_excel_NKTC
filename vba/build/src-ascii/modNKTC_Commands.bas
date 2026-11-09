@@ -33,7 +33,11 @@ Public Sub CmdTaoBang()
     If Not HasWorksheet() Then Exit Sub
     Set f = New frmTaoBang
     f.Init ActiveSheet.Name, ActiveCell.Address(False, False)
-    f.Show
+    Do
+        f.Show
+        If Len(f.PickRequest) = 0 Then Exit Do
+        f.ApplyPick PickRange(U("T\u1ea1o b\u1ea3ng"), U("Ch\u1ecdn \u00f4 b\u1eaft \u0111\u1ea7u c\u1ee7a b\u1ea3ng (g\u00f3c tr\u00ean-tr\u00e1i, \u00f4 ti\u00eau \u0111\u1ec1 STT):"), f.PickCurrent)
+    Loop
     If f.Accepted Then
         onNewSheet = f.OnNewSheet
         rows = f.RowCount
@@ -66,7 +70,12 @@ Public Sub CmdXuatNgay()
 
     Set f = New frmXuatNgay
     f.Init initial
-    f.Show
+    Do
+        f.Show
+        If Len(f.PickRequest) = 0 Then Exit Do
+        f.ApplyPick PickRange(U("Xu\u1ea5t nh\u1eadt k\u00fd theo ng\u00e0y"), _
+            U("Ch\u1ecdn v\u00f9ng d\u1eef li\u1ec7u (g\u1ed3m d\u00f2ng ti\u00eau \u0111\u1ec1). Ch\u1ec9 ch\u1ecdn 1 \u00f4 = l\u1ea5y c\u1ea3 v\u00f9ng c\u00f3 d\u1eef li\u1ec7u c\u1ee7a sheet."), f.PickCurrent)
+    Loop
     If f.Accepted Then
         Set source = f.Source
         cc = f.ColContent: cs = f.ColStart: ce = f.ColEnd

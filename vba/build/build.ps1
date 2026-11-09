@@ -83,11 +83,12 @@ function Add-RibbonToPackage([string]$path) {
     }
 }
 
-# Loại ô trong vba/forms/*.json -> ProgID của MSForms / RefEdit (ô chọn vùng gốc của Excel).
+# Loại ô trong vba/forms/*.json -> ProgID của MSForms. Không dùng RefEdit/ActiveX: Microsoft 365 mới chặn
+# chèn ActiveX ("The subject is not trusted"); ô chọn vùng = TextBox + nút Chọn (Application.InputBox).
 $progIds = @{
     Label = 'Forms.Label.1'; TextBox = 'Forms.TextBox.1'; ComboBox = 'Forms.ComboBox.1'; ListBox = 'Forms.ListBox.1'
     CommandButton = 'Forms.CommandButton.1'; OptionButton = 'Forms.OptionButton.1'; CheckBox = 'Forms.CheckBox.1'
-    Frame = 'Forms.Frame.1'; RefEdit = 'RefEdit.Ctrl'
+    Frame = 'Forms.Frame.1'
 }
 $geometryKeys = @('left', 'top', 'width', 'height')
 

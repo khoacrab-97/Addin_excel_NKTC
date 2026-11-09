@@ -1,6 +1,6 @@
 '==============================================================================
 ' NHAT KY TC ? hop thoai Xuat nhat ky theo ngay (F1). Bo cuc: vba/forms/frmXuatNgay.json.
-' O "Vung du lieu" la RefEdit cua Excel: bam vao roi chon tren sheet, hoac go dia chi.
+' O "Vung du lieu": go dia chi, hoac bam "Chon" de chon tren sheet bang hop chon vung cua Excel.
 '==============================================================================
 Option Explicit
 
@@ -8,9 +8,10 @@ Private mAccepted As Boolean
 Private mSource As Range
 Private mHeaderKey As String
 Private mLoading As Boolean
+Private mPick As String
 
 Public Sub Init(ByVal initialRef As String)
-    refVung.Value = initialRef
+    txtVung.Text = initialRef
     LoadSource
 End Sub
 
@@ -34,11 +35,31 @@ Public Property Get ColEnd() As Long
     ColEnd = cboKetThuc.ListIndex
 End Property
 
+' Nut "Chon": an hop thoai de lenh goi mo hop chon vung cua Excel (Application.InputBox), roi hien lai.
+Public Property Get PickRequest() As String
+    PickRequest = mPick
+End Property
+
+Public Property Get PickCurrent() As String
+    PickCurrent = txtVung.Text
+End Property
+
+' Ket qua chon vung (rong = nguoi dung bam Cancel, giu gia tri cu).
+Public Sub ApplyPick(ByVal text As String)
+    mPick = ""
+    If Len(text) > 0 Then txtVung.Text = text
+End Sub
+
+Private Sub cmdChonVung_Click()
+    mPick = "Vung"
+    Me.Hide
+End Sub
+
 ' Doc dong tieu de cua vung, nap danh sach cot va tu nhan dien 3 cot (R1.12).
 Private Sub LoadSource()
     Dim msg As String, headers As Variant, i As Long, key As String, cc As Long, cs As Long, ce As Long
-    Set mSource = ResolveDataRange(TryRange(refVung.Value), msg)
-    If mSource Is Nothing And Len(Trim$(refVung.Value)) > 0 And Len(msg) = 0 Then msg = U("\u0110\u1ecba ch\u1ec9 v\u00f9ng kh\u00f4ng h\u1ee3p l\u1ec7.")
+    Set mSource = ResolveDataRange(TryRange(txtVung.Text), msg)
+    If mSource Is Nothing And Len(Trim$(txtVung.Text)) > 0 And Len(msg) = 0 Then msg = U("\u0110\u1ecba ch\u1ec9 v\u00f9ng kh\u00f4ng h\u1ee3p l\u1ec7.")
     If mSource Is Nothing And Len(msg) = 0 Then msg = U("Ch\u01b0a c\u00f3 v\u00f9ng d\u1eef li\u1ec7u.")
     lblLoi.Caption = msg
     If mSource Is Nothing Then
@@ -92,7 +113,7 @@ Private Sub UpdateState()
     cmdXuat.Enabled = ok
 End Sub
 
-Private Sub refVung_Change()
+Private Sub txtVung_Change()
     LoadSource
 End Sub
 

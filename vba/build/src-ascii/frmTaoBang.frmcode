@@ -6,10 +6,11 @@ Option Explicit
 Private mAccepted As Boolean
 Private mStartCell As Range
 Private mRows As Long
+Private mPick As String
 
 Public Sub Init(ByVal sheetName As String, ByVal cellAddress As String)
     optHienTai.Caption = U("Sheet hi\u1ec7n t\u1ea1i (") & sheetName & ")"
-    refO.Value = cellAddress
+    txtO.Text = cellAddress
     txtDong.Text = CStr(DEFAULT_TABLE_ROWS)
     optMoi.Value = True
     UpdateState
@@ -31,11 +32,32 @@ Public Property Get RowCount() As Long
     RowCount = mRows
 End Property
 
+' Nut "Chon": an hop thoai de lenh goi mo hop chon vung cua Excel (Application.InputBox), roi hien lai.
+Public Property Get PickRequest() As String
+    PickRequest = mPick
+End Property
+
+Public Property Get PickCurrent() As String
+    PickCurrent = txtO.Text
+End Property
+
+' Ket qua chon vung (rong = nguoi dung bam Cancel, giu gia tri cu).
+Public Sub ApplyPick(ByVal text As String)
+    mPick = ""
+    If Len(text) > 0 Then txtO.Text = text
+End Sub
+
+Private Sub cmdChonO_Click()
+    mPick = "O"
+    Me.Hide
+End Sub
+
 ' Kiem tra du lieu nhap, hien vung bang se chiem; bat/tat nut Tao bang.
 Private Sub UpdateState()
     Dim ok As Boolean, cell As Range, area As String
     mRows = ParseRowCount(txtDong.Text)
-    refO.Enabled = optHienTai.Value
+    txtO.Enabled = optHienTai.Value
+    cmdChonO.Enabled = optHienTai.Value
     lblO.Enabled = optHienTai.Value
     Set mStartCell = Nothing
     lblVung.ForeColor = &H80000012
@@ -46,7 +68,7 @@ Private Sub UpdateState()
         lblVung.Caption = U("B\u1ea3ng s\u1ebd chi\u1ebfm v\u00f9ng A1:D") & (mRows + 1) & U(" c\u1ee7a sheet m\u1edbi.")
         ok = True
     Else
-        Set cell = TryRange(refO.Value)
+        Set cell = TryRange(txtO.Text)
         If cell Is Nothing Then
             lblVung.Caption = U("\u0110\u1ecba ch\u1ec9 \u00f4 kh\u00f4ng h\u1ee3p l\u1ec7 (v\u00ed d\u1ee5 B3).")
             lblVung.ForeColor = &HC0&
@@ -75,7 +97,7 @@ Private Sub optHienTai_Click()
     UpdateState
 End Sub
 
-Private Sub refO_Change()
+Private Sub txtO_Change()
     UpdateState
 End Sub
 

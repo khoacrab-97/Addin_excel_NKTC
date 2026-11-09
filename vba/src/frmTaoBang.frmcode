@@ -6,10 +6,11 @@ Option Explicit
 Private mAccepted As Boolean
 Private mStartCell As Range
 Private mRows As Long
+Private mPick As String
 
 Public Sub Init(ByVal sheetName As String, ByVal cellAddress As String)
     optHienTai.Caption = "Sheet hiện tại (" & sheetName & ")"
-    refO.Value = cellAddress
+    txtO.Text = cellAddress
     txtDong.Text = CStr(DEFAULT_TABLE_ROWS)
     optMoi.Value = True
     UpdateState
@@ -31,11 +32,32 @@ Public Property Get RowCount() As Long
     RowCount = mRows
 End Property
 
+' Nút "Chọn": ẩn hộp thoại để lệnh gọi mở hộp chọn vùng của Excel (Application.InputBox), rồi hiện lại.
+Public Property Get PickRequest() As String
+    PickRequest = mPick
+End Property
+
+Public Property Get PickCurrent() As String
+    PickCurrent = txtO.Text
+End Property
+
+' Kết quả chọn vùng (rỗng = người dùng bấm Cancel, giữ giá trị cũ).
+Public Sub ApplyPick(ByVal text As String)
+    mPick = ""
+    If Len(text) > 0 Then txtO.Text = text
+End Sub
+
+Private Sub cmdChonO_Click()
+    mPick = "O"
+    Me.Hide
+End Sub
+
 ' Kiểm tra dữ liệu nhập, hiện vùng bảng sẽ chiếm; bật/tắt nút Tạo bảng.
 Private Sub UpdateState()
     Dim ok As Boolean, cell As Range, area As String
     mRows = ParseRowCount(txtDong.Text)
-    refO.Enabled = optHienTai.Value
+    txtO.Enabled = optHienTai.Value
+    cmdChonO.Enabled = optHienTai.Value
     lblO.Enabled = optHienTai.Value
     Set mStartCell = Nothing
     lblVung.ForeColor = &H80000012
@@ -46,7 +68,7 @@ Private Sub UpdateState()
         lblVung.Caption = "Bảng sẽ chiếm vùng A1:D" & (mRows + 1) & " của sheet mới."
         ok = True
     Else
-        Set cell = TryRange(refO.Value)
+        Set cell = TryRange(txtO.Text)
         If cell Is Nothing Then
             lblVung.Caption = "Địa chỉ ô không hợp lệ (ví dụ B3)."
             lblVung.ForeColor = &HC0&
@@ -75,7 +97,7 @@ Private Sub optHienTai_Click()
     UpdateState
 End Sub
 
-Private Sub refO_Change()
+Private Sub txtO_Change()
     UpdateState
 End Sub
 

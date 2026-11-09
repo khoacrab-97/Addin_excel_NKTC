@@ -1,6 +1,6 @@
 '==============================================================================
 ' NHẬT KÝ TC – hộp thoại Xuất nhật ký theo ngày (F1). Bố cục: vba/forms/frmXuatNgay.json.
-' Ô "Vùng dữ liệu" là RefEdit của Excel: bấm vào rồi chọn trên sheet, hoặc gõ địa chỉ.
+' Ô "Vùng dữ liệu": gõ địa chỉ, hoặc bấm "Chọn" để chọn trên sheet bằng hộp chọn vùng của Excel.
 '==============================================================================
 Option Explicit
 
@@ -8,9 +8,10 @@ Private mAccepted As Boolean
 Private mSource As Range
 Private mHeaderKey As String
 Private mLoading As Boolean
+Private mPick As String
 
 Public Sub Init(ByVal initialRef As String)
-    refVung.Value = initialRef
+    txtVung.Text = initialRef
     LoadSource
 End Sub
 
@@ -34,11 +35,31 @@ Public Property Get ColEnd() As Long
     ColEnd = cboKetThuc.ListIndex
 End Property
 
+' Nút "Chọn": ẩn hộp thoại để lệnh gọi mở hộp chọn vùng của Excel (Application.InputBox), rồi hiện lại.
+Public Property Get PickRequest() As String
+    PickRequest = mPick
+End Property
+
+Public Property Get PickCurrent() As String
+    PickCurrent = txtVung.Text
+End Property
+
+' Kết quả chọn vùng (rỗng = người dùng bấm Cancel, giữ giá trị cũ).
+Public Sub ApplyPick(ByVal text As String)
+    mPick = ""
+    If Len(text) > 0 Then txtVung.Text = text
+End Sub
+
+Private Sub cmdChonVung_Click()
+    mPick = "Vung"
+    Me.Hide
+End Sub
+
 ' Đọc dòng tiêu đề của vùng, nạp danh sách cột và tự nhận diện 3 cột (R1.12).
 Private Sub LoadSource()
     Dim msg As String, headers As Variant, i As Long, key As String, cc As Long, cs As Long, ce As Long
-    Set mSource = ResolveDataRange(TryRange(refVung.Value), msg)
-    If mSource Is Nothing And Len(Trim$(refVung.Value)) > 0 And Len(msg) = 0 Then msg = "Địa chỉ vùng không hợp lệ."
+    Set mSource = ResolveDataRange(TryRange(txtVung.Text), msg)
+    If mSource Is Nothing And Len(Trim$(txtVung.Text)) > 0 And Len(msg) = 0 Then msg = "Địa chỉ vùng không hợp lệ."
     If mSource Is Nothing And Len(msg) = 0 Then msg = "Chưa có vùng dữ liệu."
     lblLoi.Caption = msg
     If mSource Is Nothing Then
@@ -92,7 +113,7 @@ Private Sub UpdateState()
     cmdXuat.Enabled = ok
 End Sub
 
-Private Sub refVung_Change()
+Private Sub txtVung_Change()
     LoadSource
 End Sub
 

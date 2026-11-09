@@ -19,13 +19,27 @@ Public Function RefText(ByVal r As Range) As String
     RefText = "'" & Replace(r.Worksheet.Name, "'", "''") & "'!" & r.Address
 End Function
 
-' Đổi chữ trong ô chọn vùng (RefEdit hoặc gõ tay) thành Range; Nothing nếu không hợp lệ.
+' Đổi chữ trong ô chọn vùng (gõ tay hoặc từ nút Chọn) thành Range; Nothing nếu không hợp lệ.
 Public Function TryRange(ByVal text As String) As Range
     text = Trim$(text)
     If Len(text) = 0 Then Exit Function
     On Error Resume Next
     Set TryRange = Application.Range(text)
     On Error GoTo 0
+End Function
+
+' Hộp chọn vùng của Excel (Application.InputBox Type:=8; không dùng ActiveX/RefEdit vì bị chặn mặc định
+' trên Microsoft 365 mới). Trả về địa chỉ đầy đủ; rỗng nếu người dùng bấm Cancel.
+Public Function PickRange(ByVal title As String, ByVal prompt As String, ByVal current As String) As String
+    Dim r As Range
+    On Error Resume Next
+    If TryRange(current) Is Nothing Then
+        Set r = Application.InputBox(prompt, title, Type:=8)
+    Else
+        Set r = Application.InputBox(prompt, title, current, Type:=8)
+    End If
+    On Error GoTo 0
+    If Not r Is Nothing Then PickRange = RefText(r)
 End Function
 
 ' Vùng đang chọn trên sheet (Nothing nếu đang chọn hình, biểu đồ…).
