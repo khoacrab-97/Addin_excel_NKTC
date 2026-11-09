@@ -49,3 +49,11 @@ jobs:
           else
             echo "vba/release chưa có bản dựng — bỏ qua."
           fi
+      # Bộ cài để chạy thử trước khi phát hành (Actions → lần chạy CI → Artifacts → vba-installer-test).
+      - if: hashFiles('vba/release/version.txt') != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vba-installer-test
+          path: /tmp/vba-installer/*.exe
+          if-no-files-found: error
+          retention-days: 14
