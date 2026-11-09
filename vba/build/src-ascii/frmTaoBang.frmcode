@@ -116,6 +116,11 @@ Private Sub cmdHuy_Click()
     Me.Hide
 End Sub
 
+' Tieu de tieng Viet (moi lan hien lai, ke ca sau khi chon vung).
+Private Sub UserForm_Activate()
+    SetUnicodeTitle Me
+End Sub
+
 ' Nut X: an thay vi huy form de lenh goi con doc duoc ket qua (Accepted = False).
 Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
     If CloseMode = vbFormControlMenu Then

@@ -422,6 +422,11 @@ Private Sub cmdHuy_Click()
     Me.Hide
 End Sub
 
+' Tiêu đề tiếng Việt (mỗi lần hiện lại, kể cả sau khi chọn vùng).
+Private Sub UserForm_Activate()
+    SetUnicodeTitle Me
+End Sub
+
 ' Nút X: ẩn thay vì hủy form để lệnh gọi còn đọc được kết quả (Accepted = False).
 Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
     If CloseMode = vbFormControlMenu Then
