@@ -89,45 +89,55 @@ $progIds = @{
     CommandButton = 'Forms.CommandButton.1'; OptionButton = 'Forms.OptionButton.1'; CheckBox = 'Forms.CheckBox.1'
     Frame = 'Forms.Frame.1'; RefEdit = 'RefEdit.Ctrl'
 }
-$specKeys = @('type', 'name', 'left', 'top', 'width', 'height')
+$geometryKeys = @('left', 'top', 'width', 'height')
 
 function Set-UiFont($target) {
     try { $target.Font.Name = 'Segoe UI'; $target.Font.Size = 9 } catch { }
 }
 
+# Chạy một bước; lỗi -> báo rõ bước nào (thông báo gốc của COM/.NET thường không nói vị trí).
+function Invoke-Step([string]$step, [scriptblock]$action) {
+    try { & $action } catch { throw ($step + ': ' + $_.Exception.Message) }
+}
+
 function Add-UserForm($project, [string]$specPath) {
     $spec = Get-Content -Path $specPath -Raw -Encoding UTF8 | ConvertFrom-Json
-    $component = $project.VBComponents.Add(3)   # vbext_ct_MSForm
-    $component.Name = $spec.name
-    $component.Properties.Item('Caption').Value = $spec.caption
-    $component.Properties.Item('Width').Value = $spec.width
-    $component.Properties.Item('Height').Value = $spec.height
+    $formName = [string]$spec.name
+    $component = $null
+    Invoke-Step ($formName + ' – tạo form') { $script:component = $project.VBComponents.Add(3) }   # vbext_ct_MSForm
+    $component = $script:component
+    Invoke-Step ($formName + ' – đặt tên') { $component.Name = $formName }
+    Invoke-Step ($formName + ' – tiêu đề') { $component.Properties.Item('Caption').Value = [string]$spec.caption }
+    Invoke-Step ($formName + ' – rộng') { $component.Properties.Item('Width').Value = [single]$spec.width }
+    Invoke-Step ($formName + ' – cao') { $component.Properties.Item('Height').Value = [single]$spec.height }
     $designer = $component.Designer
     Set-UiFont $designer
     foreach ($c in $spec.controls) {
-        $progId = $progIds[$c.type]
+        $controlName = [string]$c.name
+        $progId = $progIds[[string]$c.type]
         if (-not $progId) { throw ('Loại ô không hỗ trợ "' + $c.type + '" trong ' + $specPath) }
-        try {
-            $control = $designer.Controls.Add($progId, $c.name, $true)
-        } catch {
-            throw ('Không thêm được ô ' + $c.type + ' "' + $c.name + '" vào ' + $spec.name + ': ' + $_.Exception.Message)
+        $script:control = $null
+        Invoke-Step ($formName + ' – thêm ô ' + $c.type + ' "' + $controlName + '"') {
+            $script:control = $designer.Controls.Add([string]$progId, [string]$controlName, $true)
         }
-        $control.Left = $c.left; $control.Top = $c.top; $control.Width = $c.width; $control.Height = $c.height
+        $control = $script:control
         Set-UiFont $control
         foreach ($p in $c.PSObject.Properties) {
-            if ($specKeys -contains $p.Name) { continue }
-            try {
-                $control.($p.Name) = $p.Value
-            } catch {
-                throw ('Không đặt được ' + $c.name + '.' + $p.Name + ' (' + $spec.name + '): ' + $_.Exception.Message)
-            }
+            if ($p.Name -eq 'type' -or $p.Name -eq 'name') { continue }
+            $value = $p.Value
+            if ($geometryKeys -contains $p.Name) { $value = [single]$value }
+            $propName = $p.Name
+            Invoke-Step ($formName + ' – ' + $controlName + '.' + $propName) { $control.$propName = $value }
         }
     }
-    $codePath = Join-Path $srcDir ($spec.name + '.frmcode')
+    $codePath = Join-Path $srcDir ($formName + '.frmcode')
     if (-not (Test-Path $codePath)) { throw ('Thiếu mã của form: ' + $codePath) }
-    $module = $component.CodeModule
-    if ($module.CountOfLines -gt 0) { $module.DeleteLines(1, $module.CountOfLines) }
-    $module.AddFromString([IO.File]::ReadAllText($codePath))
+    Invoke-Step ($formName + ' – chép mã') {
+        $module = $component.CodeModule
+        $count = [int]$module.CountOfLines
+        if ($count -gt 0) { $module.DeleteLines(1, $count) }
+        $module.AddFromString([IO.File]::ReadAllText($codePath))
+    }
 }
 
 $excel = $null
@@ -181,6 +191,7 @@ try {
     }
 } catch {
     Log ('LỖI: ' + $_.Exception.Message)
+    Log ('  (build.ps1 dòng ' + $_.InvocationInfo.ScriptLineNumber + ': ' + $_.InvocationInfo.Line.Trim() + ')')
 } finally {
     if ($null -ne $excel) {
         $excel.Quit()
