@@ -1,7 +1,7 @@
 Attribute VB_Name = "modNKTC_Ribbon"
 '==============================================================================
 ' NHẬT KÝ TC – tab Ribbon "Nhật ký TC": nhận lệnh từ các nút (vba/ribbon/customUI14.xml).
-' Đã chuyển: Tạo bảng, Xuất theo ngày, Phiên bản (kèm kết quả kiểm thử phần lõi); các nút khác đang chuyển sang VBA.
+' Đã chuyển mọi nút trừ Kiểm tra cập nhật (làm cùng bộ nạp tự cập nhật).
 '==============================================================================
 Option Explicit
 
@@ -18,6 +18,13 @@ Public Sub RB_Action(ByVal control As Object)
     Select Case control.Id
         Case "btnTaoBang": CmdTaoBang
         Case "btnXuatNgay": CmdXuatNgay
+        Case "btnChenForm": CmdChenForm
+        Case "btnXuatForm": CmdXuatForm
+        Case "btnNgayDau": CmdChuyenNgay CMD_FIRST
+        Case "btnNgayTruoc": CmdChuyenNgay CMD_PREV
+        Case "btnNgaySau": CmdChuyenNgay CMD_NEXT
+        Case "btnNgayCuoi": CmdChuyenNgay CMD_LAST
+        Case "btnHuongDan": ShowHelp
         Case "btnPhienBan": ShowAbout
         Case Else
             ShowInfo "Chức năng này đang được chuyển sang bản VBA. Trong lúc chờ, anh/chị dùng tab ""Nhật ký thi công"" (bản cũ)."

@@ -1,0 +1,201 @@
+{
+  "name": "frmXuatForm",
+  "caption": "Xuất vào form",
+  "width": 424,
+  "height": 398,
+  "controls": [
+    {
+      "type": "Label",
+      "name": "lblNguon",
+      "left": 12,
+      "top": 10,
+      "width": 392,
+      "height": 14,
+      "Caption": "Vùng nguồn (nhật ký theo ngày, dòng đầu là tiêu đề — tự mở rộng tới hết dữ liệu)"
+    },
+    {
+      "type": "TextBox",
+      "name": "txtNguon",
+      "left": 12,
+      "top": 24,
+      "width": 344,
+      "height": 18
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdChonNguon",
+      "left": 360,
+      "top": 23,
+      "width": 44,
+      "height": 20,
+      "Caption": "Chọn"
+    },
+    {
+      "type": "Label",
+      "name": "lblNguonTT",
+      "left": 12,
+      "top": 46,
+      "width": 392,
+      "height": 26,
+      "WordWrap": true,
+      "Caption": ""
+    },
+    {
+      "type": "Label",
+      "name": "lblNgay",
+      "left": 12,
+      "top": 78,
+      "width": 150,
+      "height": 14,
+      "Caption": "Cột Ngày (dùng để chuyển ngày)"
+    },
+    {
+      "type": "ComboBox",
+      "name": "cboNgay",
+      "left": 166,
+      "top": 75,
+      "width": 238,
+      "height": 18,
+      "Style": 2
+    },
+    {
+      "type": "Label",
+      "name": "lblSoNgay",
+      "left": 166,
+      "top": 96,
+      "width": 238,
+      "height": 14,
+      "Caption": ""
+    },
+    {
+      "type": "Label",
+      "name": "lblGan",
+      "left": 12,
+      "top": 116,
+      "width": 392,
+      "height": 14,
+      "Caption": "Các dòng gán: cột nguồn → ô trên form"
+    },
+    {
+      "type": "ListBox",
+      "name": "lstGan",
+      "left": 12,
+      "top": 130,
+      "width": 392,
+      "height": 108,
+      "ColumnCount": 2,
+      "ColumnWidths": "230 pt;150 pt"
+    },
+    {
+      "type": "Label",
+      "name": "lblCot",
+      "left": 12,
+      "top": 247,
+      "width": 58,
+      "height": 14,
+      "Caption": "Cột nguồn"
+    },
+    {
+      "type": "ComboBox",
+      "name": "cboCot",
+      "left": 70,
+      "top": 244,
+      "width": 156,
+      "height": 18,
+      "Style": 2
+    },
+    {
+      "type": "Label",
+      "name": "lblO",
+      "left": 232,
+      "top": 247,
+      "width": 54,
+      "height": 14,
+      "Caption": "Ô trên form"
+    },
+    {
+      "type": "TextBox",
+      "name": "txtO",
+      "left": 286,
+      "top": 244,
+      "width": 72,
+      "height": 18
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdChonO",
+      "left": 362,
+      "top": 243,
+      "width": 42,
+      "height": 20,
+      "Caption": "Chọn"
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdThem",
+      "left": 12,
+      "top": 268,
+      "width": 72,
+      "height": 22,
+      "Caption": "Thêm"
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdSua",
+      "left": 88,
+      "top": 268,
+      "width": 72,
+      "height": 22,
+      "Caption": "Cập nhật"
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdXoa",
+      "left": 164,
+      "top": 268,
+      "width": 72,
+      "height": 22,
+      "Caption": "Xóa dòng"
+    },
+    {
+      "type": "Label",
+      "name": "lblHuongDan",
+      "left": 240,
+      "top": 268,
+      "width": 164,
+      "height": 24,
+      "WordWrap": true,
+      "Caption": "Chọn một dòng để sửa; Cập nhật / Xóa dòng."
+    },
+    {
+      "type": "Label",
+      "name": "lblLoi",
+      "left": 12,
+      "top": 296,
+      "width": 392,
+      "height": 40,
+      "WordWrap": true,
+      "ForeColor": 192,
+      "Caption": ""
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdGan",
+      "left": 236,
+      "top": 342,
+      "width": 84,
+      "height": 24,
+      "Caption": "Gán"
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdHuy",
+      "left": 320,
+      "top": 342,
+      "width": 84,
+      "height": 24,
+      "Caption": "Hủy",
+      "Cancel": true
+    }
+  ]
+}

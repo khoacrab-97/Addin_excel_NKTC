@@ -13,7 +13,7 @@ Bản chuyển đổi từ add-in Office.js sang add-in VBA, cùng kiểu với 
 | `tools/test_vba_ascii.py` | Kiểm thử công cụ trên (`python3 -m unittest test_vba_ascii`, chạy trong `vba/tools`) |
 | `build/src-ascii/` | Mã ASCII sinh từ `src/` (không sửa tay; CI kiểm tra luôn khớp) |
 | `ribbon/customUI14.xml` | Tab "Nhật ký TC"; ảnh nút lấy từ `assets/ribbon/*-32.png` |
-| `build/build.cmd`, `build/build.ps1` | Build trên Windows có Excel: nạp mã, tạo UserForm từ `forms/*.json` + `.frmcode`, biên dịch, lưu `dist/NhatKyThiCong_Core.xlam`, gắn Ribbon, chạy kiểm thử; kết quả ở `dist/ket-qua-build.txt` |
+| `build/build.cmd`, `build/build.ps1` | Build trên Windows có Excel: nạp mã, tạo UserForm từ `forms/*.json` + `.frmcode`, chép sheet "Mẫu NKTC" từ `templates/Mau_NKTC.xlsx` vào add-in, biên dịch, lưu `dist/NhatKyThiCong_Core.xlam`, gắn Ribbon, chạy kiểm thử; kết quả ở `dist/ket-qua-build.txt` |
 
 ## Build (Windows, có Excel)
 
@@ -29,11 +29,13 @@ Bản chuyển đổi từ add-in Office.js sang add-in VBA, cùng kiểu với 
 | `modNKTC_Date` | Ngày (số nguyên hệ 1900), đọc ngày dạng chữ, mẫu "Ngày … tháng … năm …" | `src/core/dates` |
 | `modNKTC_DailyLog` | F1: nhận diện cột, đọc công việc, trải theo ngày, tên sheet | `src/core/dailyLog` |
 | `modNKTC_Mapping` | F2: gán cột, danh sách ngày, chuyển ngày, khớp cột theo tên, giá trị ghi ô | `src/core/mapping` |
+| `modNKTC_Config` | F2: địa chỉ ô đích, dòng gán, cấu hình gán (lưu/đọc dạng chữ), khớp lại cột theo tên | `src/core/address/reference`, `src/core/mapping/{formRows,config,headerMatch}` |
 | `modNKTC_Excel` | Lớp Excel: đọc vùng (`Value2`), tạo sheet NK_TheoNgay, tạo bảng nhập tiến độ (không ghi đè) | `src/excel/*` |
 | `modNKTC_Commands` | Lệnh Ribbon: Tạo bảng (F4), Xuất theo ngày (F1) | `src/commands/*` |
+| `modNKTC_FormCommands` | Lệnh Ribbon F2: Chèn form mẫu, Xuất vào form, Chuyển ngày; cấu hình lưu trong file (CustomXMLPart `urn:nhatkytc:config:1`); Hướng dẫn | `src/commands/{formCommands,templateCommands}`, `src/excel/settingsStore` |
 | `modNKTC_UI` | Hộp thông báo tiếng Việt (`ShowInfo`, `ShowMessage` qua `MessageBoxW` của Windows) | `src/commands/messages.ts` |
 | `modNKTC_Ribbon` | Nhận lệnh từ nút Ribbon (`RB_Action`), Phiên bản | `manifest.xml` + `commands.ts` |
-| `frmTaoBang`, `frmXuatNgay` | Hộp thoại Tạo bảng, Xuất nhật ký theo ngày (ô chọn vùng: ô nhập + nút **Chọn**) | `src/dialog/views/*` |
+| `frmTaoBang`, `frmXuatNgay`, `frmXuatForm` | Hộp thoại Tạo bảng, Xuất nhật ký theo ngày, Xuất vào form (ô chọn vùng: ô nhập + nút **Chọn**) | `src/dialog/views/*` |
 | `modNKTC_Tests` | Kiểm thử phần lõi: `NKTC_RunTests()` → `PASS n` hoặc danh sách lỗi | `src/core/**/*.test.ts` |
 
 ## Quy ước

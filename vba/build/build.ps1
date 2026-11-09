@@ -19,6 +19,7 @@ $vbaDir = Split-Path -Parent $PSScriptRoot
 $repoDir = Split-Path -Parent $vbaDir
 $srcDir = Join-Path $vbaDir 'build\src-ascii'
 $formsDir = Join-Path $vbaDir 'forms'
+$templatePath = Join-Path $repoDir 'templates\Mau_NKTC.xlsx'
 $ribbonXml = Join-Path $vbaDir 'ribbon\customUI14.xml'
 $iconDir = Join-Path $repoDir 'assets\ribbon'
 $distDir = Join-Path $vbaDir 'dist'
@@ -167,6 +168,20 @@ try {
         Add-UserForm $project $_.FullName
         Log ('  + ' + $_.BaseName + ' (UserForm)')
     }
+
+    # Biểu mẫu "Mẫu NKTC": chép vào add-in để nút Chèn form mẫu dùng được khi không có Internet.
+    $template = $excel.Workbooks.Open($templatePath, 0, $true)
+    try {
+        $formSheetName = [string]$template.Worksheets.Item(1).Name
+        $template.Worksheets.Item(1).Copy([Reflection.Missing]::Value, $wb.Worksheets.Item($wb.Worksheets.Count))
+    } finally {
+        $template.Close($false)
+    }
+    for ($i = [int]$wb.Worksheets.Count; $i -ge 1; $i--) {
+        $sheet = $wb.Worksheets.Item($i)
+        if ([string]$sheet.Name -ne $formSheetName) { $sheet.Delete() }
+    }
+    Log ('  + biểu mẫu "' + $formSheetName + '"')
 
     # Debug > Compile VBAProject (ID 578). Biên dịch xong thì lệnh bị làm mờ.
     $compile = $excel.VBE.CommandBars.FindControl(1, 578)

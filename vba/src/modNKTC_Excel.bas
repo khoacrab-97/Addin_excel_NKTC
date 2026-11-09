@@ -30,7 +30,8 @@ End Function
 
 ' Hộp chọn vùng của Excel (Application.InputBox Type:=8; không dùng ActiveX/RefEdit vì bị chặn mặc định
 ' trên Microsoft 365 mới). Trả về địa chỉ đầy đủ; rỗng nếu người dùng bấm Cancel.
-Public Function PickRange(ByVal title As String, ByVal prompt As String, ByVal current As String) As String
+Public Function PickRange(ByVal title As String, ByVal prompt As String, ByVal current As String, _
+                          Optional ByVal singleCell As Boolean = False) As String
     Dim r As Range
     On Error Resume Next
     If TryRange(current) Is Nothing Then
@@ -39,7 +40,10 @@ Public Function PickRange(ByVal title As String, ByVal prompt As String, ByVal c
         Set r = Application.InputBox(prompt, title, current, Type:=8)
     End If
     On Error GoTo 0
-    If Not r Is Nothing Then PickRange = RefText(r)
+    If r Is Nothing Then Exit Function
+    ' Chọn ô gộp (merge) hay nhiều ô -> lấy ô đầu (trên-trái).
+    If singleCell Then Set r = r.Cells(1, 1)
+    PickRange = RefText(r)
 End Function
 
 ' Vùng đang chọn trên sheet (Nothing nếu đang chọn hình, biểu đồ…).
@@ -92,6 +96,40 @@ Public Function HeaderRow(ByVal r As Range) As Variant
         out(c - 1) = grid(1, c)
     Next c
     HeaderRow = out
+End Function
+
+' Vùng nguồn tự mở rộng (R2.17): từ ô đầu (trên-trái) của r tới dòng/cột cuối có dữ liệu của sheet — thêm cột
+' (kể cả chèn giữa) hay thêm ngày ở dưới đều được tính, không phải chọn lại vùng.
+Public Function ExpandSource(ByVal r As Range) As Range
+    Dim anchor As Range, used As Range, lastRow As Long, lastCol As Long
+    Set anchor = r.Cells(1, 1)
+    Set used = anchor.Worksheet.UsedRange
+    lastRow = used.Row + used.Rows.Count - 1
+    lastCol = used.Column + used.Columns.Count - 1
+    If lastRow < anchor.Row Or lastCol < anchor.Column Then
+        Set ExpandSource = r
+    Else
+        Set ExpandSource = anchor.Worksheet.Range(anchor, anchor.Worksheet.Cells(lastRow, lastCol))
+    End If
+End Function
+
+' Chữ của dòng tiêu đề (0-based): chuỗi giữ nguyên, số/logic thành chữ, còn lại rỗng.
+Public Function HeaderTexts(ByVal r As Range) As String()
+    Dim h As Variant, out() As String, i As Long
+    h = HeaderRow(r)
+    ReDim out(0 To UBound(h))
+    For i = 0 To UBound(h)
+        out(i) = CellText(h(i))
+    Next i
+    HeaderTexts = out
+End Function
+
+' Sheet có tên (không phân biệt hoa/thường); Nothing nếu không có.
+Public Function FindSheet(ByVal wb As Workbook, ByVal name As String) As Worksheet
+    Dim ws As Worksheet
+    For Each ws In wb.Worksheets
+        If LCase$(ws.Name) = LCase$(name) Then Set FindSheet = ws: Exit Function
+    Next ws
 End Function
 
 Public Function SheetNames(ByVal wb As Workbook) As Collection

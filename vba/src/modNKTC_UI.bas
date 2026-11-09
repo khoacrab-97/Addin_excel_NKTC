@@ -14,7 +14,7 @@ Private Declare Function MessageBoxW Lib "user32" (ByVal hWnd As Long, ByVal lpT
     ByVal lpCaption As Long, ByVal uType As Long) As Long
 #End If
 
-Private Const MSG_MAX_LENGTH As Long = 1500
+Private Const MSG_MAX_LENGTH As Long = 3000
 Private Const MB_SETFOREGROUND As Long = &H10000
 
 ' Như MsgBox (cùng hằng số nút/biểu tượng và giá trị trả về) nhưng hiện đúng tiếng Việt.

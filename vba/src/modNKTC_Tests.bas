@@ -46,7 +46,7 @@ Public Function NKTC_RunTests() As String
     Dim names As Variant, k As Long
     mPass = 0: mFail = 0: mLog = ""
     names = Array("TestText", "TestDates", "TestDatePattern", "TestColumns", "TestDailyLog", "TestSheetName", _
-        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers")
+        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers", "TestReference", "TestFormRows", "TestConfig")
     For k = 0 To UBound(names)
         RunOne k, CStr(names(k))
     Next k
@@ -75,6 +75,9 @@ Private Sub RunOne(ByVal idx As Long, ByVal testName As String)
         Case 9: TestWriteValue
         Case 10: TestValidate
         Case 11: TestDialogHelpers
+        Case 12: TestReference
+        Case 13: TestFormRows
+        Case 14: TestConfig
     End Select
     Exit Sub
 Loi:
@@ -298,4 +301,91 @@ Private Sub TestDialogHelpers()
     ' Bảng do Tạo bảng sinh ra phải được Xuất theo ngày nhận diện đủ 3 cột (R1.12).
     DetectColumns InputTableHeaders(), cc, cs, ce
     Check cc = 1 And cs = 2 And ce = 3, "Tạo bảng -> nhận diện đủ cột"
+End Sub
+
+Private Sub TestReference()
+    Dim sh As String, ad As String
+    Eq NormalizeCellAddress(" $e$2 "), "E2", "địa chỉ ô bỏ $, viết hoa"
+    Eq NormalizeCellAddress("XFD1048576"), "XFD1048576", "ô cuối sheet"
+    Eq NormalizeCellAddress("XFE1"), "", "cột vượt XFD"
+    Eq NormalizeCellAddress("A0"), "", "dòng 0"
+    Eq NormalizeCellAddress("A1:B2"), "", "vùng không phải một ô"
+    Check ParseCellReference("'Mẫu NKTC'!$E$2", sh, ad) And sh = "Mẫu NKTC" And ad = "E2", "ô có tên sheet trong nháy"
+    Check ParseCellReference("Mẫu NKTC!e2", sh, ad) And sh = "Mẫu NKTC" And ad = "E2", "ô có tên sheet không nháy"
+    Check ParseCellReference("E2", sh, ad) And sh = "" And ad = "E2", "ô không ghi sheet"
+    Check ParseCellReference("'It''s'!B3", sh, ad) And sh = "It's", "tên sheet có dấu nháy"
+    Check Not ParseCellReference("A1:B2", sh, ad), "vùng nhiều ô bị từ chối"
+    Check Not ParseCellReference("Sh[1]!A1", sh, ad), "tên sheet có ký tự cấm"
+    Check Not ParseCellReference("", sh, ad), "ô trống"
+    Eq FormatReference("Mẫu NKTC", "E2"), "Mẫu NKTC!E2", "hiển thị ô"
+    Eq QuotedReference("It's", "B3"), "'It''s'!B3", "tham chiếu cho Excel"
+End Sub
+
+Private Sub TestFormRows()
+    Dim cols() As Long, targets() As String, maps() As NKTC_Mapping, n As Long, errors As Collection, h() As String
+    ReDim cols(0 To 3): ReDim targets(0 To 3)
+    cols(0) = 0: targets(0) = "Mẫu NKTC!E2"
+    cols(1) = -1: targets(1) = ""
+    cols(2) = 1: targets(2) = "e2"
+    cols(3) = 2: targets(3) = "x"
+    Set errors = BuildMappingsFromRows(cols, targets, 4, 3, "Mẫu NKTC", maps, n)
+    Eq errors.Count, 2, "số lỗi dòng gán"
+    Eq errors(1), "Dòng 3: ô Mẫu NKTC!E2 đã được gán ở dòng 1.", "trùng ô (ô không ghi sheet thuộc sheet mặc định)"
+    Eq errors(2), "Dòng 4: ""x"" không phải một ô hợp lệ (ví dụ Mẫu NKTC!E2).", "ô không hợp lệ"
+    Eq n, 0, "có lỗi thì không có gán"
+    cols(2) = -1: targets(2) = "F3"
+    Set errors = BuildMappingsFromRows(cols, targets, 3, 3, "Mẫu NKTC", maps, n)
+    Eq errors(1), "Dòng 3: chưa chọn cột nguồn.", "thiếu cột"
+    cols(2) = 1: targets(2) = ""
+    Set errors = BuildMappingsFromRows(cols, targets, 3, 3, "Mẫu NKTC", maps, n)
+    Eq errors(1), "Dòng 3: chưa chọn ô trên form.", "thiếu ô"
+    targets(2) = "F3"
+    Set errors = BuildMappingsFromRows(cols, targets, 3, 3, "Form", maps, n)
+    Eq errors.Count, 0, "dòng gán hợp lệ"
+    Check n = 2 And maps(1).Column = 1 And maps(1).SheetName = "Form" And maps(1).Address = "F3", "gán dùng sheet mặc định"
+    Set errors = BuildMappingsFromRows(cols, targets, 0, 3, "Form", maps, n)
+    Check errors.Count = 1 And InStr(errors(1), "Chưa có dòng gán") > 0, "chưa có dòng gán"
+    h = Strs("a", " ", "b", "")
+    Eq BlankHeaderList(h, 4), "2, 4", "tiêu đề trống"
+    h = Strs("a", "b")
+    Eq BlankHeaderList(h, 2), "", "không có tiêu đề trống"
+End Sub
+
+Private Sub TestConfig()
+    Dim cfg As NKTC_Config, back As NKTC_Config, maps() As NKTC_Mapping, s As String, msg As String, h() As String
+    s = "a\b" & vbTab & "c" & vbLf & "d" & vbCr & "e"
+    Eq UnescapeField(EscapeField(s)), s, "mã hóa trường giữ nguyên nội dung"
+    Check InStr(EscapeField(s), vbTab) = 0 And InStr(EscapeField(s), vbLf) = 0, "trường mã hóa không chứa Tab/xuống dòng"
+    Eq XmlText("a<b&c>" & vbTab & vbLf), "a&lt;b&amp;c&gt;&#9;&#10;", "chữ trong XML"
+
+    h = Strs("Ngày", "Thời tiết" & vbLf & "(sáng)", "Nội dung")
+    SetHeaders cfg, h, 3
+    ReDim maps(0 To 1)
+    maps(0).Column = 1: maps(0).SheetName = "Mẫu NKTC": maps(0).Address = "E5"
+    maps(1).Column = 2: maps(1).SheetName = "Mẫu NKTC": maps(1).Address = "B9"
+    SetMaps cfg, maps, 2
+    cfg.SourceSheet = "NK_TheoNgay": cfg.SourceAddress = "A1:C40"
+    cfg.DateColumn = 0: cfg.CurrentDay = 46188: cfg.ConfirmedKey = MappingKey(maps, 2)
+    Check ParseConfig(SerializeConfig(cfg), back), "đọc lại cấu hình đã lưu"
+    Check back.SourceSheet = "NK_TheoNgay" And back.SourceAddress = "A1:C40" And back.DateColumn = 0 And _
+          back.CurrentDay = 46188 And back.ConfirmedKey = cfg.ConfirmedKey, "cấu hình: vùng nguồn, ngày, xác nhận"
+    Check back.HeaderCount = 3 And back.Headers(1) = "Thời tiết" & vbLf & "(sáng)", "cấu hình: tiêu đề nhiều dòng"
+    Check back.MapCount = 2 And back.Maps(1).Column = 2 And back.Maps(1).SheetName = "Mẫu NKTC" And _
+          back.Maps(1).Address = "B9", "cấu hình: dòng gán"
+    Check Not ParseConfig("abc", back), "cấu hình hỏng bị bỏ qua"
+    Check Not ParseConfig(Replace(SerializeConfig(cfg), "date" & vbTab & "0", "date" & vbTab & "7"), back), _
+        "cột Ngày ngoài vùng bị từ chối"
+
+    ' Khớp lại theo tên tiêu đề: chèn cột giữa -> cột đã gán dịch theo.
+    h = Strs("Ngày", "Thời tiết", "Nội dung")
+    SetHeaders cfg, h, 3
+    h = Strs("Ngày", "Số công nhân", "THỜI  TIẾT", "Nội dung")
+    msg = RemapConfig(cfg, h, 4, "NK!A1:D9")
+    Eq msg, "", "khớp lại sau khi chèn cột"
+    Check cfg.DateColumn = 0 And cfg.Maps(0).Column = 2 And cfg.Maps(1).Column = 3 And cfg.HeaderCount = 4, _
+        "vị trí cột sau khi chèn cột"
+    h = Strs("Ngày", "Nội dung")
+    msg = RemapConfig(cfg, h, 2, "NK!A1:B9")
+    Check InStr(msg, "Không tìm thấy cột ""THỜI  TIẾT"" (gán vào Mẫu NKTC!E5)") > 0, "báo cột bị xóa kèm ô đích"
+    Check cfg.Maps(0).Column = 2, "cột thiếu thì không đổi cấu hình"
 End Sub

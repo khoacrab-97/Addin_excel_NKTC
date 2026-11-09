@@ -30,7 +30,8 @@ End Function
 
 ' Hop chon vung cua Excel (Application.InputBox Type:=8; khong dung ActiveX/RefEdit vi bi chan mac dinh
 ' tren Microsoft 365 moi). Tra ve dia chi day du; rong neu nguoi dung bam Cancel.
-Public Function PickRange(ByVal title As String, ByVal prompt As String, ByVal current As String) As String
+Public Function PickRange(ByVal title As String, ByVal prompt As String, ByVal current As String, _
+                          Optional ByVal singleCell As Boolean = False) As String
     Dim r As Range
     On Error Resume Next
     If TryRange(current) Is Nothing Then
@@ -39,7 +40,10 @@ Public Function PickRange(ByVal title As String, ByVal prompt As String, ByVal c
         Set r = Application.InputBox(prompt, title, current, Type:=8)
     End If
     On Error GoTo 0
-    If Not r Is Nothing Then PickRange = RefText(r)
+    If r Is Nothing Then Exit Function
+    ' Chon o gop (merge) hay nhieu o -> lay o dau (tren-trai).
+    If singleCell Then Set r = r.Cells(1, 1)
+    PickRange = RefText(r)
 End Function
 
 ' Vung dang chon tren sheet (Nothing neu dang chon hinh, bieu do?).
@@ -92,6 +96,40 @@ Public Function HeaderRow(ByVal r As Range) As Variant
         out(c - 1) = grid(1, c)
     Next c
     HeaderRow = out
+End Function
+
+' Vung nguon tu mo rong (R2.17): tu o dau (tren-trai) cua r toi dong/cot cuoi co du lieu cua sheet ? them cot
+' (ke ca chen giua) hay them ngay o duoi deu duoc tinh, khong phai chon lai vung.
+Public Function ExpandSource(ByVal r As Range) As Range
+    Dim anchor As Range, used As Range, lastRow As Long, lastCol As Long
+    Set anchor = r.Cells(1, 1)
+    Set used = anchor.Worksheet.UsedRange
+    lastRow = used.Row + used.Rows.Count - 1
+    lastCol = used.Column + used.Columns.Count - 1
+    If lastRow < anchor.Row Or lastCol < anchor.Column Then
+        Set ExpandSource = r
+    Else
+        Set ExpandSource = anchor.Worksheet.Range(anchor, anchor.Worksheet.Cells(lastRow, lastCol))
+    End If
+End Function
+
+' Chu cua dong tieu de (0-based): chuoi giu nguyen, so/logic thanh chu, con lai rong.
+Public Function HeaderTexts(ByVal r As Range) As String()
+    Dim h As Variant, out() As String, i As Long
+    h = HeaderRow(r)
+    ReDim out(0 To UBound(h))
+    For i = 0 To UBound(h)
+        out(i) = CellText(h(i))
+    Next i
+    HeaderTexts = out
+End Function
+
+' Sheet co ten (khong phan biet hoa/thuong); Nothing neu khong co.
+Public Function FindSheet(ByVal wb As Workbook, ByVal name As String) As Worksheet
+    Dim ws As Worksheet
+    For Each ws In wb.Worksheets
+        If LCase$(ws.Name) = LCase$(name) Then Set FindSheet = ws: Exit Function
+    Next ws
 End Function
 
 Public Function SheetNames(ByVal wb As Workbook) As Collection

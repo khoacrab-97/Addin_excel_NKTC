@@ -46,7 +46,7 @@ Public Function NKTC_RunTests() As String
     Dim names As Variant, k As Long
     mPass = 0: mFail = 0: mLog = ""
     names = Array("TestText", "TestDates", "TestDatePattern", "TestColumns", "TestDailyLog", "TestSheetName", _
-        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers")
+        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers", "TestReference", "TestFormRows", "TestConfig")
     For k = 0 To UBound(names)
         RunOne k, CStr(names(k))
     Next k
@@ -75,6 +75,9 @@ Private Sub RunOne(ByVal idx As Long, ByVal testName As String)
         Case 9: TestWriteValue
         Case 10: TestValidate
         Case 11: TestDialogHelpers
+        Case 12: TestReference
+        Case 13: TestFormRows
+        Case 14: TestConfig
     End Select
     Exit Sub
 Loi:
@@ -298,4 +301,91 @@ Private Sub TestDialogHelpers()
     ' Bang do Tao bang sinh ra phai duoc Xuat theo ngay nhan dien du 3 cot (R1.12).
     DetectColumns InputTableHeaders(), cc, cs, ce
     Check cc = 1 And cs = 2 And ce = 3, U("T\u1ea1o b\u1ea3ng -> nh\u1eadn di\u1ec7n \u0111\u1ee7 c\u1ed9t")
+End Sub
+
+Private Sub TestReference()
+    Dim sh As String, ad As String
+    Eq NormalizeCellAddress(" $e$2 "), "E2", U("\u0111\u1ecba ch\u1ec9 \u00f4 b\u1ecf $, vi\u1ebft hoa")
+    Eq NormalizeCellAddress("XFD1048576"), "XFD1048576", U("\u00f4 cu\u1ed1i sheet")
+    Eq NormalizeCellAddress("XFE1"), "", U("c\u1ed9t v\u01b0\u1ee3t XFD")
+    Eq NormalizeCellAddress("A0"), "", U("d\u00f2ng 0")
+    Eq NormalizeCellAddress("A1:B2"), "", U("v\u00f9ng kh\u00f4ng ph\u1ea3i m\u1ed9t \u00f4")
+    Check ParseCellReference(U("'M\u1eabu NKTC'!$E$2"), sh, ad) And sh = U("M\u1eabu NKTC") And ad = "E2", U("\u00f4 c\u00f3 t\u00ean sheet trong nh\u00e1y")
+    Check ParseCellReference(U("M\u1eabu NKTC!e2"), sh, ad) And sh = U("M\u1eabu NKTC") And ad = "E2", U("\u00f4 c\u00f3 t\u00ean sheet kh\u00f4ng nh\u00e1y")
+    Check ParseCellReference("E2", sh, ad) And sh = "" And ad = "E2", U("\u00f4 kh\u00f4ng ghi sheet")
+    Check ParseCellReference("'It''s'!B3", sh, ad) And sh = "It's", U("t\u00ean sheet c\u00f3 d\u1ea5u nh\u00e1y")
+    Check Not ParseCellReference("A1:B2", sh, ad), U("v\u00f9ng nhi\u1ec1u \u00f4 b\u1ecb t\u1eeb ch\u1ed1i")
+    Check Not ParseCellReference("Sh[1]!A1", sh, ad), U("t\u00ean sheet c\u00f3 k\u00fd t\u1ef1 c\u1ea5m")
+    Check Not ParseCellReference("", sh, ad), U("\u00f4 tr\u1ed1ng")
+    Eq FormatReference(U("M\u1eabu NKTC"), "E2"), U("M\u1eabu NKTC!E2"), U("hi\u1ec3n th\u1ecb \u00f4")
+    Eq QuotedReference("It's", "B3"), "'It''s'!B3", U("tham chi\u1ebfu cho Excel")
+End Sub
+
+Private Sub TestFormRows()
+    Dim cols() As Long, targets() As String, maps() As NKTC_Mapping, n As Long, errors As Collection, h() As String
+    ReDim cols(0 To 3): ReDim targets(0 To 3)
+    cols(0) = 0: targets(0) = U("M\u1eabu NKTC!E2")
+    cols(1) = -1: targets(1) = ""
+    cols(2) = 1: targets(2) = "e2"
+    cols(3) = 2: targets(3) = "x"
+    Set errors = BuildMappingsFromRows(cols, targets, 4, 3, U("M\u1eabu NKTC"), maps, n)
+    Eq errors.Count, 2, U("s\u1ed1 l\u1ed7i d\u00f2ng g\u00e1n")
+    Eq errors(1), U("D\u00f2ng 3: \u00f4 M\u1eabu NKTC!E2 \u0111\u00e3 \u0111\u01b0\u1ee3c g\u00e1n \u1edf d\u00f2ng 1."), U("tr\u00f9ng \u00f4 (\u00f4 kh\u00f4ng ghi sheet thu\u1ed9c sheet m\u1eb7c \u0111\u1ecbnh)")
+    Eq errors(2), U("D\u00f2ng 4: ""x"" kh\u00f4ng ph\u1ea3i m\u1ed9t \u00f4 h\u1ee3p l\u1ec7 (v\u00ed d\u1ee5 M\u1eabu NKTC!E2)."), U("\u00f4 kh\u00f4ng h\u1ee3p l\u1ec7")
+    Eq n, 0, U("c\u00f3 l\u1ed7i th\u00ec kh\u00f4ng c\u00f3 g\u00e1n")
+    cols(2) = -1: targets(2) = "F3"
+    Set errors = BuildMappingsFromRows(cols, targets, 3, 3, U("M\u1eabu NKTC"), maps, n)
+    Eq errors(1), U("D\u00f2ng 3: ch\u01b0a ch\u1ecdn c\u1ed9t ngu\u1ed3n."), U("thi\u1ebfu c\u1ed9t")
+    cols(2) = 1: targets(2) = ""
+    Set errors = BuildMappingsFromRows(cols, targets, 3, 3, U("M\u1eabu NKTC"), maps, n)
+    Eq errors(1), U("D\u00f2ng 3: ch\u01b0a ch\u1ecdn \u00f4 tr\u00ean form."), U("thi\u1ebfu \u00f4")
+    targets(2) = "F3"
+    Set errors = BuildMappingsFromRows(cols, targets, 3, 3, "Form", maps, n)
+    Eq errors.Count, 0, U("d\u00f2ng g\u00e1n h\u1ee3p l\u1ec7")
+    Check n = 2 And maps(1).Column = 1 And maps(1).SheetName = "Form" And maps(1).Address = "F3", U("g\u00e1n d\u00f9ng sheet m\u1eb7c \u0111\u1ecbnh")
+    Set errors = BuildMappingsFromRows(cols, targets, 0, 3, "Form", maps, n)
+    Check errors.Count = 1 And InStr(errors(1), U("Ch\u01b0a c\u00f3 d\u00f2ng g\u00e1n")) > 0, U("ch\u01b0a c\u00f3 d\u00f2ng g\u00e1n")
+    h = Strs("a", " ", "b", "")
+    Eq BlankHeaderList(h, 4), "2, 4", U("ti\u00eau \u0111\u1ec1 tr\u1ed1ng")
+    h = Strs("a", "b")
+    Eq BlankHeaderList(h, 2), "", U("kh\u00f4ng c\u00f3 ti\u00eau \u0111\u1ec1 tr\u1ed1ng")
+End Sub
+
+Private Sub TestConfig()
+    Dim cfg As NKTC_Config, back As NKTC_Config, maps() As NKTC_Mapping, s As String, msg As String, h() As String
+    s = "a\b" & vbTab & "c" & vbLf & "d" & vbCr & "e"
+    Eq UnescapeField(EscapeField(s)), s, U("m\u00e3 h\u00f3a tr\u01b0\u1eddng gi\u1eef nguy\u00ean n\u1ed9i dung")
+    Check InStr(EscapeField(s), vbTab) = 0 And InStr(EscapeField(s), vbLf) = 0, U("tr\u01b0\u1eddng m\u00e3 h\u00f3a kh\u00f4ng ch\u1ee9a Tab/xu\u1ed1ng d\u00f2ng")
+    Eq XmlText("a<b&c>" & vbTab & vbLf), "a&lt;b&amp;c&gt;&#9;&#10;", U("ch\u1eef trong XML")
+
+    h = Strs(U("Ng\u00e0y"), U("Th\u1eddi ti\u1ebft") & vbLf & U("(s\u00e1ng)"), U("N\u1ed9i dung"))
+    SetHeaders cfg, h, 3
+    ReDim maps(0 To 1)
+    maps(0).Column = 1: maps(0).SheetName = U("M\u1eabu NKTC"): maps(0).Address = "E5"
+    maps(1).Column = 2: maps(1).SheetName = U("M\u1eabu NKTC"): maps(1).Address = "B9"
+    SetMaps cfg, maps, 2
+    cfg.SourceSheet = "NK_TheoNgay": cfg.SourceAddress = "A1:C40"
+    cfg.DateColumn = 0: cfg.CurrentDay = 46188: cfg.ConfirmedKey = MappingKey(maps, 2)
+    Check ParseConfig(SerializeConfig(cfg), back), U("\u0111\u1ecdc l\u1ea1i c\u1ea5u h\u00ecnh \u0111\u00e3 l\u01b0u")
+    Check back.SourceSheet = "NK_TheoNgay" And back.SourceAddress = "A1:C40" And back.DateColumn = 0 And _
+          back.CurrentDay = 46188 And back.ConfirmedKey = cfg.ConfirmedKey, U("c\u1ea5u h\u00ecnh: v\u00f9ng ngu\u1ed3n, ng\u00e0y, x\u00e1c nh\u1eadn")
+    Check back.HeaderCount = 3 And back.Headers(1) = U("Th\u1eddi ti\u1ebft") & vbLf & U("(s\u00e1ng)"), U("c\u1ea5u h\u00ecnh: ti\u00eau \u0111\u1ec1 nhi\u1ec1u d\u00f2ng")
+    Check back.MapCount = 2 And back.Maps(1).Column = 2 And back.Maps(1).SheetName = U("M\u1eabu NKTC") And _
+          back.Maps(1).Address = "B9", U("c\u1ea5u h\u00ecnh: d\u00f2ng g\u00e1n")
+    Check Not ParseConfig("abc", back), U("c\u1ea5u h\u00ecnh h\u1ecfng b\u1ecb b\u1ecf qua")
+    Check Not ParseConfig(Replace(SerializeConfig(cfg), "date" & vbTab & "0", "date" & vbTab & "7"), back), _
+        U("c\u1ed9t Ng\u00e0y ngo\u00e0i v\u00f9ng b\u1ecb t\u1eeb ch\u1ed1i")
+
+    ' Khop lai theo ten tieu de: chen cot giua -> cot da gan dich theo.
+    h = Strs(U("Ng\u00e0y"), U("Th\u1eddi ti\u1ebft"), U("N\u1ed9i dung"))
+    SetHeaders cfg, h, 3
+    h = Strs(U("Ng\u00e0y"), U("S\u1ed1 c\u00f4ng nh\u00e2n"), U("TH\u1edcI  TI\u1ebeT"), U("N\u1ed9i dung"))
+    msg = RemapConfig(cfg, h, 4, "NK!A1:D9")
+    Eq msg, "", U("kh\u1edbp l\u1ea1i sau khi ch\u00e8n c\u1ed9t")
+    Check cfg.DateColumn = 0 And cfg.Maps(0).Column = 2 And cfg.Maps(1).Column = 3 And cfg.HeaderCount = 4, _
+        U("v\u1ecb tr\u00ed c\u1ed9t sau khi ch\u00e8n c\u1ed9t")
+    h = Strs(U("Ng\u00e0y"), U("N\u1ed9i dung"))
+    msg = RemapConfig(cfg, h, 2, "NK!A1:B9")
+    Check InStr(msg, U("Kh\u00f4ng t\u00ecm th\u1ea5y c\u1ed9t ""TH\u1edcI  TI\u1ebeT"" (g\u00e1n v\u00e0o M\u1eabu NKTC!E5)")) > 0, U("b\u00e1o c\u1ed9t b\u1ecb x\u00f3a k\u00e8m \u00f4 \u0111\u00edch")
+    Check cfg.Maps(0).Column = 2, U("c\u1ed9t thi\u1ebfu th\u00ec kh\u00f4ng \u0111\u1ed5i c\u1ea5u h\u00ecnh")
 End Sub
