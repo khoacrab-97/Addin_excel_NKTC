@@ -46,7 +46,7 @@ Public Function NKTC_RunTests() As String
     Dim names As Variant, k As Long
     mPass = 0: mFail = 0: mLog = ""
     names = Array("TestText", "TestDates", "TestDatePattern", "TestColumns", "TestDailyLog", "TestSheetName", _
-        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers", "TestReference", "TestFormRows", "TestConfig")
+        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers", "TestReference", "TestFormRows", "TestConfig", "TestUpdate")
     For k = 0 To UBound(names)
         RunOne k, CStr(names(k))
     Next k
@@ -78,6 +78,7 @@ Private Sub RunOne(ByVal idx As Long, ByVal testName As String)
         Case 12: TestReference
         Case 13: TestFormRows
         Case 14: TestConfig
+        Case 15: TestUpdate
     End Select
     Exit Sub
 Loi:
@@ -388,4 +389,26 @@ Private Sub TestConfig()
     msg = RemapConfig(cfg, h, 2, "NK!A1:B9")
     Check InStr(msg, "Không tìm thấy cột ""THỜI  TIẾT"" (gán vào Mẫu NKTC!E5)") > 0, "báo cột bị xóa kèm ô đích"
     Check cfg.Maps(0).Column = 2, "cột thiếu thì không đổi cấu hình"
+End Sub
+
+Private Sub TestUpdate()
+    Dim ver As String, f As String, sha As String, size As Long, notes As String, b() As Byte
+    ParseManifest "version=3.1.0" & vbCrLf & "file=NhatKyThiCong_Core.xlam" & vbCrLf & "sha256=" & String(64, "A") & vbLf & _
+        "size=12345" & vbLf & "notes=Sửa lỗi" & vbLf, ver, f, sha, size, notes
+    Check ver = "3.1.0" And f = "NhatKyThiCong_Core.xlam" And sha = String(64, "a") And size = 12345 And notes = "Sửa lỗi", _
+        "đọc version.txt"
+    ParseManifest "version=3.1" & vbLf & "file=..\x.xlam" & vbLf & "sha256=xyz", ver, f, sha, size, notes
+    Check ver = "3.1" And f = "" And sha = "", "version.txt: tên tệp có đường dẫn, SHA-256 sai bị bỏ"
+    ParseManifest "file=https://x/y.xlam" & vbLf & "version=3.0.0-beta", ver, f, sha, size, notes
+    Check ver = "" And f = "", "version.txt: phiên bản sai, tên tệp là URL bị bỏ"
+    Eq CompareVersions("3.10.0", "3.9.0"), 1, "so phiên bản 3.10 > 3.9"
+    Eq CompareVersions("3.0.0", "3.0.0"), 0, "so phiên bản bằng"
+    Eq CompareVersions("3.0", "3.0.1"), -1, "so phiên bản thiếu phần"
+    Check IsVersion("3.0.0") And Not IsVersion("3") And Not IsVersion("3.a.0") And Not IsVersion("3..0"), "kiểm tra dạng phiên bản"
+    Check IsAllowedUpdateUrl("https://khoacrab-97.github.io/x/") And IsAllowedUpdateUrl("http://127.0.0.1:8080/"), "địa chỉ cập nhật hợp lệ"
+    Check Not IsAllowedUpdateUrl("http://example.com/") And Not IsAllowedUpdateUrl("https://u:p@example.com/") And _
+          Not IsAllowedUpdateUrl("http://localhost.evil.com/"), "địa chỉ cập nhật bị từ chối"
+    b = StrConv("abc", vbFromUnicode)
+    Eq Sha256Hex(b), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", "SHA-256 (CryptoAPI) mẫu chuẩn ""abc"""
+    Check IsSha256(Sha256Hex(b)) And Not IsSha256(String(63, "a")) And Not IsSha256(String(63, "a") & "g"), "kiểm tra dạng SHA-256"
 End Sub

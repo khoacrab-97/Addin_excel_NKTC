@@ -80,7 +80,8 @@ class SourceRulesTests(unittest.TestCase):
 
         pattern = re.compile(r"(?<![.\w])(MsgBox|InputBox)\b")
         offenders = []
-        for path in sorted(Path(__file__).resolve().parent.parent.joinpath("src").iterdir()):
+        vba_dir = Path(__file__).resolve().parent.parent
+        for path in sorted(list(vba_dir.joinpath("src").iterdir()) + list(vba_dir.joinpath("loader").iterdir())):
             for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
                 code = re.sub(r'"[^"]*"', '""', line).split("'", 1)[0]  # bỏ chuỗi rồi bỏ chú thích
                 if pattern.search(code):

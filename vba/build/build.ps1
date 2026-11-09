@@ -5,8 +5,11 @@
        tạo UserForm theo bố cục vba/forms/<tên>.json và chép mã src-ascii/<tên>.frmcode vào form.
     2. Biên dịch dự án VBA (Debug > Compile). Lỗi biên dịch -> Excel hiện hộp thoại, build dừng.
     3. Lưu thành vba/dist/NhatKyThiCong_Core.xlam, gắn Ribbon (customUI14.xml + ảnh nút).
-    4. Mở lại file, chạy kiểm thử phần lõi (modNKTC_Tests.NKTC_RunTests).
-  Kết quả ghi ra màn hình và vba/dist/ket-qua-build.txt.
+    4. Dựng bộ nạp vba/dist/NhatKyThiCong.xlam (vba/build/loader-ascii, sinh từ vba/loader).
+    5. Mở bộ nạp (bộ nạp tự mở lõi), chạy kiểm thử phần lõi (modNKTC_Tests.NKTC_RunTests).
+    6. Ghi vba/dist/version.txt (phiên bản, tên tệp, SHA-256, kích thước của lõi) cho kênh cập nhật.
+  Kết quả ghi ra màn hình và vba/dist/ket-qua-build.txt. Phát hành: tải 3 tệp NhatKyThiCong.xlam,
+  NhatKyThiCong_Core.xlam, version.txt lên thư mục vba/release của repo (xem vba/README.md).
   Yêu cầu một lần: Excel > File > Options > Trust Center > Trust Center Settings > Macro Settings >
   tích "Trust access to the VBA project object model".
 #>
@@ -18,6 +21,7 @@ $ErrorActionPreference = 'Stop'
 $vbaDir = Split-Path -Parent $PSScriptRoot
 $repoDir = Split-Path -Parent $vbaDir
 $srcDir = Join-Path $vbaDir 'build\src-ascii'
+$loaderSrcDir = Join-Path $vbaDir 'build\loader-ascii'
 $formsDir = Join-Path $vbaDir 'forms'
 $templatePath = Join-Path $repoDir 'templates\Mau_NKTC.xlsx'
 $ribbonXml = Join-Path $vbaDir 'ribbon\customUI14.xml'
@@ -25,6 +29,9 @@ $iconDir = Join-Path $repoDir 'assets\ribbon'
 $distDir = Join-Path $vbaDir 'dist'
 $coreName = 'NhatKyThiCong_Core.xlam'
 $corePath = Join-Path $distDir $coreName
+$loaderName = 'NhatKyThiCong.xlam'
+$loaderPath = Join-Path $distDir $loaderName
+$versionPath = Join-Path $distDir 'version.txt'
 $resultPath = Join-Path $distDir 'ket-qua-build.txt'
 $xlOpenXMLAddIn = 55
 
@@ -142,15 +149,52 @@ function Add-UserForm($project, [string]$specPath) {
     }
 }
 
+# Module ThisWorkbook của workbook (tên mã thường là "ThisWorkbook"; dò theo loại nếu Excel chưa trả về).
+function Get-WorkbookModule($wb) {
+    $name = [string]$wb.CodeName
+    if ($name) { return $wb.VBProject.VBComponents.Item($name).CodeModule }
+    $sheetNames = @()
+    foreach ($s in $wb.Worksheets) { $sheetNames += [string]$s.CodeName }
+    foreach ($c in $wb.VBProject.VBComponents) {
+        if ([int]$c.Type -eq 100 -and ($sheetNames -notcontains [string]$c.Name)) { return $c.CodeModule }
+    }
+    throw 'Không tìm thấy module ThisWorkbook.'
+}
+
+function Set-ModuleCode($module, [string]$path) {
+    $count = [int]$module.CountOfLines
+    if ($count -gt 0) { $module.DeleteLines(1, $count) }
+    $module.AddFromString([IO.File]::ReadAllText($path))
+}
+
+# Debug > Compile VBAProject (ID 578) cho dự án đang chọn trong VBE. Biên dịch xong thì lệnh bị làm mờ.
+function Invoke-Compile($excel, $project, [string]$label) {
+    $excel.VBE.ActiveVBProject = $project
+    $compile = $excel.VBE.CommandBars.FindControl(1, 578)
+    if ($null -ne $compile -and $compile.Enabled) { $compile.Execute() }
+    if ($null -ne $compile -and $compile.Enabled) {
+        throw ('Biên dịch VBA (' + $label + ') có lỗi (xem hộp thoại và cửa sổ VBA trong Excel). Chụp màn hình gửi lại.')
+    }
+    Log ('Biên dịch ' + $label + ': OK')
+}
+
+function Import-Modules($project, [string]$dir) {
+    Get-ChildItem -Path $dir -Include '*.bas', '*.cls' -File -Recurse | Sort-Object Name | ForEach-Object {
+        [void]$project.VBComponents.Import($_.FullName)
+        Log ('  + ' + $_.Name)
+    }
+}
+
 $excel = $null
 $exitCode = 1
 try {
-    if (Test-Path $corePath) { Remove-Item $corePath -Force }
+    foreach ($old in @($corePath, $loaderPath, $versionPath)) { if (Test-Path $old) { Remove-Item $old -Force } }
     $excel = New-Object -ComObject Excel.Application
     # Hiện Excel để nếu có lỗi biên dịch thì thấy được hộp thoại báo lỗi.
     $excel.Visible = $true
     $excel.DisplayAlerts = $false
 
+    # ---------- Lõi: NhatKyThiCong_Core.xlam ----------
     $wb = $excel.Workbooks.Add()
     try {
         $project = $wb.VBProject
@@ -159,15 +203,14 @@ try {
         throw 'Excel chưa cho phép truy cập dự án VBA. Vào File > Options > Trust Center > Trust Center Settings > Macro Settings, tích "Trust access to the VBA project object model", rồi chạy lại.'
     }
 
-    Log 'Nạp mã nguồn:'
-    Get-ChildItem -Path $srcDir -Include '*.bas', '*.cls' -File -Recurse | Sort-Object Name | ForEach-Object {
-        [void]$project.VBComponents.Import($_.FullName)
-        Log ('  + ' + $_.Name)
-    }
+    Log 'Nạp mã nguồn lõi:'
+    Import-Modules $project $srcDir
     Get-ChildItem -Path $formsDir -Filter '*.json' -File | Sort-Object Name | ForEach-Object {
         Add-UserForm $project $_.FullName
         Log ('  + ' + $_.BaseName + ' (UserForm)')
     }
+    Set-ModuleCode (Get-WorkbookModule $wb) (Join-Path $srcDir 'ThisWorkbook.doccode')
+    Log '  + ThisWorkbook'
 
     # Biểu mẫu "Mẫu NKTC": chép vào add-in để nút Chèn form mẫu dùng được khi không có Internet.
     $template = $excel.Workbooks.Open($templatePath, 0, $true)
@@ -183,27 +226,45 @@ try {
     }
     Log ('  + biểu mẫu "' + $formSheetName + '"')
 
-    # Debug > Compile VBAProject (ID 578). Biên dịch xong thì lệnh bị làm mờ.
-    $compile = $excel.VBE.CommandBars.FindControl(1, 578)
-    if ($null -ne $compile -and $compile.Enabled) { $compile.Execute() }
-    if ($null -ne $compile -and $compile.Enabled) {
-        throw 'Biên dịch VBA có lỗi (xem hộp thoại và cửa sổ VBA trong Excel). Chụp màn hình gửi lại.'
-    }
-    Log 'Biên dịch: OK'
-
+    Invoke-Compile $excel $project 'lõi'
     $wb.SaveAs($corePath, $xlOpenXMLAddIn)
     $wb.Close($false)
     Add-RibbonToPackage $corePath
     Log ('Đã tạo: ' + $corePath)
 
+    # ---------- Bộ nạp: NhatKyThiCong.xlam ----------
+    $loaderWb = $excel.Workbooks.Add()
+    Log 'Nạp mã nguồn bộ nạp:'
+    Import-Modules $loaderWb.VBProject $loaderSrcDir
+    Set-ModuleCode (Get-WorkbookModule $loaderWb) (Join-Path $loaderSrcDir 'ThisWorkbook.doccode')
+    Log '  + ThisWorkbook'
+    Invoke-Compile $excel $loaderWb.VBProject 'bộ nạp'
+    $loaderWb.SaveAs($loaderPath, $xlOpenXMLAddIn)
+    $loaderWb.Close($false)
+    Log ('Đã tạo: ' + $loaderPath)
+
     if ($SkipTests) {
         $exitCode = 0
     } else {
-        $addin = $excel.Workbooks.Open($corePath)
+        # Mở bộ nạp như khi Excel khởi động: bộ nạp phải tự mở lõi.
+        $loader = $excel.Workbooks.Open($loaderPath)
+        $core = $null
+        foreach ($w in $excel.Workbooks) { if ([string]$w.Name -eq $coreName) { $core = $w } }
+        if ($null -eq $core) { throw 'Bộ nạp không mở được lõi NhatKyThiCong_Core.xlam.' }
+        Log 'Bộ nạp mở lõi: OK'
         $result = [string]$excel.Run("'" + $coreName + "'!modNKTC_Tests.NKTC_RunTests")
-        $addin.Close($false)
+        $version = [string]$excel.Run("'" + $coreName + "'!modNKTC_Ribbon.NKTC_Version")
+        $core.Close($false)
+        $loader.Close($false)
         Log ('Kiểm thử phần lõi: ' + $result)
         if ($result.StartsWith('PASS')) { $exitCode = 0 }
+
+        # version.txt cho kênh cập nhật (tệp văn bản UTF-8 không BOM, xuống dòng LF).
+        $hash = (Get-FileHash -Path $corePath -Algorithm SHA256).Hash.ToLowerInvariant()
+        $size = (Get-Item $corePath).Length
+        $manifest = "version=$version`nfile=$coreName`nsha256=$hash`nsize=$size`n"
+        [IO.File]::WriteAllText($versionPath, $manifest, (New-Object Text.UTF8Encoding($false)))
+        Log ('Đã tạo: ' + $versionPath + ' (phiên bản ' + $version + ')')
     }
 } catch {
     Log ('LỖI: ' + $_.Exception.Message)

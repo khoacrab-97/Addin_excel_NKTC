@@ -1,11 +1,11 @@
 Attribute VB_Name = "modNKTC_Ribbon"
 '==============================================================================
 ' NHẬT KÝ TC – tab Ribbon "Nhật ký TC": nhận lệnh từ các nút (vba/ribbon/customUI14.xml).
-' Đã chuyển mọi nút trừ Kiểm tra cập nhật (làm cùng bộ nạp tự cập nhật).
+' Mọi nút của tab gọi RB_Action; xử lý trong modNKTC_Commands, modNKTC_FormCommands, modNKTC_Update.
 '==============================================================================
 Option Explicit
 
-Public Const APP_VERSION As String = "3.0.0-dev"
+Public Const APP_VERSION As String = "3.0.0"
 
 Private mRibbon As Object
 
@@ -26,6 +26,7 @@ Public Sub RB_Action(ByVal control As Object)
         Case "btnNgayCuoi": CmdChuyenNgay CMD_LAST
         Case "btnHuongDan": ShowHelp
         Case "btnPhienBan": ShowAbout
+        Case "btnCapNhat": CheckForUpdate True
         Case Else
             ShowInfo "Chức năng này đang được chuyển sang bản VBA. Trong lúc chờ, anh/chị dùng tab ""Nhật ký thi công"" (bản cũ)."
     End Select
@@ -33,6 +34,11 @@ Public Sub RB_Action(ByVal control As Object)
 Loi:
     ShowInfo "Lỗi: " & Err.Description, vbExclamation
 End Sub
+
+' Phiên bản lõi (build.ps1 đọc để ghi version.txt).
+Public Function NKTC_Version() As String
+    NKTC_Version = APP_VERSION
+End Function
 
 Private Sub ShowAbout()
     ShowInfo "Nhật ký TC – phiên bản " & APP_VERSION & vbLf & _

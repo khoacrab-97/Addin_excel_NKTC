@@ -32,10 +32,20 @@ jobs:
         run: |
           python3 -m unittest discover -s vba/tools -p "test_*.py"
           python3 vba/tools/vba_ascii.py vba/src vba/build/src-ascii
-          git diff --exit-code -- vba/build/src-ascii
+          python3 vba/tools/vba_ascii.py vba/loader vba/build/loader-ascii
+          git status --porcelain -- vba/build
+          test -z "$(git status --porcelain -- vba/build)"
       - name: Validate production manifest (Microsoft validation service)
         run: npx office-addin-manifest validate dist/manifest.xml
       - name: Install NSIS (Windows installer compiler)
         run: sudo apt-get update && sudo apt-get install -y nsis
       - name: Build Windows installer (dist/NhatKyThiCong_Setup.exe)
         run: npm run build:installer
+      # Bản VBA: khi đã có bản dựng trên Windows trong vba/release → kiểm tra version.txt và dựng bộ cài NhatKyTC_Setup.
+      - name: Build VBA installer (when vba/release has a build)
+        run: |
+          if [ -f vba/release/version.txt ]; then
+            scripts/build-vba-release.sh /tmp/vba-pages /tmp/vba-installer
+          else
+            echo "vba/release chưa có bản dựng — bỏ qua."
+          fi

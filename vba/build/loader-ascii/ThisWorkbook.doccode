@@ -1,0 +1,8 @@
+'==============================================================================
+' NHAT KY TC ? ma cua ThisWorkbook trong bo nap NhatKyThiCong.xlam (build.ps1 chep vao).
+'==============================================================================
+Option Explicit
+
+Private Sub Workbook_Open()
+    NKTC_LoadCore
+End Sub

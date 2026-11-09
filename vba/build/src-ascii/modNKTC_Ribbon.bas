@@ -1,11 +1,11 @@
 Attribute VB_Name = "modNKTC_Ribbon"
 '==============================================================================
 ' NHAT KY TC ? tab Ribbon "Nhat ky TC": nhan lenh tu cac nut (vba/ribbon/customUI14.xml).
-' Da chuyen moi nut tru Kiem tra cap nhat (lam cung bo nap tu cap nhat).
+' Moi nut cua tab goi RB_Action; xu ly trong modNKTC_Commands, modNKTC_FormCommands, modNKTC_Update.
 '==============================================================================
 Option Explicit
 
-Public Const APP_VERSION As String = "3.0.0-dev"
+Public Const APP_VERSION As String = "3.0.0"
 
 Private mRibbon As Object
 
@@ -26,6 +26,7 @@ Public Sub RB_Action(ByVal control As Object)
         Case "btnNgayCuoi": CmdChuyenNgay CMD_LAST
         Case "btnHuongDan": ShowHelp
         Case "btnPhienBan": ShowAbout
+        Case "btnCapNhat": CheckForUpdate True
         Case Else
             ShowInfo U("Ch\u1ee9c n\u0103ng n\u00e0y \u0111ang \u0111\u01b0\u1ee3c chuy\u1ec3n sang b\u1ea3n VBA. Trong l\u00fac ch\u1edd, anh/ch\u1ecb d\u00f9ng tab ""Nh\u1eadt k\u00fd thi c\u00f4ng"" (b\u1ea3n c\u0169).")
     End Select
@@ -33,6 +34,11 @@ Public Sub RB_Action(ByVal control As Object)
 Loi:
     ShowInfo U("L\u1ed7i: ") & Err.Description, vbExclamation
 End Sub
+
+' Phien ban loi (build.ps1 doc de ghi version.txt).
+Public Function NKTC_Version() As String
+    NKTC_Version = APP_VERSION
+End Function
 
 Private Sub ShowAbout()
     ShowInfo U("Nh\u1eadt k\u00fd TC \u2013 phi\u00ean b\u1ea3n ") & APP_VERSION & vbLf & _

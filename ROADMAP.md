@@ -187,5 +187,8 @@ Lý do: bản Office.js cài kiểu nhà phát triển (sideload) mất tab sau 
 | P12.2 | Chuyển phần lõi (chữ, ngày, F1 nhận diện cột/trải theo ngày, F2 gán cột/chuyển ngày/khớp tên cột) + bộ kiểm thử VBA: 104/104 PASS trên Excel Windows của chủ dự án (09/11/2026) | Tested |
 | P12.3 | UserForm tạo khi build từ `vba/forms/*.json` + `.frmcode`; nút **Tạo bảng** (F4) và **Xuất theo ngày** (F1) với ô chọn vùng = ô nhập + nút **Chọn** (`Application.InputBox`; RefEdit/ActiveX bị Microsoft 365 chặn khi build — 09/11/2026); thông báo tiếng Việt qua `MessageBoxW`. Build PASS 119, chủ dự án chạy thử trên Excel Windows và báo OK (09/11/2026) | Verified |
 | P12.4 | Nút Chèn form mẫu (sheet mẫu nằm sẵn trong add-in, không cần Internet), Xuất vào form (danh sách dòng gán + Thêm / Cập nhật / Xóa dòng; cấu hình lưu trong file bằng CustomXMLPart), 4 nút Chuyển ngày (khớp cột theo tên, hỏi trước khi ghi đè), Hướng dẫn. Build PASS 157; chủ dự án chạy thử trên Excel Windows và báo OK (09/11/2026); tiêu đề hộp thoại có dấu sửa sau đó (`SetUnicodeTitle`) | Verified |
-| P12.5 | Bộ nạp + tự cập nhật hằng ngày (kiểm tra kích thước, chữ ký ZIP, SHA-256), bộ cài, tài liệu, kiểm tra bảo mật, phát hành 3.0.0 | Not Started |
-| P12.6 | Nghiệm thu bản VBA trên Excel Desktop Windows; sau đó gỡ bản Office.js theo yêu cầu chủ dự án | Not Started |
+| P12.5 | Bộ nạp `NhatKyThiCong.xlam` + tự cập nhật hằng ngày của lõi (version.txt trên GitHub Pages `/vba/`; kiểm tra kích thước, chữ ký ZIP, SHA-256; bộ nạp kiểm lại SHA-256 trước khi thay lõi) | Implemented |
+| P12.6a | Bộ cài `NhatKyTC_Setup_<phiên bản>.exe` (NSIS, cho từng người dùng, đăng ký khóa OPEN của Excel; gỡ cài đặt dồn lại các khóa OPEN). Chạy thử trên Wine: cài, cài lại, gỡ khi có add-in khác | Tested |
+| P12.6b | Quy trình phát hành: 3 tệp dựng trên Windows → `vba/release/` → CI kiểm tra SHA-256, đăng kênh cập nhật, dựng bộ cài, tạo Release | Implemented |
+| P12.6c | Tài liệu hướng dẫn cài đặt bản VBA, kiểm tra bảo mật, phát hành 3.0.0 | Not Started |
+| P12.7 | Nghiệm thu bản VBA trên Excel Desktop Windows (bộ cài, tab luôn hiện, tự cập nhật); sau đó gỡ bản Office.js theo yêu cầu chủ dự án | Not Started |

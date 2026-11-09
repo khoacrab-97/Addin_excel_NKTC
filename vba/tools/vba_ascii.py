@@ -15,7 +15,8 @@ from pathlib import Path
 
 MAX_LINE = 1023
 # .frmcode: mã của UserForm (bố cục ở vba/forms/<tên>.json); build.ps1 tạo form rồi chép mã này vào.
-SOURCE_SUFFIXES = (".bas", ".cls", ".frmcode")
+# .doccode: mã của ThisWorkbook; build.ps1 chép vào module ThisWorkbook.
+SOURCE_SUFFIXES = (".bas", ".cls", ".frmcode", ".doccode")
 
 
 class ConvertError(Exception):

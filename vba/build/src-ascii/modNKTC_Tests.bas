@@ -46,7 +46,7 @@ Public Function NKTC_RunTests() As String
     Dim names As Variant, k As Long
     mPass = 0: mFail = 0: mLog = ""
     names = Array("TestText", "TestDates", "TestDatePattern", "TestColumns", "TestDailyLog", "TestSheetName", _
-        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers", "TestReference", "TestFormRows", "TestConfig")
+        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers", "TestReference", "TestFormRows", "TestConfig", "TestUpdate")
     For k = 0 To UBound(names)
         RunOne k, CStr(names(k))
     Next k
@@ -78,6 +78,7 @@ Private Sub RunOne(ByVal idx As Long, ByVal testName As String)
         Case 12: TestReference
         Case 13: TestFormRows
         Case 14: TestConfig
+        Case 15: TestUpdate
     End Select
     Exit Sub
 Loi:
@@ -388,4 +389,26 @@ Private Sub TestConfig()
     msg = RemapConfig(cfg, h, 2, "NK!A1:B9")
     Check InStr(msg, U("Kh\u00f4ng t\u00ecm th\u1ea5y c\u1ed9t ""TH\u1edcI  TI\u1ebeT"" (g\u00e1n v\u00e0o M\u1eabu NKTC!E5)")) > 0, U("b\u00e1o c\u1ed9t b\u1ecb x\u00f3a k\u00e8m \u00f4 \u0111\u00edch")
     Check cfg.Maps(0).Column = 2, U("c\u1ed9t thi\u1ebfu th\u00ec kh\u00f4ng \u0111\u1ed5i c\u1ea5u h\u00ecnh")
+End Sub
+
+Private Sub TestUpdate()
+    Dim ver As String, f As String, sha As String, size As Long, notes As String, b() As Byte
+    ParseManifest "version=3.1.0" & vbCrLf & "file=NhatKyThiCong_Core.xlam" & vbCrLf & "sha256=" & String(64, "A") & vbLf & _
+        "size=12345" & vbLf & U("notes=S\u1eeda l\u1ed7i") & vbLf, ver, f, sha, size, notes
+    Check ver = "3.1.0" And f = "NhatKyThiCong_Core.xlam" And sha = String(64, "a") And size = 12345 And notes = U("S\u1eeda l\u1ed7i"), _
+        U("\u0111\u1ecdc version.txt")
+    ParseManifest "version=3.1" & vbLf & "file=..\x.xlam" & vbLf & "sha256=xyz", ver, f, sha, size, notes
+    Check ver = "3.1" And f = "" And sha = "", U("version.txt: t\u00ean t\u1ec7p c\u00f3 \u0111\u01b0\u1eddng d\u1eabn, SHA-256 sai b\u1ecb b\u1ecf")
+    ParseManifest "file=https://x/y.xlam" & vbLf & "version=3.0.0-beta", ver, f, sha, size, notes
+    Check ver = "" And f = "", U("version.txt: phi\u00ean b\u1ea3n sai, t\u00ean t\u1ec7p l\u00e0 URL b\u1ecb b\u1ecf")
+    Eq CompareVersions("3.10.0", "3.9.0"), 1, U("so phi\u00ean b\u1ea3n 3.10 > 3.9")
+    Eq CompareVersions("3.0.0", "3.0.0"), 0, U("so phi\u00ean b\u1ea3n b\u1eb1ng")
+    Eq CompareVersions("3.0", "3.0.1"), -1, U("so phi\u00ean b\u1ea3n thi\u1ebfu ph\u1ea7n")
+    Check IsVersion("3.0.0") And Not IsVersion("3") And Not IsVersion("3.a.0") And Not IsVersion("3..0"), U("ki\u1ec3m tra d\u1ea1ng phi\u00ean b\u1ea3n")
+    Check IsAllowedUpdateUrl("https://khoacrab-97.github.io/x/") And IsAllowedUpdateUrl("http://127.0.0.1:8080/"), U("\u0111\u1ecba ch\u1ec9 c\u1eadp nh\u1eadt h\u1ee3p l\u1ec7")
+    Check Not IsAllowedUpdateUrl("http://example.com/") And Not IsAllowedUpdateUrl("https://u:p@example.com/") And _
+          Not IsAllowedUpdateUrl("http://localhost.evil.com/"), U("\u0111\u1ecba ch\u1ec9 c\u1eadp nh\u1eadt b\u1ecb t\u1eeb ch\u1ed1i")
+    b = StrConv("abc", vbFromUnicode)
+    Eq Sha256Hex(b), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", U("SHA-256 (CryptoAPI) m\u1eabu chu\u1ea9n ""abc""")
+    Check IsSha256(Sha256Hex(b)) And Not IsSha256(String(63, "a")) And Not IsSha256(String(63, "a") & "g"), U("ki\u1ec3m tra d\u1ea1ng SHA-256")
 End Sub
