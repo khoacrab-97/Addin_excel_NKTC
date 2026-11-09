@@ -69,5 +69,24 @@ class ConvertTests(unittest.TestCase):
         self.assertEqual(strip_diacritics("Đường đi Nhật ký"), "Duong di Nhat ky")
 
 
+class SourceRulesTests(unittest.TestCase):
+    """Quy ước của mã nguồn trong vba/src."""
+
+    def test_no_vba_msgbox_or_inputbox(self):
+        # MsgBox/InputBox của VBA mất dấu tiếng Việt (ANSI) -> dùng ShowInfo/ShowMessage (modNKTC_UI, MessageBoxW)
+        # và Application.InputBox (của Excel, Unicode).
+        import re
+        from pathlib import Path
+
+        pattern = re.compile(r"(?<![.\w])(MsgBox|InputBox)\b")
+        offenders = []
+        for path in sorted(Path(__file__).resolve().parent.parent.joinpath("src").iterdir()):
+            for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                code = re.sub(r'"[^"]*"', '""', line).split("'", 1)[0]  # bỏ chuỗi rồi bỏ chú thích
+                if pattern.search(code):
+                    offenders.append("%s:%d" % (path.name, number))
+        self.assertEqual(offenders, [])
+
+
 if __name__ == "__main__":
     unittest.main()

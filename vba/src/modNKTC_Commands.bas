@@ -6,13 +6,6 @@ Attribute VB_Name = "modNKTC_Commands"
 Option Explicit
 
 Private Const MAX_ISSUES_SHOWN As Long = 10
-Private Const MSG_MAX_LENGTH As Long = 1000
-
-' Hộp thông báo chung của add-in (MsgBox cắt nội dung quá dài).
-Public Sub ShowInfo(ByVal text As String, Optional ByVal kind As VbMsgBoxStyle = vbInformation)
-    If Len(text) > MSG_MAX_LENGTH Then text = Left$(text, MSG_MAX_LENGTH - 1) & ChrW(8230)
-    MsgBox text, kind, "Nhật ký TC"
-End Sub
 
 ' Có workbook đang mở và sheet đang xem là worksheet (không phải chart sheet).
 Private Function HasWorksheet() As Boolean

@@ -20,17 +20,16 @@ Public Sub RB_Action(ByVal control As Object)
         Case "btnXuatNgay": CmdXuatNgay
         Case "btnPhienBan": ShowAbout
         Case Else
-            MsgBox "Chức năng này đang được chuyển sang bản VBA. Trong lúc chờ, anh/chị dùng tab ""Nhật ký thi công"" (bản cũ).", _
-                vbInformation, "Nhật ký TC"
+            ShowInfo "Chức năng này đang được chuyển sang bản VBA. Trong lúc chờ, anh/chị dùng tab ""Nhật ký thi công"" (bản cũ)."
     End Select
     Exit Sub
 Loi:
-    MsgBox "Lỗi: " & Err.Description, vbExclamation, "Nhật ký TC"
+    ShowInfo "Lỗi: " & Err.Description, vbExclamation
 End Sub
 
 Private Sub ShowAbout()
-    MsgBox "Nhật ký TC – phiên bản " & APP_VERSION & vbLf & _
+    ShowInfo "Nhật ký TC – phiên bản " & APP_VERSION & vbLf & _
         "Excel " & Application.Version & vbLf & _
         "Thư mục cài đặt: " & ThisWorkbook.Path & vbLf & vbLf & _
-        "Kiểm thử phần lõi: " & Left$(NKTC_RunTests(), 300), vbInformation, "Nhật ký TC"
+        "Kiểm thử phần lõi: " & Left$(NKTC_RunTests(), 300)
 End Sub

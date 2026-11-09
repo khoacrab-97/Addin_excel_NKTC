@@ -31,6 +31,7 @@ Bản chuyển đổi từ add-in Office.js sang add-in VBA, cùng kiểu với 
 | `modNKTC_Mapping` | F2: gán cột, danh sách ngày, chuyển ngày, khớp cột theo tên, giá trị ghi ô | `src/core/mapping` |
 | `modNKTC_Excel` | Lớp Excel: đọc vùng (`Value2`), tạo sheet NK_TheoNgay, tạo bảng nhập tiến độ (không ghi đè) | `src/excel/*` |
 | `modNKTC_Commands` | Lệnh Ribbon: Tạo bảng (F4), Xuất theo ngày (F1) | `src/commands/*` |
+| `modNKTC_UI` | Hộp thông báo tiếng Việt (`ShowInfo`, `ShowMessage` qua `MessageBoxW` của Windows) | `src/commands/messages.ts` |
 | `modNKTC_Ribbon` | Nhận lệnh từ nút Ribbon (`RB_Action`), Phiên bản | `manifest.xml` + `commands.ts` |
 | `frmTaoBang`, `frmXuatNgay` | Hộp thoại Tạo bảng, Xuất nhật ký theo ngày (ô chọn vùng: ô nhập + nút **Chọn**) | `src/dialog/views/*` |
 | `modNKTC_Tests` | Kiểm thử phần lõi: `NKTC_RunTests()` → `PASS n` hoặc danh sách lỗi | `src/core/**/*.test.ts` |
@@ -39,5 +40,6 @@ Bản chuyển đổi từ add-in Office.js sang add-in VBA, cùng kiểu với 
 
 - Phần lõi (`modNKTC_Text`, `modNKTC_Date`, `modNKTC_DailyLog`, `modNKTC_Mapping`) không gọi đối tượng Excel; đọc dữ liệu ô dạng `Range.Value2`.
 - `Const` không chứa chuỗi tiếng Việt (VBA không cho gọi hàm trong `Const`) — công cụ chuyển đổi báo lỗi nếu vi phạm.
+- Không dùng `MsgBox`/`InputBox` của VBA (đổi sang ANSI, mất dấu tiếng Việt): dùng `ShowInfo`/`ShowMessage` và `Application.InputBox`. Kiểm thử `test_vba_ascii.py` chặn vi phạm.
 - Không dùng ActiveX trên UserForm (kể cả RefEdit): Microsoft 365 mới chặn chèn ActiveX. Chọn vùng bằng `Application.InputBox(Type:=8)` qua `PickRange`.
 - Không dùng `VBScript.RegExp` (Microsoft đang loại bỏ VBScript khỏi Windows).

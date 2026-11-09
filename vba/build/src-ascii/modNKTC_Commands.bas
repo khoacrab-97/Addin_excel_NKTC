@@ -6,13 +6,6 @@ Attribute VB_Name = "modNKTC_Commands"
 Option Explicit
 
 Private Const MAX_ISSUES_SHOWN As Long = 10
-Private Const MSG_MAX_LENGTH As Long = 1000
-
-' Hop thong bao chung cua add-in (MsgBox cat noi dung qua dai).
-Public Sub ShowInfo(ByVal text As String, Optional ByVal kind As VbMsgBoxStyle = vbInformation)
-    If Len(text) > MSG_MAX_LENGTH Then text = Left$(text, MSG_MAX_LENGTH - 1) & ChrW(8230)
-    MsgBox text, kind, U("Nh\u1eadt k\u00fd TC")
-End Sub
 
 ' Co workbook dang mo va sheet dang xem la worksheet (khong phai chart sheet).
 Private Function HasWorksheet() As Boolean
