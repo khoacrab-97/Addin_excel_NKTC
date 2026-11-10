@@ -9,9 +9,9 @@
   - Claude Code Desktop
   - GitHub Repository
   - Microsoft Excel Desktop
-  - Office.js
-  - React
-  - TypeScript
+  - Excel VBA add-in (`.xlam`, build on Windows with Excel)
+  - Python (source conversion tool, tests)
+  - NSIS installer, GitHub Actions
 
 ## 2. Core Development Rules
 
@@ -29,10 +29,10 @@ Never assume a feature is missing without inspecting the codebase.
 
 ## 3. Code Quality
 
-- Use TypeScript strict mode.
+- Use `Option Explicit` in every VBA module.
 - Follow modular architecture.
 - Keep business logic independent from Excel APIs.
-- Use actual Office.js APIs.
+- Use actual Excel VBA / Win32 APIs.
 - Do not invent unsupported APIs.
 - Avoid duplicated business logic.
 - Avoid unnecessary dependencies.

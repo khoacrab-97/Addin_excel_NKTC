@@ -1,5 +1,8 @@
 # BUSINESS_SPEC — ConstructionDailyLog
 
+
+> Từ 3.0.0 sản phẩm là add-in **VBA** (tab **Nhật ký TC**). Các mục ghi chi tiết riêng của Office.js (Dialog API, `messageParent`, ExcelApi, viền nháy R0.6, R0.5…) là lịch sử của bản 1.x – 2.x; yêu cầu nghiệp vụ (R1.x, R2.x, R4.x) giữ nguyên và được bản VBA thực hiện — xem `vba/README.md`, ROADMAP Phase 12.
+
 > Trạng thái tài liệu: **v0.2** — các câu hỏi mở Q1–Q6 đã được chủ dự án chốt (31/10/2026), xem §5. Các quy tắc `[GIẢ ĐỊNH]` liên quan Q1–Q3 nay là quy tắc chính thức.
 
 ---

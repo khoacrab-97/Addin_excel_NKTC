@@ -190,6 +190,19 @@ Lý do: bản Office.js cài kiểu nhà phát triển (sideload) mất tab sau 
 | P12.5 | Bộ nạp `NhatKyThiCong.xlam` + tự cập nhật hằng ngày của lõi (version.txt trên GitHub Pages `/vba/`; kiểm tra kích thước, chữ ký ZIP, SHA-256; bộ nạp kiểm lại SHA-256 trước khi thay lõi) | Implemented |
 | P12.6a | Bộ cài `NhatKyTC_Setup_<phiên bản>.exe` (NSIS, cho từng người dùng, đăng ký khóa OPEN của Excel; gỡ cài đặt dồn lại các khóa OPEN). Chạy thử trên Wine: cài, cài lại, gỡ khi có add-in khác | Tested |
 | P12.6b | Quy trình phát hành: 3 tệp dựng trên Windows → `vba/release/` → CI kiểm tra SHA-256, đăng kênh cập nhật, dựng bộ cài, tạo Release. Bản dựng 3.0.0 (PASS 168) đã lên `vba/release/`, CI dựng bộ cài thử thành công | Tested |
-| P12.6c | Hướng dẫn cài đặt bản VBA (`docs/HUONG_DAN_CAI_DAT_VBA.md`); kiểm tra bảo mật run-3 (quick, theo phạm vi VBA: 0 lỗ hổng, 9/9 hạng mục covered); củng cố phát hành: CI so `version.txt` với `APP_VERSION`, tag riêng `vba-v<phiên bản>`, bộ cài thử chỉ từ push | Tested |
+| P12.6c | Hướng dẫn cài đặt bản VBA (`docs/HUONG_DAN_CAI_DAT.md`, trước là `HUONG_DAN_CAI_DAT_VBA.md`); kiểm tra bảo mật run-3 (quick, theo phạm vi VBA: 0 lỗ hổng, 9/9 hạng mục covered); củng cố phát hành: CI so `version.txt` với `APP_VERSION`, tag riêng `vba-v<phiên bản>`, bộ cài thử chỉ từ push | Tested |
 | P12.6d | Phát hành chính thức 3.0.0 (kênh cập nhật đã được chủ dự án kiểm tra trên Excel): PR #13 merge vào `main` (10/11/2026; CI + SonarCloud đạt sau khi giới hạn đường dẫn của `vba_ascii.py` và loại mã sinh tự động khỏi Sonar); workflow đăng kênh cập nhật Pages `/vba/` và Release [`vba-v3.0.0`](https://github.com/khoacrab-97/Addin_excel_NKTC/releases/tag/vba-v3.0.0) (`NhatKyTC_Setup_3.0.0.exe`, SHA-256 `ee0d26da…b1f0`) | Verified |
 | P12.7 | Nghiệm thu bản VBA trên Excel Desktop Windows: bộ cài thử 3.0.0 (artifact CI) — chủ dự án cài, tab luôn hiện, các chức năng chạy OK; sau phát hành, **Kiểm tra cập nhật** đọc được kênh Pages `/vba/` và báo đang dùng bản mới nhất 3.0.0 (10/11/2026); còn theo dõi lần tự cập nhật thật ở bản 3.0.1; sau đó gỡ bản Office.js theo yêu cầu chủ dự án | In Progress |
+
+---
+
+## Phase 13 — Gỡ bản Office.js (theo yêu cầu chủ dự án, 10/11/2026)
+
+Chủ dự án nghiệm thu bản VBA 3.0.0 (cài đặt, chức năng, kênh cập nhật) và yêu cầu gỡ bản Office.js; chọn phương án "gỡ hẳn + trang thông báo".
+
+| ID | Hạng mục | Trạng thái |
+|---|---|---|
+| P13.1 | Xóa mã và công cụ Office.js: `src/`, `manifest.xml`, cấu hình webpack/TypeScript/ESLint/Prettier/Vitest/Babel, `package.json`, smoke test, fixture JSON, bộ cài `installer/NhatKyThiCong.nsi`, icon manifest. Giữ biểu mẫu `templates/`, icon `assets/ribbon/`, `installer/icon.ico`, file Excel thử | Implemented |
+| P13.2 | GitHub Pages: trang tĩnh `site/` (thông báo bản cũ đã ngừng + link tải bản VBA + cách gỡ bản cũ), biểu mẫu tải về, kênh cập nhật `/vba/`. Máy còn cài bản Office.js: các nút không còn chạy; hướng dẫn gỡ ở `docs/HUONG_DAN_CAI_DAT.md` mục 7 | Implemented |
+| P13.3 | Workflow: CI chỉ còn kiểm tra VBA + dựng bộ cài thử; deploy chỉ còn trang tĩnh + kênh cập nhật + Release `vba-v<phiên bản>` (bỏ job phát hành Office.js) | Implemented |
+| P13.4 | Tài liệu: README, MASTER_CONTEXT §4, CLAUDE.md (môi trường, quy tắc mã), hướng dẫn cài đặt, kiểm thử nghiệm thu chuyển sang bản VBA; BUSINESS_SPEC, BAO_MAT ghi chú phần lịch sử Office.js | Implemented |

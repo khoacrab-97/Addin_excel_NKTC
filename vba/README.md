@@ -1,6 +1,6 @@
 # Nhật ký TC — bản add-in VBA (`.xlam`)
 
-Bản chuyển đổi từ add-in Office.js sang add-in VBA, cùng kiểu với TienBangChu (tab luôn hiện khi mở Excel, ô chọn vùng dùng hộp chọn vùng gốc của Excel, không cần Internet khi dùng). Tên tab: **Nhật ký TC**. Trạng thái: **In Progress** (xem `ROADMAP.md`, Phase 12).
+Bản chuyển đổi từ add-in Office.js sang add-in VBA, cùng kiểu với TienBangChu (tab luôn hiện khi mở Excel, ô chọn vùng dùng hộp chọn vùng gốc của Excel, không cần Internet khi dùng). Tên tab: **Nhật ký TC**. Phát hành chính thức 3.0.0 (10/11/2026, ROADMAP Phase 12); bản Office.js đã gỡ khỏi repo (Phase 13).
 
 ## Cấu trúc
 
@@ -38,7 +38,7 @@ Bản chuyển đổi từ add-in Office.js sang add-in VBA, cùng kiểu với 
 
 ## Module
 
-| Module | Nội dung | Tương ứng bản Office.js |
+| Module | Nội dung | Tương ứng bản Office.js cũ (lịch sử Git, tag `v2.0.1`) |
 |---|---|---|
 | `modNKTC_Text` | `U()`, bỏ dấu, chuẩn hóa tiêu đề | `src/core/text` |
 | `modNKTC_Date` | Ngày (số nguyên hệ 1900), đọc ngày dạng chữ, mẫu "Ngày … tháng … năm …" | `src/core/dates` |

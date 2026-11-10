@@ -1,4 +1,6 @@
-# Bảo mật — Add-in "Nhật ký thi công"
+# Bảo mật — Add-in "Nhật ký TC"
+
+> Từ 10/11/2026 repo chỉ còn bản VBA (3.x). Các biện pháp ghi theo phiên bản 1.x – 2.x bên dưới là lịch sử của bản Office.js đã gỡ (ROADMAP Phase 13).
 
 ## 1. Kết quả kiểm tra và biện pháp đã áp dụng
 
