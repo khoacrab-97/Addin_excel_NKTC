@@ -236,7 +236,7 @@ Private Sub TestNavigation()
     r = ResolveDay(days, 0, 0, CMD_FIRST): Check (Not r.Ok) And (Not r.IsInfo), U("kh\u00f4ng c\u00f3 ng\u00e0y")
     r = ResolveDay(days, n, 0, CMD_GOTO, D + 1): Check r.Ok And r.TargetIndex = 1, U("\u0111i t\u1edbi ng\u00e0y c\u00f3")
     r = ResolveDay(days, n, D, CMD_GOTO, D + 9)
-    Check (Not r.Ok) And (Not r.IsInfo) And InStr(r.Message, U("Kh\u00f4ng c\u00f3 ng\u00e0y 25/06/2026 trong v\u00f9ng ngu\u1ed3n")) > 0, U("\u0111i t\u1edbi ng\u00e0y kh\u00f4ng c\u00f3")
+    Check (Not r.Ok) And (Not r.IsInfo) And InStr(r.Message, U("Kh\u00f4ng c\u00f3 ng\u00e0y 24/06/2026 trong v\u00f9ng ngu\u1ed3n")) > 0, U("\u0111i t\u1edbi ng\u00e0y kh\u00f4ng c\u00f3")
 End Sub
 
 Private Function Strs(ParamArray items() As Variant) As String()

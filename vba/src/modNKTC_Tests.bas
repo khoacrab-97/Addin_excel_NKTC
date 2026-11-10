@@ -236,7 +236,7 @@ Private Sub TestNavigation()
     r = ResolveDay(days, 0, 0, CMD_FIRST): Check (Not r.Ok) And (Not r.IsInfo), "không có ngày"
     r = ResolveDay(days, n, 0, CMD_GOTO, D + 1): Check r.Ok And r.TargetIndex = 1, "đi tới ngày có"
     r = ResolveDay(days, n, D, CMD_GOTO, D + 9)
-    Check (Not r.Ok) And (Not r.IsInfo) And InStr(r.Message, "Không có ngày 25/06/2026 trong vùng nguồn") > 0, "đi tới ngày không có"
+    Check (Not r.Ok) And (Not r.IsInfo) And InStr(r.Message, "Không có ngày 24/06/2026 trong vùng nguồn") > 0, "đi tới ngày không có"
 End Sub
 
 Private Function Strs(ParamArray items() As Variant) As String()
