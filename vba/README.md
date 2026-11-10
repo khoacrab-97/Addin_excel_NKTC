@@ -28,7 +28,7 @@ Bản chuyển đổi từ add-in Office.js sang add-in VBA, cùng kiểu với 
 
 1. Tăng `APP_VERSION` trong `src/modNKTC_Ribbon.bas` (ví dụ 3.0.1), sinh lại mã ASCII, build như trên (phải **ĐẠT**).
 2. Tải 3 tệp `vba/dist/NhatKyThiCong.xlam`, `NhatKyThiCong_Core.xlam`, `version.txt` lên `vba/release/` (GitHub → Add file → Upload files).
-3. Đưa lên `main`: CI kiểm tra SHA-256, đăng kênh cập nhật (GitHub Pages `/vba/`), dựng bộ cài `NhatKyTC_Setup_<phiên bản>.exe`, tạo Release `v<phiên bản>`. Máy đã cài tự tải bản mới trong vòng một ngày.
+3. Đưa lên `main`: CI kiểm tra SHA-256, đăng kênh cập nhật (GitHub Pages `/vba/`), dựng bộ cài `NhatKyTC_Setup_<phiên bản>.exe`, tạo Release `vba-v<phiên bản>` (tiền tố riêng, không trùng tag của bản Office.js); CI dừng nếu `version.txt` khác `APP_VERSION`. Máy đã cài tự tải bản mới trong vòng một ngày.
 
 ## Cài đặt và cập nhật trên máy người dùng
 

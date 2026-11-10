@@ -5,7 +5,9 @@ Tài liệu dự án: [`MASTER_CONTEXT.md`](MASTER_CONTEXT.md) · [`ROADMAP.md`]
 
 ## Cài đặt cho người dùng
 
-Link gửi người dùng: <https://khoacrab-97.github.io/Addin_excel_NKTC/> → **Tải bộ cài (Windows)** (`NhatKyThiCong_Setup.exe`, không cần quyền quản trị), hoặc [**Releases mới nhất**](https://github.com/khoacrab-97/Addin_excel_NKTC/releases/latest) → `NhatKyThiCong_Setup_<phiên bản>.exe`. Add-in tự cập nhật mỗi lần mở; chỉ chạy lại bộ cài khi thông báo yêu cầu. Chi tiết: [`docs/HUONG_DAN_CAI_DAT.md`](docs/HUONG_DAN_CAI_DAT.md). Kiểm thử nghiệm thu: [`docs/KIEM_THU_NGHIEM_THU.md`](docs/KIEM_THU_NGHIEM_THU.md).
+Link gửi người dùng: <https://khoacrab-97.github.io/Addin_excel_NKTC/> → **Tải bộ cài (Windows)** (`NhatKyThiCong_Setup.exe`, không cần quyền quản trị), hoặc [**Releases mới nhất**](https://github.com/khoacrab-97/Addin_excel_NKTC/releases/latest) → `NhatKyThiCong_Setup_<phiên bản>.exe`. Add-in tự cập nhật mỗi lần mở; chỉ chạy lại bộ cài khi thông báo yêu cầu. Chi tiết: [`docs/HUONG_DAN_CAI_DAT.md`](docs/HUONG_DAN_CAI_DAT.md).
+
+**Bản VBA (từ 3.0.0, tab "Nhật ký TC" luôn hiện, không cần Internet khi dùng):** [Releases](https://github.com/khoacrab-97/Addin_excel_NKTC/releases) → `NhatKyTC_Setup_<phiên bản>.exe`. Hướng dẫn: [`docs/HUONG_DAN_CAI_DAT_VBA.md`](docs/HUONG_DAN_CAI_DAT_VBA.md); mã nguồn và quy trình build/phát hành: [`vba/README.md`](vba/README.md). Kiểm thử nghiệm thu: [`docs/KIEM_THU_NGHIEM_THU.md`](docs/KIEM_THU_NGHIEM_THU.md).
 
 ## Yêu cầu (môi trường phát triển)
 

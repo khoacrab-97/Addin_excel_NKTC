@@ -160,7 +160,8 @@ jobs:
           gh release create "v$VERSION" "NhatKyThiCong_Setup_$VERSION.exe" \
             --target "$GITHUB_SHA" --title "Nhật ký thi công $VERSION" --notes-file notes.md --latest
 
-  # GitHub Release v<phiên bản VBA> (3.x) kèm bộ cài NhatKyTC_Setup_<phiên bản>.exe của bản add-in VBA.
+  # GitHub Release vba-v<phiên bản VBA> kèm bộ cài NhatKyTC_Setup_<phiên bản>.exe của bản add-in VBA
+  # (tiền tố "vba-" tách khỏi tag v<phiên bản> của bản Office.js).
   # Chỉ tạo khi vba/release có bản dựng mới (phiên bản chưa có Release); kênh tự cập nhật đã lên Pages ở job deploy.
   release-vba:
     needs: [build, deploy]
@@ -181,8 +182,8 @@ jobs:
         run: |
           [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
           [[ "$SHA256" =~ ^[0-9a-f]{64}$ ]]
-          if gh release view "v$VERSION" > /dev/null 2>&1; then
-            echo "Release v$VERSION đã tồn tại — bỏ qua (dựng bản mới với APP_VERSION mới để phát hành)."
+          if gh release view "vba-v$VERSION" > /dev/null 2>&1; then
+            echo "Release vba-v$VERSION đã tồn tại — bỏ qua (dựng bản mới với APP_VERSION mới để phát hành)."
             exit 0
           fi
           EXE=$(find . -name "NhatKyTC_Setup_$VERSION.exe" | head -n 1)
@@ -217,5 +218,5 @@ jobs:
             echo
             echo "Đối chiếu trên Windows (PowerShell): \`Get-FileHash .\\NhatKyTC_Setup_$VERSION.exe -Algorithm SHA256\`"
           } >> notes.md
-          gh release create "v$VERSION" "$EXE" \
+          gh release create "vba-v$VERSION" "$EXE" \
             --target "$GITHUB_SHA" --title "Nhật ký TC $VERSION" --notes-file notes.md --latest

@@ -31,6 +31,9 @@ ACTUAL_SIZE=$(stat -c %s "$CORE")
 [ "$ACTUAL_SHA" = "$SHA" ] || fail "SHA-256 của lõi ($ACTUAL_SHA) khác version.txt — tải lại đủ 3 tệp của cùng một lần build"
 [ "$ACTUAL_SIZE" = "$SIZE" ] || fail "kích thước lõi ($ACTUAL_SIZE) khác version.txt"
 for f in "$LOADER" "$CORE"; do [ "$(head -c 2 "$f")" = "PK" ] || fail "$f không phải tệp .xlam (ZIP)"; done
+# Phiên bản phát hành phải đúng APP_VERSION của mã nguồn đã duyệt (tránh đăng nhầm bản dựng cũ/khác).
+SRC_VERSION=$(sed -n 's/^Public Const APP_VERSION As String = "\([0-9.]*\)".*/\1/p' vba/src/modNKTC_Ribbon.bas | tr -d '\r')
+[ "$SRC_VERSION" = "$VERSION" ] || fail "version.txt ($VERSION) khác APP_VERSION trong vba/src/modNKTC_Ribbon.bas ($SRC_VERSION) — build lại từ mã nguồn hiện tại"
 
 mkdir -p "$OUT/vba" "$INSTALLER_DIR"
 cp "$CORE" "$MANIFEST" "$OUT/vba/"

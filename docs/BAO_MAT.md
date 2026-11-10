@@ -7,7 +7,19 @@
 | run-1 | `3b1004e` (1.1.x), mức `quick` | **0 lỗ hổng**; 5/6 hạng mục "covered", 1 "blocked" (tình trạng CVE thư viện — cần tra cứu trực tuyến) |
 | run-2 (03/11/2026, trước bản chính thức 2.0.0) | `8d29a95` (1.8.0), mức `quick` | **0 lỗ hổng**; 8/9 hạng mục "covered" (cấu hình workbook, dữ liệu ô → ghi ô, khung viền nháy, tin nhắn/dữ liệu hộp thoại, metadata cập nhật & trang tĩnh, bộ cài NSIS, quyền manifest/Ribbon, CI/phát hành), 1 "blocked" (tra cứu CVE ngoại tuyến — bù bằng `npm audit --omit=dev` trong CI). Critic cuối: không thiếu hạng mục. Đây là lượt kiểm tra một phần (mức `quick`), không khẳng định đã phủ hết mọi lỗi. |
 
+| run-3 (10/11/2026, trước bản VBA 3.0.0) | `2ecee12` (VBA 3.0.0), mức `quick`, theo phạm vi `vba/`, bộ cài `NhatKyTC.nsi`, script và workflow phát hành | **0 lỗ hổng**; 9/9 hạng mục "covered" (tự cập nhật, bộ nạp thay lõi, `settings.txt`, bộ cài + khóa `OPEN` của Excel, workflow phát hành, ràng buộc bản dựng ↔ `version.txt`, cấu hình gán trong workbook nhận từ người khác, ghi ô, chọn vùng); 1 hạng mục ngoài phạm vi (phần Office.js 2.0.1). Critic cuối: không thiếu hạng mục. Lượt kiểm tra một phần, chỉ phân tích mã nguồn (không chạy VBA). Báo cáo: `~/security-audit-skill/Addin_excel_NKTC/run-3/REPORT.md`. |
+
 Biện pháp bổ sung ở bản 2.0.0 (từ ghi chú củng cố của run-2): mã **SHA-256** của bộ cài đăng trong mỗi GitHub Release và trên trang phát hành (`NhatKyThiCong_Setup.exe.sha256`); kiểm tra số phiên bản toàn chuỗi trong workflow phát hành; `actions/checkout` không lưu token (`persist-credentials: false`).
+
+Biện pháp của bản VBA 3.0.0 (và củng cố từ run-3):
+
+| Biện pháp | Vị trí |
+|---|---|
+| Tự cập nhật qua HTTPS (TLS 1.2+); `version.txt` kiểm tra chặt (phiên bản dạng số, tên tệp không có đường dẫn, SHA-256 64 hex); tệp tải về phải khớp kích thước, chữ ký ZIP, SHA-256; chỉ nhận phiên bản lớn hơn bản đang chạy | `vba/src/modNKTC_Update.bas` |
+| Bộ nạp kiểm lại SHA-256 trước khi thay lõi, sai thì xóa; giữ `.bak`, lỗi thì khôi phục | `vba/loader/modNKTC_Loader.bas` |
+| Cấu hình gán đọc từ workbook được kiểm tra (tên sheet, ô đơn, ≤ 500 dòng, cột trong phạm vi); chỉ ghi vào ô của chính workbook; văn bản ghi có tiền tố `'` | `vba/src/modNKTC_Config.bas`, `vba/src/modNKTC_FormCommands.bas`, `vba/src/modNKTC_Mapping.bas` |
+| Bộ cài chạy quyền người dùng, chỉ ghi `%LOCALAPPDATA%\NhatKyTC` và `HKCU`; xóa trạng thái cập nhật cũ khi cài | `installer/NhatKyTC.nsi` |
+| CI chỉ phát hành từ `main`; lõi phát hành phải khớp SHA-256/kích thước trong `version.txt` **và** phiên bản phải bằng `APP_VERSION` của mã nguồn (run-3); Release dùng tag riêng `vba-v<phiên bản>` (run-3); bộ cài thử chỉ tạo từ lần chạy push, không từ Pull Request (run-3) | `scripts/build-vba-release.sh`, `.github/workflows/*.yml` |
 
 | Biện pháp (phiên bản 1.1.1) | Vị trí |
 |---|---|
@@ -74,4 +86,5 @@ Hệ quả: mọi thay đổi vào `main` (cũng là phát hành) phải đi qua
 | `npm audit` toàn bộ (gồm công cụ phát triển) | Còn cảnh báo trong công cụ `office-addin-*` của Microsoft và `minimatch` (ESLint); không nằm trong bản phát hành. Theo dõi bản cập nhật. |
 | Bộ cài chưa ký số (code signing) | Windows SmartScreen cảnh báo khi chạy lần đầu (More info → Run anyway). Chỉ tải bộ cài từ trang phát hành chính thức và đối chiếu mã SHA-256 (từ 2.0.0). Có thể mua chứng chỉ ký mã nếu phát hành rộng. |
 | Ghi chú củng cố còn mở (run-2, không phải lỗ hổng) | Xác nhận ghi đè lưu trong workbook có thể được file nhận từ người khác đặt sẵn (chỉ áp dụng cho ô đích do chính file đó định nghĩa); origin `khoacrab-97.github.io` dùng chung cho các trang Pages của tài khoản (tên miền riêng sẽ tách biệt hơn); dọn dữ liệu tạm `localStorage nktc.dialog.*` còn sót khi Excel bị đóng đột ngột; `npm ci --ignore-scripts` cho job build; ghim phiên bản NSIS. |
+| Ghi chú củng cố còn mở (run-3, bản VBA — không phải lỗ hổng) | Cần build lại VBA nên để bản 3.0.x sau: kiểm tra trường `source` của cấu hình gán như ô đích; bỏ ngoại lệ `http://localhost` của `UpdateUrl` ở bản phát hành; yêu cầu `size` dương; khớp đúng giá trị `OPEN` khi đăng ký/gỡ; so phiên bản khi cài lại; thêm SHA-256 của bộ nạp vào `version.txt`; kiểm tra trước khi ghi (sheet khóa, chuỗi dài) khi chuyển ngày. Thiết lập GitHub: yêu cầu chủ repo duyệt thay đổi `vba/release/**`. Chi tiết: báo cáo run-3 mục 6. |
 | Kiểm tra lại định kỳ | Chạy skill `security-audit` (mức `standard`) khi có thay đổi lớn. |
