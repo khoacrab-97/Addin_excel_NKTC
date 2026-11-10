@@ -110,16 +110,18 @@ Private Function AskPdfPath(ByVal wb As Workbook, ByVal firstDay As Long, ByVal 
     AskPdfPath = CStr(answer)
 End Function
 
-' Đổi công thức của sheet tạm thành giá trị (dán giá trị lên chính nó: giữ nguyên kiểu dữ liệu, ô gộp, công thức mảng).
-Private Sub FreezeValues(ByVal sh As Worksheet)
+' Đổi công thức của bản sao (dst, trong workbook tạm) thành giá trị lấy từ sheet gốc (src, đã tính trong file nhật ký):
+' bản sao tính lại trong workbook tạm có thể ra kết quả khác (INDIRECT, CELL("filename")…). Dán giá trị giữ nguyên kiểu
+' dữ liệu, ô gộp, công thức mảng. Gọi ngay sau khi chép sheet.
+Private Sub FreezeValues(ByVal src As Worksheet, ByVal dst As Worksheet)
     Dim used As Range, anyFormula As Variant
-    Set used = sh.UsedRange
+    Set used = src.UsedRange
     anyFormula = used.HasFormula          ' True / False / Null (chỉ một phần có công thức)
     If Not IsNull(anyFormula) Then
         If Not anyFormula Then Exit Sub
     End If
     used.Copy
-    used.PasteSpecial Paste:=XL_PASTE_VALUES
+    dst.Range(used.Address).PasteSpecial Paste:=XL_PASTE_VALUES
     Application.CutCopyMode = False
 End Sub
 
@@ -129,7 +131,7 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
                      ByVal pickedCount As Long, ByVal printRange As Range, ByVal toPdf As Boolean, _
                      ByVal copies As Long, ByVal pdfPath As String, ByVal originalDay As Long)
     Dim tmp As Workbook, ws As Worksheet, sh As Worksheet, blank As Worksheet, area As String
-    Dim k As Long, dayNum As Long, message As String, style As VbMsgBoxStyle, changed As Boolean
+    Dim k As Long, dayNum As Long, message As String, style As VbMsgBoxStyle, changed As Boolean, shown As Boolean
     Dim oldScreen As Boolean, oldAlerts As Boolean, oldCancel As Long, result As String, kind As VbMsgBoxStyle
 
     oldScreen = Application.ScreenUpdating
@@ -149,7 +151,11 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
         dayNum = days(picked(k)).DayNum
         Application.StatusBar = "Nhật ký TC: chuẩn bị ngày " & (k + 1) & "/" & pickedCount & " (" & FormatDay(dayNum) & ")…"
         changed = True
-        If Not ShowDayOnForm(wb, dayNum, message, style) Then
+        ' Không cho Esc ngắt giữa chừng việc ghi biểu mẫu / lưu cấu hình (SaveConfig xóa rồi thêm lại CustomXMLPart).
+        Application.EnableCancelKey = XL_DISABLED
+        shown = ShowDayOnForm(wb, dayNum, message, style)
+        Application.EnableCancelKey = XL_ERROR_HANDLER
+        If Not shown Then
             If k = 0 Then changed = False   ' chưa ghi gì lên biểu mẫu
             result = "Đã dừng in: biểu mẫu chưa nhận được dữ liệu ngày " & FormatDay(dayNum) & "."
             If Len(message) > 0 Then result = result & vbLf & vbLf & message
@@ -161,9 +167,9 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
         ws.Copy After:=tmp.Sheets(tmp.Sheets.Count)
         Application.DisplayAlerts = oldAlerts
         Set sh = tmp.Sheets(tmp.Sheets.Count)
+        FreezeValues ws, sh
         sh.Visible = XL_SHEET_VISIBLE
         sh.Name = PrintSheetName(dayNum)
-        FreezeValues sh
         sh.PageSetup.PrintArea = area
     Next k
     Application.DisplayAlerts = False
@@ -184,6 +190,8 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
 Cleanup:
     On Error Resume Next
     Application.EnableCancelKey = XL_DISABLED
+    Application.CutCopyMode = False
+    Application.DisplayAlerts = False
     If Not tmp Is Nothing Then tmp.Close SaveChanges:=False
     Application.DisplayAlerts = oldAlerts
     If changed And originalDay > 0 Then
@@ -202,6 +210,7 @@ Cleanup:
     Exit Sub
 
 Fail:
+    Application.EnableCancelKey = XL_DISABLED
     If Err.Number = ERR_USER_BREAK Then
         result = "Đã dừng in theo yêu cầu."
         kind = vbInformation

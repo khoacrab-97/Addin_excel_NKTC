@@ -110,16 +110,18 @@ Private Function AskPdfPath(ByVal wb As Workbook, ByVal firstDay As Long, ByVal 
     AskPdfPath = CStr(answer)
 End Function
 
-' Doi cong thuc cua sheet tam thanh gia tri (dan gia tri len chinh no: giu nguyen kieu du lieu, o gop, cong thuc mang).
-Private Sub FreezeValues(ByVal sh As Worksheet)
+' Doi cong thuc cua ban sao (dst, trong workbook tam) thanh gia tri lay tu sheet goc (src, da tinh trong file nhat ky):
+' ban sao tinh lai trong workbook tam co the ra ket qua khac (INDIRECT, CELL("filename")?). Dan gia tri giu nguyen kieu
+' du lieu, o gop, cong thuc mang. Goi ngay sau khi chep sheet.
+Private Sub FreezeValues(ByVal src As Worksheet, ByVal dst As Worksheet)
     Dim used As Range, anyFormula As Variant
-    Set used = sh.UsedRange
+    Set used = src.UsedRange
     anyFormula = used.HasFormula          ' True / False / Null (chi mot phan co cong thuc)
     If Not IsNull(anyFormula) Then
         If Not anyFormula Then Exit Sub
     End If
     used.Copy
-    used.PasteSpecial Paste:=XL_PASTE_VALUES
+    dst.Range(used.Address).PasteSpecial Paste:=XL_PASTE_VALUES
     Application.CutCopyMode = False
 End Sub
 
@@ -129,7 +131,7 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
                      ByVal pickedCount As Long, ByVal printRange As Range, ByVal toPdf As Boolean, _
                      ByVal copies As Long, ByVal pdfPath As String, ByVal originalDay As Long)
     Dim tmp As Workbook, ws As Worksheet, sh As Worksheet, blank As Worksheet, area As String
-    Dim k As Long, dayNum As Long, message As String, style As VbMsgBoxStyle, changed As Boolean
+    Dim k As Long, dayNum As Long, message As String, style As VbMsgBoxStyle, changed As Boolean, shown As Boolean
     Dim oldScreen As Boolean, oldAlerts As Boolean, oldCancel As Long, result As String, kind As VbMsgBoxStyle
 
     oldScreen = Application.ScreenUpdating
@@ -149,7 +151,11 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
         dayNum = days(picked(k)).DayNum
         Application.StatusBar = U("Nh\u1eadt k\u00fd TC: chu\u1ea9n b\u1ecb ng\u00e0y ") & (k + 1) & "/" & pickedCount & " (" & FormatDay(dayNum) & U(")\u2026")
         changed = True
-        If Not ShowDayOnForm(wb, dayNum, message, style) Then
+        ' Khong cho Esc ngat giua chung viec ghi bieu mau / luu cau hinh (SaveConfig xoa roi them lai CustomXMLPart).
+        Application.EnableCancelKey = XL_DISABLED
+        shown = ShowDayOnForm(wb, dayNum, message, style)
+        Application.EnableCancelKey = XL_ERROR_HANDLER
+        If Not shown Then
             If k = 0 Then changed = False   ' chua ghi gi len bieu mau
             result = U("\u0110\u00e3 d\u1eebng in: bi\u1ec3u m\u1eabu ch\u01b0a nh\u1eadn \u0111\u01b0\u1ee3c d\u1eef li\u1ec7u ng\u00e0y ") & FormatDay(dayNum) & "."
             If Len(message) > 0 Then result = result & vbLf & vbLf & message
@@ -161,9 +167,9 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
         ws.Copy After:=tmp.Sheets(tmp.Sheets.Count)
         Application.DisplayAlerts = oldAlerts
         Set sh = tmp.Sheets(tmp.Sheets.Count)
+        FreezeValues ws, sh
         sh.Visible = XL_SHEET_VISIBLE
         sh.Name = PrintSheetName(dayNum)
-        FreezeValues sh
         sh.PageSetup.PrintArea = area
     Next k
     Application.DisplayAlerts = False
@@ -184,6 +190,8 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
 Cleanup:
     On Error Resume Next
     Application.EnableCancelKey = XL_DISABLED
+    Application.CutCopyMode = False
+    Application.DisplayAlerts = False
     If Not tmp Is Nothing Then tmp.Close SaveChanges:=False
     Application.DisplayAlerts = oldAlerts
     If changed And originalDay > 0 Then
@@ -202,6 +210,7 @@ Cleanup:
     Exit Sub
 
 Fail:
+    Application.EnableCancelKey = XL_DISABLED
     If Err.Number = ERR_USER_BREAK Then
         result = U("\u0110\u00e3 d\u1eebng in theo y\u00eau c\u1ea7u.")
         kind = vbInformation
