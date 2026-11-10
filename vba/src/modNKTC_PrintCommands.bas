@@ -4,11 +4,11 @@ Attribute VB_Name = "modNKTC_PrintCommands"
 ' In qua workbook tạm (không lưu): mỗi ngày -> hiển thị ngày trên biểu mẫu (cơ chế Chuyển ngày), chép sheet chứa
 ' vùng in sang workbook tạm và đổi công thức thành giá trị. Xong (kể cả lỗi / Esc): đóng workbook tạm, trả biểu mẫu
 ' về ngày đang hiển thị trước khi in — file người dùng không bị thêm sheet (CLAUDE.md §4).
+' Chỉ in đúng ngày đang hiển thị: in biểu mẫu như đang thấy (giữ nội dung sửa tay), không ghi lại từ nguồn.
 '==============================================================================
 Option Explicit
 
 ' Hằng số Excel (giá trị số).
-Private Const XL_WBAT_WORKSHEET As Long = -4167
 Private Const XL_TYPE_PDF As Long = 0
 Private Const XL_ERROR_HANDLER As Long = 2
 Private Const XL_DISABLED As Long = 0
@@ -30,6 +30,7 @@ Public Sub CmdInNhatKy()
     Dim message As String, dayNums() As Long, i As Long, initial As String, f As frmInNhatKy
     Dim accepted As Boolean, printRange As Range, printMode As Long, fromDay As Long, toDay As Long
     Dim toPdf As Boolean, copies As Long, picked() As Long, pickedCount As Long, pdfPath As String
+    Dim cfg As NKTC_Config, sourceSheet As String
 
     If ActiveWorkbook Is Nothing Then
         ShowInfo "Hãy mở một file Excel trước.", vbExclamation
@@ -44,6 +45,12 @@ Public Sub CmdInNhatKy()
         ShowInfo "Vùng nguồn không có ngày hợp lệ để in.", vbExclamation
         Exit Sub
     End If
+    If wb.ProtectStructure Then
+        ShowInfo "Workbook đang khóa cấu trúc (Protect Workbook) — không chép được sheet để in. Bỏ khóa rồi in lại.", _
+            vbExclamation
+        Exit Sub
+    End If
+    If LoadConfig(wb, cfg) Then sourceSheet = cfg.SourceSheet     ' sheet nguồn nhật ký: không cho chọn làm vùng in
     ReDim dayNums(0 To dayCount - 1)
     For i = 0 To dayCount - 1
         dayNums(i) = days(i).DayNum
@@ -51,7 +58,7 @@ Public Sub CmdInNhatKy()
     initial = DefaultPrintAreaText(formSheet)
 
     Set f = New frmInNhatKy
-    f.Init wb, initial, dayNums, dayCount, currentDay
+    f.Init wb, initial, dayNums, dayCount, currentDay, sourceSheet
     Do
         f.Show
         If Len(f.PickRequest) = 0 Then Exit Do
@@ -87,7 +94,8 @@ Public Sub CmdInNhatKy()
     RunPrint wb, days, picked, pickedCount, printRange, toPdf, copies, pdfPath, currentDay
 End Sub
 
-' Vùng in gợi ý: Print Area của sheet biểu mẫu; chưa đặt -> vùng có dữ liệu của sheet đó. Rỗng nếu không có sheet.
+' Vùng in gợi ý: Print Area của sheet biểu mẫu; chưa đặt hoặc gồm nhiều vùng -> vùng có dữ liệu của sheet đó.
+' Rỗng nếu không có sheet.
 Private Function DefaultPrintAreaText(ByVal formSheet As Worksheet) As String
     Dim area As String, r As Range
     If formSheet Is Nothing Then Exit Function
@@ -95,6 +103,9 @@ Private Function DefaultPrintAreaText(ByVal formSheet As Worksheet) As String
     area = formSheet.PageSetup.PrintArea
     If Len(area) > 0 Then Set r = formSheet.Range(area)
     On Error GoTo 0
+    If Not r Is Nothing Then
+        If r.Areas.Count > 1 Then Set r = Nothing
+    End If
     If r Is Nothing Then Set r = formSheet.UsedRange
     DefaultPrintAreaText = RefText(r)
 End Function
@@ -120,19 +131,27 @@ Private Sub FreezeValues(ByVal src As Worksheet, ByVal dst As Worksheet)
     If Not IsNull(anyFormula) Then
         If Not anyFormula Then Exit Sub
     End If
-    used.Copy
-    dst.Range(used.Address).PasteSpecial Paste:=XL_PASTE_VALUES
-    Application.CutCopyMode = False
+    If src.FilterMode Then
+        ' Sheet đang lọc (AutoFilter ẩn dòng): Copy chỉ chép dòng đang hiện -> ghi thẳng giá trị
+        ' (chấp nhận Excel đọc lại chữ, trường hợp hiếm).
+        dst.Range(used.Address).Value = used.Value
+    Else
+        used.Copy
+        dst.Range(used.Address).PasteSpecial Paste:=XL_PASTE_VALUES
+        Application.CutCopyMode = False
+    End If
 End Sub
 
 ' In các ngày picked(0..pickedCount-1) (chỉ số trong days()) qua workbook tạm rồi báo kết quả.
 ' originalDay: ngày đang hiển thị trước khi in (0 nếu chưa có) — được khôi phục cả khi lỗi hoặc bấm Esc.
+' Chỉ in một ngày và đó là ngày đang hiển thị -> in biểu mẫu như đang thấy (không ghi lại, không khôi phục).
 Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef picked() As Long, _
                      ByVal pickedCount As Long, ByVal printRange As Range, ByVal toPdf As Boolean, _
                      ByVal copies As Long, ByVal pdfPath As String, ByVal originalDay As Long)
-    Dim tmp As Workbook, ws As Worksheet, sh As Worksheet, blank As Worksheet, area As String
+    Dim tmp As Workbook, newBook As Workbook, ws As Worksheet, sh As Worksheet, area As String
     Dim k As Long, dayNum As Long, message As String, style As VbMsgBoxStyle, changed As Boolean, shown As Boolean
     Dim oldScreen As Boolean, oldAlerts As Boolean, oldCancel As Long, result As String, kind As VbMsgBoxStyle
+    Dim keepDisplayed As Boolean, lastShown As Long
 
     oldScreen = Application.ScreenUpdating
     oldAlerts = Application.DisplayAlerts
@@ -141,40 +160,66 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
     On Error GoTo Fail
     Set ws = printRange.Worksheet
     area = printRange.Address               ' $A$1:$I$70 (không có tên sheet)
+    If pickedCount = 1 And originalDay > 0 Then keepDisplayed = (days(picked(0)).DayNum = originalDay)
     Application.ScreenUpdating = False
     Application.EnableCancelKey = XL_ERROR_HANDLER      ' Esc -> lỗi 18 -> dừng, dọn dẹp
 
-    Set tmp = Workbooks.Add(XL_WBAT_WORKSHEET)
-    tmp.Date1904 = wb.Date1904
-    Set blank = tmp.Worksheets(1)
     For k = 0 To pickedCount - 1
         dayNum = days(picked(k)).DayNum
         Application.StatusBar = "Nhật ký TC: chuẩn bị ngày " & (k + 1) & "/" & pickedCount & " (" & FormatDay(dayNum) & ")…"
-        changed = True
-        ' Không cho Esc ngắt giữa chừng việc ghi biểu mẫu / lưu cấu hình (SaveConfig xóa rồi thêm lại CustomXMLPart).
-        Application.EnableCancelKey = XL_DISABLED
-        shown = ShowDayOnForm(wb, dayNum, message, style)
-        Application.EnableCancelKey = XL_ERROR_HANDLER
-        If Not shown Then
-            If k = 0 Then changed = False   ' chưa ghi gì lên biểu mẫu
-            result = "Đã dừng in: biểu mẫu chưa nhận được dữ liệu ngày " & FormatDay(dayNum) & "."
-            If Len(message) > 0 Then result = result & vbLf & vbLf & message
-            GoTo Cleanup
+        If Not keepDisplayed Then
+            changed = True
+            ' Không cho Esc ngắt giữa chừng việc ghi biểu mẫu / lưu cấu hình (SaveConfig xóa rồi thêm lại CustomXMLPart).
+            Application.EnableCancelKey = XL_DISABLED
+            shown = ShowDayOnForm(wb, dayNum, message, style)
+            Application.EnableCancelKey = XL_ERROR_HANDLER
+            If Not shown Then
+                If k = 0 Then changed = False   ' chưa ghi gì lên biểu mẫu
+                result = "Đã dừng in: biểu mẫu chưa nhận được dữ liệu ngày " & FormatDay(dayNum) & "."
+                If Len(message) > 0 Then result = result & vbLf & vbLf & message
+                GoTo Cleanup
+            End If
+            lastShown = dayNum
         End If
         Application.Calculate               ' mẫu in tự dựng có công thức tham chiếu ô biểu mẫu
         ' Tắt hộp hỏi trùng tên (Name) khi chép sheet nhiều lần vào cùng workbook tạm.
         Application.DisplayAlerts = False
-        ws.Copy After:=tmp.Sheets(tmp.Sheets.Count)
-        Application.DisplayAlerts = oldAlerts
+        If tmp Is Nothing Then
+            ' Ngày đầu: chép sheet ra workbook mới -> workbook tạm giữ theme / style của file nhật ký.
+            ws.Copy
+            Application.DisplayAlerts = oldAlerts
+            Set newBook = ActiveWorkbook
+            If newBook Is Nothing Then
+                result = "Không tạo được workbook tạm để in."
+                GoTo Cleanup
+            End If
+            If newBook Is wb Then
+                result = "Không tạo được workbook tạm để in."
+                GoTo Cleanup
+            End If
+            Set tmp = newBook
+            tmp.Date1904 = wb.Date1904
+        Else
+            ws.Copy After:=tmp.Sheets(tmp.Sheets.Count)
+            Application.DisplayAlerts = oldAlerts
+        End If
         Set sh = tmp.Sheets(tmp.Sheets.Count)
+        ' Chỉ bỏ khóa bản sao trong workbook tạm (sheet của người dùng giữ nguyên). Password:="" -> sheet có mật khẩu
+        ' báo lỗi thay vì hiện hộp hỏi mật khẩu.
+        If sh.ProtectContents Then
+            On Error Resume Next
+            sh.Unprotect Password:=""
+            On Error GoTo Fail
+            If sh.ProtectContents Then
+                result = "Sheet chứa vùng in đang khóa (Protect Sheet) có mật khẩu — bỏ khóa rồi in lại."
+                GoTo Cleanup
+            End If
+        End If
         FreezeValues ws, sh
         sh.Visible = XL_SHEET_VISIBLE
         sh.Name = PrintSheetName(dayNum)
         sh.PageSetup.PrintArea = area
     Next k
-    Application.DisplayAlerts = False
-    blank.Delete
-    Application.DisplayAlerts = oldAlerts
 
     If toPdf Then
         Application.StatusBar = "Nhật ký TC: đang xuất PDF…"
@@ -184,6 +229,9 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
         Application.StatusBar = "Nhật ký TC: đang gửi tới máy in…"
         tmp.PrintOut Copies:=copies, Collate:=True
         result = "Đã gửi " & pickedCount & " ngày tới máy in " & ActivePrinterName() & "."
+    End If
+    If originalDay = 0 And lastShown > 0 Then
+        result = result & vbLf & "Biểu mẫu đang hiển thị ngày " & FormatDay(lastShown) & "."
     End If
     kind = vbInformation
 

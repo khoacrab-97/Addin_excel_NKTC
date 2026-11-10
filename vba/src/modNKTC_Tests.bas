@@ -454,7 +454,7 @@ Private Sub TestPrint()
     Eq SelectPrintDays(days, 4, PRINT_CURRENT, 0, 0, 0, picked, n), _
         "Biểu mẫu chưa hiển thị ngày nào. Bấm một nút Chuyển ngày trước, hoặc chọn ngày cần in.", "chưa hiển thị ngày nào"
     Eq SelectPrintDays(days, 4, PRINT_CURRENT, 0, 0, D + 2, picked, n), _
-        "Biểu mẫu chưa hiển thị ngày nào. Bấm một nút Chuyển ngày trước, hoặc chọn ngày cần in.", "ngày đang hiển thị không còn trong danh sách"
+        "Ngày đang hiển thị 17/06/2026 không còn trong vùng nguồn.", "ngày đang hiển thị không còn trong danh sách"
 
     Eq SelectPrintDays(days, 0, PRINT_ALL, 0, 0, 0, picked, n), "Vùng nguồn không có ngày hợp lệ để in.", "không có ngày nào"
     Eq n, 0, "không có ngày nào: số ngày chọn"

@@ -14,6 +14,7 @@ Private mAccepted As Boolean
 Private mPick As String
 Private mLoading As Boolean
 Private mWorkbook As Workbook
+Private mSourceSheet As String
 Private mRange As Range
 Private mDayNums() As Long
 Private mDayCount As Long
@@ -25,16 +26,18 @@ Private mDaysOk As Boolean
 Private mCopies As Long
 
 ' wb: file đang in; rangeText: vùng in gợi ý; dayNums(0..dayCount-1): các ngày của vùng nguồn (tăng dần);
-' currentDay: ngày đang hiển thị trên biểu mẫu (0 nếu chưa có).
+' currentDay: ngày đang hiển thị trên biểu mẫu (0 nếu chưa có); sourceSheet: tên sheet nguồn nhật ký (không cho in).
 Public Sub Init(ByVal wb As Workbook, ByVal rangeText As String, ByRef dayNums() As Long, ByVal dayCount As Long, _
-                ByVal currentDay As Long)
-    Dim i As Long
+                ByVal currentDay As Long, ByVal sourceSheet As String)
+    Dim i As Long, currentListed As Boolean
     Set mWorkbook = wb
+    mSourceSheet = sourceSheet
     mDayCount = dayCount
     If dayCount > 0 Then
         ReDim mDayNums(0 To dayCount - 1)
         For i = 0 To dayCount - 1
             mDayNums(i) = dayNums(i)
+            If currentDay > 0 And dayNums(i) = currentDay Then currentListed = True
         Next i
     Else
         ReDim mDayNums(0 To 0)
@@ -56,7 +59,8 @@ Public Sub Init(ByVal wb As Workbook, ByVal rangeText As String, ByRef dayNums()
     End If
     txtVung.Text = rangeText
     txtSoBan.Text = "1"
-    If currentDay > 0 Then optHienTai.Value = True Else optTatCa.Value = True
+    ' Ngày đang hiển thị không còn trong vùng nguồn -> mặc định Tất cả.
+    If currentListed Then optHienTai.Value = True Else optTatCa.Value = True
     optMayIn.Value = True
     mLoading = False
 
@@ -130,6 +134,8 @@ Private Sub LoadRange()
         msg = "Vùng in phải là một vùng liên tục (chỉ chọn một vùng)."
     ElseIf Not r.Worksheet.Parent Is mWorkbook Then
         msg = "Vùng in phải nằm trong file đang in (" & mWorkbook.Name & ")."
+    ElseIf Len(mSourceSheet) > 0 And StrComp(r.Worksheet.Name, mSourceSheet, vbTextCompare) = 0 Then
+        msg = "Không in sheet nguồn nhật ký — chọn vùng trên biểu mẫu."
     End If
     If Len(msg) > 0 Then
         lblVungTT.ForeColor = COLOR_ERROR

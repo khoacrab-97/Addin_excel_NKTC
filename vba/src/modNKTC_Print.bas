@@ -30,7 +30,11 @@ Public Function SelectPrintDays(ByRef days() As NKTC_SourceDay, ByVal dayCount A
             idx = -1
             If currentDay > 0 Then idx = IndexOfDay(days, dayCount, currentDay)
             If idx = -1 Then
-                SelectPrintDays = "Biểu mẫu chưa hiển thị ngày nào. Bấm một nút Chuyển ngày trước, hoặc chọn ngày cần in."
+                If currentDay > 0 Then
+                    SelectPrintDays = "Ngày đang hiển thị " & FormatDay(currentDay) & " không còn trong vùng nguồn."
+                Else
+                    SelectPrintDays = "Biểu mẫu chưa hiển thị ngày nào. Bấm một nút Chuyển ngày trước, hoặc chọn ngày cần in."
+                End If
                 Exit Function
             End If
             picked(0) = idx: pickedCount = 1

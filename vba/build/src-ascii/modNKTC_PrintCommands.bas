@@ -4,11 +4,11 @@ Attribute VB_Name = "modNKTC_PrintCommands"
 ' In qua workbook tam (khong luu): moi ngay -> hien thi ngay tren bieu mau (co che Chuyen ngay), chep sheet chua
 ' vung in sang workbook tam va doi cong thuc thanh gia tri. Xong (ke ca loi / Esc): dong workbook tam, tra bieu mau
 ' ve ngay dang hien thi truoc khi in ? file nguoi dung khong bi them sheet (CLAUDE.md ?4).
+' Chi in dung ngay dang hien thi: in bieu mau nhu dang thay (giu noi dung sua tay), khong ghi lai tu nguon.
 '==============================================================================
 Option Explicit
 
 ' Hang so Excel (gia tri so).
-Private Const XL_WBAT_WORKSHEET As Long = -4167
 Private Const XL_TYPE_PDF As Long = 0
 Private Const XL_ERROR_HANDLER As Long = 2
 Private Const XL_DISABLED As Long = 0
@@ -30,6 +30,7 @@ Public Sub CmdInNhatKy()
     Dim message As String, dayNums() As Long, i As Long, initial As String, f As frmInNhatKy
     Dim accepted As Boolean, printRange As Range, printMode As Long, fromDay As Long, toDay As Long
     Dim toPdf As Boolean, copies As Long, picked() As Long, pickedCount As Long, pdfPath As String
+    Dim cfg As NKTC_Config, sourceSheet As String
 
     If ActiveWorkbook Is Nothing Then
         ShowInfo U("H\u00e3y m\u1edf m\u1ed9t file Excel tr\u01b0\u1edbc."), vbExclamation
@@ -44,6 +45,12 @@ Public Sub CmdInNhatKy()
         ShowInfo U("V\u00f9ng ngu\u1ed3n kh\u00f4ng c\u00f3 ng\u00e0y h\u1ee3p l\u1ec7 \u0111\u1ec3 in."), vbExclamation
         Exit Sub
     End If
+    If wb.ProtectStructure Then
+        ShowInfo U("Workbook \u0111ang kh\u00f3a c\u1ea5u tr\u00fac (Protect Workbook) \u2014 kh\u00f4ng ch\u00e9p \u0111\u01b0\u1ee3c sheet \u0111\u1ec3 in. B\u1ecf kh\u00f3a r\u1ed3i in l\u1ea1i."), _
+            vbExclamation
+        Exit Sub
+    End If
+    If LoadConfig(wb, cfg) Then sourceSheet = cfg.SourceSheet     ' sheet nguon nhat ky: khong cho chon lam vung in
     ReDim dayNums(0 To dayCount - 1)
     For i = 0 To dayCount - 1
         dayNums(i) = days(i).DayNum
@@ -51,7 +58,7 @@ Public Sub CmdInNhatKy()
     initial = DefaultPrintAreaText(formSheet)
 
     Set f = New frmInNhatKy
-    f.Init wb, initial, dayNums, dayCount, currentDay
+    f.Init wb, initial, dayNums, dayCount, currentDay, sourceSheet
     Do
         f.Show
         If Len(f.PickRequest) = 0 Then Exit Do
@@ -87,7 +94,8 @@ Public Sub CmdInNhatKy()
     RunPrint wb, days, picked, pickedCount, printRange, toPdf, copies, pdfPath, currentDay
 End Sub
 
-' Vung in goi y: Print Area cua sheet bieu mau; chua dat -> vung co du lieu cua sheet do. Rong neu khong co sheet.
+' Vung in goi y: Print Area cua sheet bieu mau; chua dat hoac gom nhieu vung -> vung co du lieu cua sheet do.
+' Rong neu khong co sheet.
 Private Function DefaultPrintAreaText(ByVal formSheet As Worksheet) As String
     Dim area As String, r As Range
     If formSheet Is Nothing Then Exit Function
@@ -95,6 +103,9 @@ Private Function DefaultPrintAreaText(ByVal formSheet As Worksheet) As String
     area = formSheet.PageSetup.PrintArea
     If Len(area) > 0 Then Set r = formSheet.Range(area)
     On Error GoTo 0
+    If Not r Is Nothing Then
+        If r.Areas.Count > 1 Then Set r = Nothing
+    End If
     If r Is Nothing Then Set r = formSheet.UsedRange
     DefaultPrintAreaText = RefText(r)
 End Function
@@ -120,19 +131,27 @@ Private Sub FreezeValues(ByVal src As Worksheet, ByVal dst As Worksheet)
     If Not IsNull(anyFormula) Then
         If Not anyFormula Then Exit Sub
     End If
-    used.Copy
-    dst.Range(used.Address).PasteSpecial Paste:=XL_PASTE_VALUES
-    Application.CutCopyMode = False
+    If src.FilterMode Then
+        ' Sheet dang loc (AutoFilter an dong): Copy chi chep dong dang hien -> ghi thang gia tri
+        ' (chap nhan Excel doc lai chu, truong hop hiem).
+        dst.Range(used.Address).Value = used.Value
+    Else
+        used.Copy
+        dst.Range(used.Address).PasteSpecial Paste:=XL_PASTE_VALUES
+        Application.CutCopyMode = False
+    End If
 End Sub
 
 ' In cac ngay picked(0..pickedCount-1) (chi so trong days()) qua workbook tam roi bao ket qua.
 ' originalDay: ngay dang hien thi truoc khi in (0 neu chua co) ? duoc khoi phuc ca khi loi hoac bam Esc.
+' Chi in mot ngay va do la ngay dang hien thi -> in bieu mau nhu dang thay (khong ghi lai, khong khoi phuc).
 Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef picked() As Long, _
                      ByVal pickedCount As Long, ByVal printRange As Range, ByVal toPdf As Boolean, _
                      ByVal copies As Long, ByVal pdfPath As String, ByVal originalDay As Long)
-    Dim tmp As Workbook, ws As Worksheet, sh As Worksheet, blank As Worksheet, area As String
+    Dim tmp As Workbook, newBook As Workbook, ws As Worksheet, sh As Worksheet, area As String
     Dim k As Long, dayNum As Long, message As String, style As VbMsgBoxStyle, changed As Boolean, shown As Boolean
     Dim oldScreen As Boolean, oldAlerts As Boolean, oldCancel As Long, result As String, kind As VbMsgBoxStyle
+    Dim keepDisplayed As Boolean, lastShown As Long
 
     oldScreen = Application.ScreenUpdating
     oldAlerts = Application.DisplayAlerts
@@ -141,40 +160,66 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
     On Error GoTo Fail
     Set ws = printRange.Worksheet
     area = printRange.Address               ' $A$1:$I$70 (khong co ten sheet)
+    If pickedCount = 1 And originalDay > 0 Then keepDisplayed = (days(picked(0)).DayNum = originalDay)
     Application.ScreenUpdating = False
     Application.EnableCancelKey = XL_ERROR_HANDLER      ' Esc -> loi 18 -> dung, don dep
 
-    Set tmp = Workbooks.Add(XL_WBAT_WORKSHEET)
-    tmp.Date1904 = wb.Date1904
-    Set blank = tmp.Worksheets(1)
     For k = 0 To pickedCount - 1
         dayNum = days(picked(k)).DayNum
         Application.StatusBar = U("Nh\u1eadt k\u00fd TC: chu\u1ea9n b\u1ecb ng\u00e0y ") & (k + 1) & "/" & pickedCount & " (" & FormatDay(dayNum) & U(")\u2026")
-        changed = True
-        ' Khong cho Esc ngat giua chung viec ghi bieu mau / luu cau hinh (SaveConfig xoa roi them lai CustomXMLPart).
-        Application.EnableCancelKey = XL_DISABLED
-        shown = ShowDayOnForm(wb, dayNum, message, style)
-        Application.EnableCancelKey = XL_ERROR_HANDLER
-        If Not shown Then
-            If k = 0 Then changed = False   ' chua ghi gi len bieu mau
-            result = U("\u0110\u00e3 d\u1eebng in: bi\u1ec3u m\u1eabu ch\u01b0a nh\u1eadn \u0111\u01b0\u1ee3c d\u1eef li\u1ec7u ng\u00e0y ") & FormatDay(dayNum) & "."
-            If Len(message) > 0 Then result = result & vbLf & vbLf & message
-            GoTo Cleanup
+        If Not keepDisplayed Then
+            changed = True
+            ' Khong cho Esc ngat giua chung viec ghi bieu mau / luu cau hinh (SaveConfig xoa roi them lai CustomXMLPart).
+            Application.EnableCancelKey = XL_DISABLED
+            shown = ShowDayOnForm(wb, dayNum, message, style)
+            Application.EnableCancelKey = XL_ERROR_HANDLER
+            If Not shown Then
+                If k = 0 Then changed = False   ' chua ghi gi len bieu mau
+                result = U("\u0110\u00e3 d\u1eebng in: bi\u1ec3u m\u1eabu ch\u01b0a nh\u1eadn \u0111\u01b0\u1ee3c d\u1eef li\u1ec7u ng\u00e0y ") & FormatDay(dayNum) & "."
+                If Len(message) > 0 Then result = result & vbLf & vbLf & message
+                GoTo Cleanup
+            End If
+            lastShown = dayNum
         End If
         Application.Calculate               ' mau in tu dung co cong thuc tham chieu o bieu mau
         ' Tat hop hoi trung ten (Name) khi chep sheet nhieu lan vao cung workbook tam.
         Application.DisplayAlerts = False
-        ws.Copy After:=tmp.Sheets(tmp.Sheets.Count)
-        Application.DisplayAlerts = oldAlerts
+        If tmp Is Nothing Then
+            ' Ngay dau: chep sheet ra workbook moi -> workbook tam giu theme / style cua file nhat ky.
+            ws.Copy
+            Application.DisplayAlerts = oldAlerts
+            Set newBook = ActiveWorkbook
+            If newBook Is Nothing Then
+                result = U("Kh\u00f4ng t\u1ea1o \u0111\u01b0\u1ee3c workbook t\u1ea1m \u0111\u1ec3 in.")
+                GoTo Cleanup
+            End If
+            If newBook Is wb Then
+                result = U("Kh\u00f4ng t\u1ea1o \u0111\u01b0\u1ee3c workbook t\u1ea1m \u0111\u1ec3 in.")
+                GoTo Cleanup
+            End If
+            Set tmp = newBook
+            tmp.Date1904 = wb.Date1904
+        Else
+            ws.Copy After:=tmp.Sheets(tmp.Sheets.Count)
+            Application.DisplayAlerts = oldAlerts
+        End If
         Set sh = tmp.Sheets(tmp.Sheets.Count)
+        ' Chi bo khoa ban sao trong workbook tam (sheet cua nguoi dung giu nguyen). Password:="" -> sheet co mat khau
+        ' bao loi thay vi hien hop hoi mat khau.
+        If sh.ProtectContents Then
+            On Error Resume Next
+            sh.Unprotect Password:=""
+            On Error GoTo Fail
+            If sh.ProtectContents Then
+                result = U("Sheet ch\u1ee9a v\u00f9ng in \u0111ang kh\u00f3a (Protect Sheet) c\u00f3 m\u1eadt kh\u1ea9u \u2014 b\u1ecf kh\u00f3a r\u1ed3i in l\u1ea1i.")
+                GoTo Cleanup
+            End If
+        End If
         FreezeValues ws, sh
         sh.Visible = XL_SHEET_VISIBLE
         sh.Name = PrintSheetName(dayNum)
         sh.PageSetup.PrintArea = area
     Next k
-    Application.DisplayAlerts = False
-    blank.Delete
-    Application.DisplayAlerts = oldAlerts
 
     If toPdf Then
         Application.StatusBar = U("Nh\u1eadt k\u00fd TC: \u0111ang xu\u1ea5t PDF\u2026")
@@ -184,6 +229,9 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
         Application.StatusBar = U("Nh\u1eadt k\u00fd TC: \u0111ang g\u1eedi t\u1edbi m\u00e1y in\u2026")
         tmp.PrintOut Copies:=copies, Collate:=True
         result = U("\u0110\u00e3 g\u1eedi ") & pickedCount & U(" ng\u00e0y t\u1edbi m\u00e1y in ") & ActivePrinterName() & "."
+    End If
+    If originalDay = 0 And lastShown > 0 Then
+        result = result & vbLf & U("Bi\u1ec3u m\u1eabu \u0111ang hi\u1ec3n th\u1ecb ng\u00e0y ") & FormatDay(lastShown) & "."
     End If
     kind = vbInformation
 

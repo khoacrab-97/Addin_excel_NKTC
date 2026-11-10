@@ -14,6 +14,7 @@ Private mAccepted As Boolean
 Private mPick As String
 Private mLoading As Boolean
 Private mWorkbook As Workbook
+Private mSourceSheet As String
 Private mRange As Range
 Private mDayNums() As Long
 Private mDayCount As Long
@@ -25,16 +26,18 @@ Private mDaysOk As Boolean
 Private mCopies As Long
 
 ' wb: file dang in; rangeText: vung in goi y; dayNums(0..dayCount-1): cac ngay cua vung nguon (tang dan);
-' currentDay: ngay dang hien thi tren bieu mau (0 neu chua co).
+' currentDay: ngay dang hien thi tren bieu mau (0 neu chua co); sourceSheet: ten sheet nguon nhat ky (khong cho in).
 Public Sub Init(ByVal wb As Workbook, ByVal rangeText As String, ByRef dayNums() As Long, ByVal dayCount As Long, _
-                ByVal currentDay As Long)
-    Dim i As Long
+                ByVal currentDay As Long, ByVal sourceSheet As String)
+    Dim i As Long, currentListed As Boolean
     Set mWorkbook = wb
+    mSourceSheet = sourceSheet
     mDayCount = dayCount
     If dayCount > 0 Then
         ReDim mDayNums(0 To dayCount - 1)
         For i = 0 To dayCount - 1
             mDayNums(i) = dayNums(i)
+            If currentDay > 0 And dayNums(i) = currentDay Then currentListed = True
         Next i
     Else
         ReDim mDayNums(0 To 0)
@@ -56,7 +59,8 @@ Public Sub Init(ByVal wb As Workbook, ByVal rangeText As String, ByRef dayNums()
     End If
     txtVung.Text = rangeText
     txtSoBan.Text = "1"
-    If currentDay > 0 Then optHienTai.Value = True Else optTatCa.Value = True
+    ' Ngay dang hien thi khong con trong vung nguon -> mac dinh Tat ca.
+    If currentListed Then optHienTai.Value = True Else optTatCa.Value = True
     optMayIn.Value = True
     mLoading = False
 
@@ -130,6 +134,8 @@ Private Sub LoadRange()
         msg = U("V\u00f9ng in ph\u1ea3i l\u00e0 m\u1ed9t v\u00f9ng li\u00ean t\u1ee5c (ch\u1ec9 ch\u1ecdn m\u1ed9t v\u00f9ng).")
     ElseIf Not r.Worksheet.Parent Is mWorkbook Then
         msg = U("V\u00f9ng in ph\u1ea3i n\u1eb1m trong file \u0111ang in (") & mWorkbook.Name & ")."
+    ElseIf Len(mSourceSheet) > 0 And StrComp(r.Worksheet.Name, mSourceSheet, vbTextCompare) = 0 Then
+        msg = U("Kh\u00f4ng in sheet ngu\u1ed3n nh\u1eadt k\u00fd \u2014 ch\u1ecdn v\u00f9ng tr\u00ean bi\u1ec3u m\u1eabu.")
     End If
     If Len(msg) > 0 Then
         lblVungTT.ForeColor = COLOR_ERROR

@@ -72,6 +72,9 @@ Chuẩn bị: file đã gán F2 (ví dụ `demo_f2.xlsx`), có máy in hoặc "M
 | P4 | Ngày in "tất cả" khi có hơn 50 ngày | Hỏi xác nhận; chọn đồng ý rồi bấm **Esc** giữa chừng → dừng, form trở về ngày cũ | |
 | P5 | Dựng biểu mẫu riêng trên sheet khác (có công thức tham chiếu form) → **Chọn** làm Vùng in | In đúng vùng đã chọn, công thức ra giá trị đúng của từng ngày | |
 | P6 | Sau khi in từ ngày cuối trở về: kiểm tra danh sách sheet và ngày đang hiển thị | Form về đúng ngày cũ; file không có thêm sheet nào (kể cả sheet tạm) | |
+| P7 | Sheet chứa vùng in có **Protect Sheet**: (a) không mật khẩu; (b) có mật khẩu → In nhật ký | (a) In được, sheet gốc vẫn khóa; (b) báo bằng tiếng Việt "Sheet chứa vùng in đang khóa (Protect Sheet) có mật khẩu…", không in, form về ngày cũ | |
+| P8 | So sánh file PDF xuất ra với **Print Preview** của file gốc | Giống nhau: số trang, phông chữ, độ rộng cột | |
+| P9 | Sửa tay một ô trên form → In nhật ký, Ngày in "đang hiển thị" | Bản in có nội dung đã sửa tay; form giữ nguyên nội dung sửa tay sau khi in | |
 
 ## D. Kết luận
 

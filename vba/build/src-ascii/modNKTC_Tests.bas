@@ -454,7 +454,7 @@ Private Sub TestPrint()
     Eq SelectPrintDays(days, 4, PRINT_CURRENT, 0, 0, 0, picked, n), _
         U("Bi\u1ec3u m\u1eabu ch\u01b0a hi\u1ec3n th\u1ecb ng\u00e0y n\u00e0o. B\u1ea5m m\u1ed9t n\u00fat Chuy\u1ec3n ng\u00e0y tr\u01b0\u1edbc, ho\u1eb7c ch\u1ecdn ng\u00e0y c\u1ea7n in."), U("ch\u01b0a hi\u1ec3n th\u1ecb ng\u00e0y n\u00e0o")
     Eq SelectPrintDays(days, 4, PRINT_CURRENT, 0, 0, D + 2, picked, n), _
-        U("Bi\u1ec3u m\u1eabu ch\u01b0a hi\u1ec3n th\u1ecb ng\u00e0y n\u00e0o. B\u1ea5m m\u1ed9t n\u00fat Chuy\u1ec3n ng\u00e0y tr\u01b0\u1edbc, ho\u1eb7c ch\u1ecdn ng\u00e0y c\u1ea7n in."), U("ng\u00e0y \u0111ang hi\u1ec3n th\u1ecb kh\u00f4ng c\u00f2n trong danh s\u00e1ch")
+        U("Ng\u00e0y \u0111ang hi\u1ec3n th\u1ecb 17/06/2026 kh\u00f4ng c\u00f2n trong v\u00f9ng ngu\u1ed3n."), U("ng\u00e0y \u0111ang hi\u1ec3n th\u1ecb kh\u00f4ng c\u00f2n trong danh s\u00e1ch")
 
     Eq SelectPrintDays(days, 0, PRINT_ALL, 0, 0, 0, picked, n), U("V\u00f9ng ngu\u1ed3n kh\u00f4ng c\u00f3 ng\u00e0y h\u1ee3p l\u1ec7 \u0111\u1ec3 in."), U("kh\u00f4ng c\u00f3 ng\u00e0y n\u00e0o")
     Eq n, 0, U("kh\u00f4ng c\u00f3 ng\u00e0y n\u00e0o: s\u1ed1 ng\u00e0y ch\u1ecdn")

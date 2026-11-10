@@ -30,7 +30,11 @@ Public Function SelectPrintDays(ByRef days() As NKTC_SourceDay, ByVal dayCount A
             idx = -1
             If currentDay > 0 Then idx = IndexOfDay(days, dayCount, currentDay)
             If idx = -1 Then
-                SelectPrintDays = U("Bi\u1ec3u m\u1eabu ch\u01b0a hi\u1ec3n th\u1ecb ng\u00e0y n\u00e0o. B\u1ea5m m\u1ed9t n\u00fat Chuy\u1ec3n ng\u00e0y tr\u01b0\u1edbc, ho\u1eb7c ch\u1ecdn ng\u00e0y c\u1ea7n in.")
+                If currentDay > 0 Then
+                    SelectPrintDays = U("Ng\u00e0y \u0111ang hi\u1ec3n th\u1ecb ") & FormatDay(currentDay) & U(" kh\u00f4ng c\u00f2n trong v\u00f9ng ngu\u1ed3n.")
+                Else
+                    SelectPrintDays = U("Bi\u1ec3u m\u1eabu ch\u01b0a hi\u1ec3n th\u1ecb ng\u00e0y n\u00e0o. B\u1ea5m m\u1ed9t n\u00fat Chuy\u1ec3n ng\u00e0y tr\u01b0\u1edbc, ho\u1eb7c ch\u1ecdn ng\u00e0y c\u1ea7n in.")
+                End If
                 Exit Function
             End If
             picked(0) = idx: pickedCount = 1
