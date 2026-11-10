@@ -32,6 +32,7 @@ Public Const CMD_FIRST As Long = 1
 Public Const CMD_PREV As Long = 2
 Public Const CMD_NEXT As Long = 3
 Public Const CMD_LAST As Long = 4
+Public Const CMD_GOTO As Long = 5      ' mot ngay cu the (targetDay)
 
 '------------------------------------------------------------------------------
 ' Khoa o dich
@@ -157,7 +158,7 @@ End Function
 
 ' Ngay can hien thi cho mot lenh chuyen ngay. currentDay = 0 neu chua hien thi ngay nao.
 Public Function ResolveDay(ByRef days() As NKTC_SourceDay, ByVal dayCount As Long, ByVal currentDay As Long, _
-                           ByVal command As Long) As NKTC_DayResolution
+                           ByVal command As Long, Optional ByVal targetDay As Long = 0) As NKTC_DayResolution
     Dim res As NKTC_DayResolution, idx As Long, nextIdx As Long
     If dayCount = 0 Then
         res.Message = U("V\u00f9ng ngu\u1ed3n kh\u00f4ng c\u00f3 ng\u00e0y h\u1ee3p l\u1ec7 \u1edf c\u1ed9t Ng\u00e0y \u0111\u00e3 ch\u1ecdn.")
@@ -166,6 +167,13 @@ Public Function ResolveDay(ByRef days() As NKTC_SourceDay, ByVal dayCount As Lon
     Select Case command
         Case CMD_FIRST: res.Ok = True: res.TargetIndex = 0
         Case CMD_LAST: res.Ok = True: res.TargetIndex = dayCount - 1
+        Case CMD_GOTO
+            idx = IndexOfDay(days, dayCount, targetDay)
+            If idx >= 0 Then
+                res.Ok = True: res.TargetIndex = idx
+            Else
+                res.Message = U("Kh\u00f4ng c\u00f3 ng\u00e0y ") & FormatDay(targetDay) & U(" trong v\u00f9ng ngu\u1ed3n.")
+            End If
         Case CMD_PREV, CMD_NEXT
             idx = -1
             If currentDay > 0 Then idx = IndexOfDay(days, dayCount, currentDay)

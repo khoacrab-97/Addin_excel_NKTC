@@ -96,35 +96,15 @@ End Sub
 ' Ghi du lieu mot ngay len form: doc lai nguon (moi nhat), khop cot theo ten tieu de, chon ngay, hoi truoc khi
 ' ghi de o co cong thuc/du lieu (mot lan cho moi bo o dich), roi ghi. True neu da ghi; message: thong bao kem theo.
 Public Function NavigateDay(ByVal wb As Workbook, ByVal command As Long, ByRef message As String, _
-                            ByRef style As VbMsgBoxStyle) As Boolean
-    Dim cfg As NKTC_Config, source As Range, msg As String, headers() As String, errors As Collection, v As Variant
-    Dim values As Variant, days() As NKTC_SourceDay, dayCount As Long, issues As Collection, res As NKTC_DayResolution
+                            ByRef style As VbMsgBoxStyle, Optional ByVal targetDay As Long = 0) As Boolean
+    Dim cfg As NKTC_Config, source As Range, values As Variant, days() As NKTC_SourceDay, dayCount As Long
+    Dim res As NKTC_DayResolution
     Dim targets() As Range, texts() As String, i As Long, key As String, risky As String, riskyCount As Long
     Dim raw As Variant, isPattern As Boolean, maps() As NKTC_Mapping, valueRow As Long, c0 As Long, ws As Worksheet
 
-    message = "": style = vbInformation
-    If Not LoadConfig(wb, cfg) Then message = NotAssignedMessage(): Exit Function
-    If cfg.MapCount = 0 Then message = NotAssignedMessage(): Exit Function
-    style = vbExclamation
-
-    Set source = ConfigSource(wb, cfg, msg)
-    If source Is Nothing Then message = msg: Exit Function
-    headers = HeaderTexts(source)
-    msg = RemapConfig(cfg, headers, UBound(headers) + 1, RefText(source))
-    If Len(msg) > 0 Then message = msg: Exit Function
+    If Not PrepareSourceDays(wb, cfg, source, values, days, dayCount, message, style) Then Exit Function
     GetMaps cfg, maps
-    Set errors = ValidateMappings(maps, cfg.MapCount, cfg.HeaderCount)
-    If errors.Count > 0 Then
-        For Each v In errors
-            message = message & v & " "
-        Next v
-        message = message & U("B\u1ea5m ""Xu\u1ea5t v\u00e0o form"" \u0111\u1ec3 g\u00e1n c\u1ed9t.")
-        Exit Function
-    End If
-
-    values = RangeGrid(source)
-    BuildDayIndex values, cfg.DateColumn, source.Row, wb.Date1904, days, dayCount, issues
-    res = ResolveDay(days, dayCount, cfg.CurrentDay, command)
+    res = ResolveDay(days, dayCount, cfg.CurrentDay, command, targetDay)
     If Not res.Ok Then
         message = res.Message
         If res.IsInfo Then style = vbInformation
@@ -185,6 +165,60 @@ Public Function NavigateDay(ByVal wb As Workbook, ByVal command As Long, ByRef m
     SaveConfig wb, cfg
     message = res.Notice
     NavigateDay = True
+End Function
+
+' Dung chung cho NavigateDay va LoadPrintDays: doc cau hinh, vung nguon (khop lai cot theo tieu de), kiem tra anh xa,
+' doc gia tri moi nhat va dung danh sach ngay. False -> message/style cho biet ly do.
+Private Function PrepareSourceDays(ByVal wb As Workbook, ByRef cfg As NKTC_Config, ByRef source As Range, _
+                                   ByRef values As Variant, ByRef days() As NKTC_SourceDay, ByRef dayCount As Long, _
+                                   ByRef message As String, ByRef style As VbMsgBoxStyle) As Boolean
+    Dim msg As String, headers() As String, errors As Collection, v As Variant, maps() As NKTC_Mapping
+    Dim issues As Collection
+
+    message = "": style = vbInformation
+    If Not LoadConfig(wb, cfg) Then message = NotAssignedMessage(): Exit Function
+    If cfg.MapCount = 0 Then message = NotAssignedMessage(): Exit Function
+    style = vbExclamation
+
+    Set source = ConfigSource(wb, cfg, msg)
+    If source Is Nothing Then message = msg: Exit Function
+    headers = HeaderTexts(source)
+    msg = RemapConfig(cfg, headers, UBound(headers) + 1, RefText(source))
+    If Len(msg) > 0 Then message = msg: Exit Function
+    GetMaps cfg, maps
+    Set errors = ValidateMappings(maps, cfg.MapCount, cfg.HeaderCount)
+    If errors.Count > 0 Then
+        For Each v In errors
+            message = message & v & " "
+        Next v
+        message = message & U("B\u1ea5m ""Xu\u1ea5t v\u00e0o form"" \u0111\u1ec3 g\u00e1n c\u1ed9t.")
+        Exit Function
+    End If
+
+    values = RangeGrid(source)
+    BuildDayIndex values, cfg.DateColumn, source.Row, wb.Date1904, days, dayCount, issues
+    PrepareSourceDays = True
+End Function
+
+' Hien thi mot ngay cu the tren form (cung co che, cung hoi xac nhan ghi de nhu NavigateDay).
+Public Function ShowDayOnForm(ByVal wb As Workbook, ByVal dayNum As Long, ByRef message As String, _
+                              ByRef style As VbMsgBoxStyle) As Boolean
+    ShowDayOnForm = NavigateDay(wb, CMD_GOTO, message, style, dayNum)
+End Function
+
+' Danh sach ngay cua vung nguon cho chuc nang In nhat ky. currentDay: ngay dang hien thi (0 neu chua);
+' formSheet: sheet cua o dich dau tien (Nothing neu sheet khong con).
+Public Function LoadPrintDays(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef dayCount As Long, _
+                              ByRef currentDay As Long, ByRef formSheet As Worksheet, ByRef message As String) As Boolean
+    Dim cfg As NKTC_Config, source As Range, values As Variant, style As VbMsgBoxStyle, maps() As NKTC_Mapping
+
+    Set formSheet = Nothing
+    currentDay = 0
+    If Not PrepareSourceDays(wb, cfg, source, values, days, dayCount, message, style) Then Exit Function
+    GetMaps cfg, maps
+    currentDay = cfg.CurrentDay
+    Set formSheet = FindSheet(wb, maps(0).SheetName)
+    LoadPrintDays = True
 End Function
 
 '------------------------------------------------------------------------------
