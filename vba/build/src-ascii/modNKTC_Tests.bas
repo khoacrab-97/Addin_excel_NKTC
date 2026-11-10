@@ -46,7 +46,7 @@ Public Function NKTC_RunTests() As String
     Dim names As Variant, k As Long
     mPass = 0: mFail = 0: mLog = ""
     names = Array("TestText", "TestDates", "TestDatePattern", "TestColumns", "TestDailyLog", "TestSheetName", _
-        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers", "TestReference", "TestFormRows", "TestConfig", "TestUpdate")
+        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers", "TestReference", "TestFormRows", "TestConfig", "TestUpdate", "TestPrint")
     For k = 0 To UBound(names)
         RunOne k, CStr(names(k))
     Next k
@@ -79,6 +79,7 @@ Private Sub RunOne(ByVal idx As Long, ByVal testName As String)
         Case 13: TestFormRows
         Case 14: TestConfig
         Case 15: TestUpdate
+        Case 16: TestPrint
     End Select
     Exit Sub
 Loi:
@@ -411,4 +412,57 @@ Private Sub TestUpdate()
     b = StrConv("abc", vbFromUnicode)
     Eq Sha256Hex(b), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", U("SHA-256 (CryptoAPI) m\u1eabu chu\u1ea9n ""abc""")
     Check IsSha256(Sha256Hex(b)) And Not IsSha256(String(63, "a")) And Not IsSha256(String(63, "a") & "g"), U("ki\u1ec3m tra d\u1ea1ng SHA-256")
+End Sub
+
+Private Sub TestPrint()
+    Dim days(0 To 3) As NKTC_SourceDay, picked() As Long, n As Long, msg As String, i As Long
+    Const D As Long = 46188
+    days(0).DayNum = D: days(0).ValueRow = 2: days(0).RowNumber = 2
+    days(1).DayNum = D + 1: days(1).ValueRow = 3: days(1).RowNumber = 3
+    days(2).DayNum = D + 3: days(2).ValueRow = 4: days(2).RowNumber = 4
+    days(3).DayNum = D + 7: days(3).ValueRow = 5: days(3).RowNumber = 5
+
+    msg = SelectPrintDays(days, 4, PRINT_ALL, 0, 0, 0, picked, n)
+    Check msg = "" And n = 4, U("in t\u1ea5t c\u1ea3: 4 ng\u00e0y")
+    Check picked(0) = 0 And picked(3) = 3, U("in t\u1ea5t c\u1ea3: ch\u1ec9 s\u1ed1 t\u0103ng d\u1ea7n")
+
+    msg = SelectPrintDays(days, 4, PRINT_ONE, D + 3, 0, 0, picked, n)
+    Check msg = "" And n = 1, U("m\u1ed9t ng\u00e0y c\u00f3 trong danh s\u00e1ch")
+    Eq picked(0), 2, U("m\u1ed9t ng\u00e0y: ch\u1ec9 s\u1ed1")
+    msg = SelectPrintDays(days, 4, PRINT_ONE, D + 2, 0, 0, picked, n)
+    Eq msg, U("Kh\u00f4ng c\u00f3 ng\u00e0y 17/06/2026 trong v\u00f9ng ngu\u1ed3n."), U("m\u1ed9t ng\u00e0y kh\u00f4ng c\u00f3")
+    Eq n, 0, U("m\u1ed9t ng\u00e0y kh\u00f4ng c\u00f3: s\u1ed1 ng\u00e0y ch\u1ecdn")
+    Eq SelectPrintDays(days, 4, PRINT_ONE, 0, 0, 0, picked, n), U("Nh\u1eadp ng\u00e0y c\u1ea7n in (dd/mm/yyyy)."), U("m\u1ed9t ng\u00e0y: ch\u01b0a nh\u1eadp")
+
+    msg = SelectPrintDays(days, 4, PRINT_RANGE, D + 1, D + 3, 0, picked, n)
+    Check msg = "" And n = 2, U("kho\u1ea3ng ng\u00e0y th\u01b0\u1eddng")
+    Check picked(0) = 1 And picked(1) = 2, U("kho\u1ea3ng ng\u00e0y: ch\u1ec9 s\u1ed1")
+    msg = SelectPrintDays(days, 4, PRINT_RANGE, D + 7, D, 0, picked, n)
+    Check msg = "" And n = 4, U("kho\u1ea3ng \u0111\u1ea3o ng\u01b0\u1ee3c (from > to)")
+    msg = SelectPrintDays(days, 4, PRINT_RANGE, D + 4, D + 6, 0, picked, n)
+    Eq msg, U("Kh\u00f4ng c\u00f3 ng\u00e0y n\u00e0o t\u1eeb 19/06/2026 \u0111\u1ebfn 21/06/2026 trong v\u00f9ng ngu\u1ed3n."), U("kho\u1ea3ng r\u1ed7ng")
+    Eq n, 0, U("kho\u1ea3ng r\u1ed7ng: s\u1ed1 ng\u00e0y ch\u1ecdn")
+    Eq SelectPrintDays(days, 4, PRINT_RANGE, D, 0, 0, picked, n), U("Nh\u1eadp \u0111\u1ee7 T\u1eeb ng\u00e0y v\u00e0 \u0110\u1ebfn ng\u00e0y (dd/mm/yyyy)."), U("kho\u1ea3ng thi\u1ebfu \u0110\u1ebfn ng\u00e0y")
+    Eq SelectPrintDays(days, 4, PRINT_RANGE, 0, D, 0, picked, n), U("Nh\u1eadp \u0111\u1ee7 T\u1eeb ng\u00e0y v\u00e0 \u0110\u1ebfn ng\u00e0y (dd/mm/yyyy)."), U("kho\u1ea3ng thi\u1ebfu T\u1eeb ng\u00e0y")
+
+    msg = SelectPrintDays(days, 4, PRINT_CURRENT, 0, 0, D + 7, picked, n)
+    Check msg = "" And n = 1, U("ng\u00e0y \u0111ang hi\u1ec3n th\u1ecb c\u00f3")
+    Eq picked(0), 3, U("ng\u00e0y \u0111ang hi\u1ec3n th\u1ecb: ch\u1ec9 s\u1ed1")
+    Eq SelectPrintDays(days, 4, PRINT_CURRENT, 0, 0, 0, picked, n), _
+        U("Bi\u1ec3u m\u1eabu ch\u01b0a hi\u1ec3n th\u1ecb ng\u00e0y n\u00e0o. B\u1ea5m m\u1ed9t n\u00fat Chuy\u1ec3n ng\u00e0y tr\u01b0\u1edbc, ho\u1eb7c ch\u1ecdn ng\u00e0y c\u1ea7n in."), U("ch\u01b0a hi\u1ec3n th\u1ecb ng\u00e0y n\u00e0o")
+    Eq SelectPrintDays(days, 4, PRINT_CURRENT, 0, 0, D + 2, picked, n), _
+        U("Bi\u1ec3u m\u1eabu ch\u01b0a hi\u1ec3n th\u1ecb ng\u00e0y n\u00e0o. B\u1ea5m m\u1ed9t n\u00fat Chuy\u1ec3n ng\u00e0y tr\u01b0\u1edbc, ho\u1eb7c ch\u1ecdn ng\u00e0y c\u1ea7n in."), U("ng\u00e0y \u0111ang hi\u1ec3n th\u1ecb kh\u00f4ng c\u00f2n trong danh s\u00e1ch")
+
+    Eq SelectPrintDays(days, 0, PRINT_ALL, 0, 0, 0, picked, n), U("V\u00f9ng ngu\u1ed3n kh\u00f4ng c\u00f3 ng\u00e0y h\u1ee3p l\u1ec7 \u0111\u1ec3 in."), U("kh\u00f4ng c\u00f3 ng\u00e0y n\u00e0o")
+    Eq n, 0, U("kh\u00f4ng c\u00f3 ng\u00e0y n\u00e0o: s\u1ed1 ng\u00e0y ch\u1ecdn")
+    Eq SelectPrintDays(days, 4, 9, 0, 0, 0, picked, n), U("Ch\u1ebf \u0111\u1ed9 in kh\u00f4ng h\u1ee3p l\u1ec7."), U("ch\u1ebf \u0111\u1ed9 sai (9)")
+    Eq SelectPrintDays(days, 4, 0, 0, 0, 0, picked, n), U("Ch\u1ebf \u0111\u1ed9 in kh\u00f4ng h\u1ee3p l\u1ec7."), U("ch\u1ebf \u0111\u1ed9 sai (0)")
+
+    Eq PrintPdfFileName(D, D), "NKTC_15-06-2026.pdf", U("t\u00ean PDF m\u1ed9t ng\u00e0y")
+    Eq PrintPdfFileName(D, D + 199), "NKTC_15-06-2026_den_31-12-2026.pdf", U("t\u00ean PDF nhi\u1ec1u ng\u00e0y")
+    Eq PrintSheetName(D), "Ngay_15-06-2026", U("t\u00ean sheet t\u1ea1m")
+    Check Len(PrintSheetName(D)) <= 31, U("t\u00ean sheet t\u1ea1m <= 31 k\u00fd t\u1ef1")
+    For i = 1 To Len(PrintSheetName(D))
+        Check InStr("\/?*[]:", Mid$(PrintSheetName(D), i, 1)) = 0, U("t\u00ean sheet t\u1ea1m kh\u00f4ng c\u00f3 k\u00fd t\u1ef1 c\u1ea5m")
+    Next i
 End Sub
