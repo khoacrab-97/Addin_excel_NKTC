@@ -5,7 +5,7 @@
 
 ## 1. Mục tiêu sản phẩm
 
-Excel Add-in (Office.js) hỗ trợ lập **Nhật ký thi công (NKTC)** từ danh sách công việc có thời gian thực hiện, gồm:
+Excel Add-in (VBA, `.xlam`, tên tab **Nhật ký TC**) hỗ trợ lập **Nhật ký thi công (NKTC)** từ danh sách công việc có thời gian thực hiện, gồm:
 
 | Mã | Nhóm chức năng | Mô tả ngắn |
 |---|---|---|
@@ -36,47 +36,34 @@ Danh sách nhật ký dạng bảng (có dòng tiêu đề), mỗi dòng là m�
 
 ## 4. Kiến trúc kỹ thuật
 
+Từ 3.0.0 add-in là **VBA (`.xlam`)**; bản Office.js (1.x – 2.0.1) đã gỡ khỏi repo ngày 10/11/2026 (ROADMAP Phase 13, mã cũ còn trong lịch sử Git, tag `v2.0.1`).
+
 | Thành phần | Lựa chọn | Ghi chú |
 |---|---|---|
-| Nền tảng | Office Add-in (TaskPaneApp manifest XML) + **add-in commands**: tab Ribbon riêng **Nhật ký thi công**, nút chạy hàm trong function file (`ExecuteFunction`), hộp thoại Office Dialog API 1.1 | Từ 1.3.0 không còn khung làm việc bên phải (BUSINESS_SPEC R0.1–R0.3). |
-| Phiên bản Excel tối thiểu | **Microsoft 365 hoặc Excel 2016 trở về sau** (Q6) | |
-| Excel API | Office.js, requirement set **ExcelApi 1.1** làm mức tối thiểu | Excel 2016 bản mua một lần chỉ hỗ trợ ExcelApi 1.1. API cao hơn chỉ được dùng kèm kiểm tra `isSetSupported` và có phương án thay thế. |
-| Trình duyệt nhúng | Phải chạy được trên **Internet Explorer 11** | Excel 2016/2019 bản mua một lần dùng IE11 để hiển thị add-in. |
-| UI | **React 17** + **Fluent UI React v8** + TypeScript (strict) | React 18 và Fluent UI v9 không hỗ trợ IE11. |
-| Build | Webpack 5 + Babel (`preset-env`, core-js polyfill), output **ES5** | `tsc --noEmit` dùng để kiểm tra kiểu. Môi trường dev: Node.js ≥ 22.12. |
-| Hosting | GitHub Pages: `https://khoacrab-97.github.io/Addin_excel_NKTC/` (Q5) | Build production tự thay URL `localhost` trong manifest. |
-| Phân phối | Bộ cài Windows (NSIS, per-user, đăng ký `HKCU\…\Wef\Developer` + workbook kích hoạt) qua GitHub Releases / Pages; Shared Folder Catalog dự phòng (Q5) | |
-| Test | Vitest (`src/**/*.test.ts`, môi trường Node) | Bắt buộc cho business logic tầng `core`. |
-| Lint | ESLint (typescript-eslint `strictTypeChecked`, react-hooks) + Prettier | ESLint chặn tầng `core` dùng `Office`/`Excel` hoặc import `excel`/`taskpane`. |
+| Nền tảng | Excel add-in VBA: bộ nạp `NhatKyThiCong.xlam` + lõi `NhatKyThiCong_Core.xlam`; tab Ribbon **Nhật ký TC** (customUI14) luôn hiện | Không cần Internet khi dùng. |
+| Phiên bản Excel tối thiểu | Excel 2016 / 2019 / 2021 / 2024 / Microsoft 365 trên Windows, 32 và 64-bit (`#If VBA7`) | |
+| Hộp thoại | UserForm sinh khi build từ `vba/forms/*.json` + `.frmcode`; chọn vùng bằng `Application.InputBox(Type:=8)` | Không dùng ActiveX/RefEdit (Microsoft 365 chặn). Thông báo/tiêu đề tiếng Việt qua `MessageBoxW` / `DefWindowProcW`. |
+| Mã nguồn | `vba/src`, `vba/loader` viết UTF-8; `vba/tools/vba_ascii.py` đổi sang ASCII (`U("\uXXXX")`) trong `vba/build/*-ascii` | CI kiểm tra mã ASCII khớp nguồn. |
+| Build | `vba/build/build.cmd` trên Windows có Excel (COM): nạp mã, tạo UserForm, chép biểu mẫu, biên dịch, gắn Ribbon, kiểm thử, ghi `version.txt` | Cần bật "Trust access to the VBA project object model". |
+| Test | `modNKTC_Tests.NKTC_RunTests` (chạy khi build và trong **Phiên bản**); unit test Python cho công cụ chuyển mã | Bắt buộc cho phần lõi. |
+| Cấu hình gán (R2.8) | CustomXMLPart `urn:nhatkytc:config:1` trong workbook | |
+| Cập nhật | Lõi tự kiểm tra `version.txt` trên GitHub Pages `/vba/` mỗi ngày; kiểm tra kích thước, ZIP, SHA-256; bộ nạp thay lõi khi mở Excel | |
+| Phân phối | Bộ cài NSIS `NhatKyTC_Setup_<phiên bản>.exe` (per-user, khóa `OPEN` của Excel) qua GitHub Release `vba-v<phiên bản>` | |
 
-### Hệ quả của mức tối thiểu ExcelApi 1.1
-
-| Nhu cầu | API mới (không dùng trực tiếp) | Cách làm với 1.1 |
-|---|---|---|
-| Kiểm tra sheet tồn tại | `getItemOrNullObject` (1.4) | Load `worksheets.items/name` rồi so khớp tên. |
-| Xác định ô đầu của vùng merge (R2.2) | `getMergedAreasOrNullObject` (1.13) | Người dùng chọn ô → lấy `getSelectedRange().getCell(0, 0)`. |
-| Lưu cấu hình mapping (R2.8) | — | `Office.context.document.settings` (Common API). |
-| Gọi mạng (kiểm tra phiên bản) | `fetch` (không có trên IE11) | `XMLHttpRequest` hoặc polyfill. |
-
-### Phân tầng mã nguồn
+### Phân tầng mã nguồn (`vba/src`)
 
 ```
-src/
-  core/        Business logic thuần TypeScript, KHÔNG phụ thuộc Office.js (unit test được)
-    dates/       Chuyển đổi Excel serial date ↔ ngày, đọc text ngày
-    text/        Chuẩn hóa text tiếng Việt (bỏ dấu, không dùng String.normalize vì IE11)
-    address/     Tiện ích thuần về địa chỉ Excel (chữ cột, địa chỉ ô, bỏ tên sheet)
-    dailyLog/    F1: nhận diện cột, kiểm tra dòng, trải công việc theo ngày, tên sheet
-    mapping/     F2: mapping cột → ô, cột Ngày, danh sách ngày điều hướng, kế hoạch ghi, cấu hình lưu
-    version/     F3: so sánh phiên bản, đọc/kiểm tra version.json
-  excel/       Adapter Office.js: đọc/ghi range, tạo sheet, lưu settings
-  commands/    Function file: lệnh của các nút Ribbon (F1, F2, F3), mở hộp thoại, điều phối excel + core
-  dialog/      Hộp thoại React (chọn cột, gán cột, danh sách gán, đến ngày, xác nhận, thông báo, hướng dẫn, phiên bản)
-  taskpane/    Trang chào mừng (chỉ hiện khi kích hoạt add-in)
-  version/     Phiên bản đang chạy, tải version.json (XMLHttpRequest), đường dẫn tài liệu/file mẫu
+modNKTC_Text, modNKTC_Date, modNKTC_DailyLog, modNKTC_Mapping, modNKTC_Config
+             Phần lõi: không gọi đối tượng Excel (dữ liệu ô dạng Range.Value2), có kiểm thử
+modNKTC_Excel        Lớp Excel: đọc vùng, tạo sheet/bảng
+modNKTC_Commands, modNKTC_FormCommands
+             Lệnh của các nút Ribbon (F1, F2, F4), lưu/đọc cấu hình
+modNKTC_UI, modNKTC_Ribbon, modNKTC_Update, frm*.frmcode
+             Thông báo, Ribbon, tự cập nhật, hộp thoại
+vba/loader/modNKTC_Loader   Bộ nạp: thay lõi đã tải (kiểm lại SHA-256) rồi mở lõi
 ```
 
-Nguyên tắc: `commands` → gọi `excel` (I/O) và `core` (xử lý); `dialog` chỉ hiển thị/thu thập lựa chọn, giao tiếp với `commands` theo `core/dialog/protocol`; `core` không import `excel` hay `Office`.
+Nguyên tắc: lệnh gọi lớp Excel (I/O) và phần lõi (xử lý); phần lõi không gọi đối tượng Excel.
 
 ## 5. Ràng buộc an toàn dữ liệu Excel (tóm tắt từ `CLAUDE.md` §4)
 
