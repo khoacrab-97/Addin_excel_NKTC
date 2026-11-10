@@ -1,4 +1,4 @@
-version=3.0.0
+version=3.1.0
 file=NhatKyThiCong_Core.xlam
-sha256=3e19c041707e217eb186ecfdb3acc4fd18a036f07542b34374ee2217c3c2cc06
-size=330580
+sha256=e237b7885f5f61587b9aff0599cdc5918a7fe1efa75167b4866b980674f652b6
+size=393465
