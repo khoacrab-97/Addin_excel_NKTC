@@ -68,7 +68,7 @@ Chuẩn bị: file đã gán F2 (ví dụ `demo_f2.xlsx`), có máy in hoặc "M
 |---|---|---|---|
 | P1 | **In nhật ký** → Ngày in "đang hiển thị", Đầu ra "Máy in" (1 bản) | Máy in nhận đúng biểu mẫu của ngày đang hiển thị; Vùng in mặc định = Print Area (hoặc UsedRange) của sheet form | |
 | P2 | Ngày in "một ngày" (chọn 1 ngày) → Đầu ra PDF | Hỏi nơi lưu; file `NKTC_dd-mm-yyyy.pdf` đúng ngày, nội dung đúng | |
-| P3 | Ngày in "khoảng ngày" 5 ngày → PDF | File `NKTC_<từ>_den_<đến>.pdf` có đúng 5 trang/ngày theo thiết lập trang (ví dụ 2 trang/ngày = 10 trang), đúng thứ tự ngày | |
+| P3 | Ngày in "khoảng ngày" 5 ngày → PDF | File `NKTC_<từ>_den_<đến>.pdf` gồm đúng 5 ngày theo thứ tự ngày; mỗi ngày đủ số trang theo thiết lập trang (ví dụ 2 trang/ngày → 10 trang) | |
 | P4 | Ngày in "tất cả" khi có hơn 50 ngày | Hỏi xác nhận; chọn đồng ý rồi bấm **Esc** giữa chừng → dừng, form trở về ngày cũ | |
 | P5 | Dựng biểu mẫu riêng trên sheet khác (có công thức tham chiếu form) → **Chọn** làm Vùng in | In đúng vùng đã chọn, công thức ra giá trị đúng của từng ngày | |
 | P6 | Sau khi in từ ngày cuối trở về: kiểm tra danh sách sheet và ngày đang hiển thị | Form về đúng ngày cũ; file không có thêm sheet nào (kể cả sheet tạm) | |
