@@ -50,11 +50,9 @@ End Sub
 
 ' Mo loi; tra ve ly do neu khong mo duoc (rong = da mo). Build goi truc tiep qua Application.Run de kiem thu.
 Public Function NKTC_TryLoadCore() As String
-    Dim folder As String, wb As Workbook
+    Dim folder As String
+    If IsCoreOpen() Then Exit Function
     On Error GoTo Loi
-    For Each wb In Application.Workbooks
-        If LCase$(wb.Name) = LCase$(CORE_FILE) Then Exit Function
-    Next wb
     folder = ThisWorkbook.Path & Application.PathSeparator
     ApplyPendingUpdate folder
     If Len(Dir$(folder & CORE_FILE)) = 0 Then
@@ -66,6 +64,14 @@ Public Function NKTC_TryLoadCore() As String
     Exit Function
 Loi:
     NKTC_TryLoadCore = U("Kh\u00f4ng m\u1edf \u0111\u01b0\u1ee3c Nh\u1eadt k\u00fd TC: ") & Err.Description
+End Function
+
+' Add-in (.xlam) dang mo khong co trong danh sach khi duyet Application.Workbooks -> tim theo ten.
+Private Function IsCoreOpen() As Boolean
+    Dim wb As Workbook
+    On Error Resume Next
+    Set wb = Application.Workbooks(CORE_FILE)
+    IsCoreOpen = Not wb Is Nothing
 End Function
 
 ' Thay tep loi bang ban cap nhat da tai, neu ban do con nguyen ven (SHA-256 khop .pending.ok).

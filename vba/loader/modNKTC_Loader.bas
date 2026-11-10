@@ -50,11 +50,9 @@ End Sub
 
 ' Mở lõi; trả về lý do nếu không mở được (rỗng = đã mở). Build gọi trực tiếp qua Application.Run để kiểm thử.
 Public Function NKTC_TryLoadCore() As String
-    Dim folder As String, wb As Workbook
+    Dim folder As String
+    If IsCoreOpen() Then Exit Function
     On Error GoTo Loi
-    For Each wb In Application.Workbooks
-        If LCase$(wb.Name) = LCase$(CORE_FILE) Then Exit Function
-    Next wb
     folder = ThisWorkbook.Path & Application.PathSeparator
     ApplyPendingUpdate folder
     If Len(Dir$(folder & CORE_FILE)) = 0 Then
@@ -66,6 +64,14 @@ Public Function NKTC_TryLoadCore() As String
     Exit Function
 Loi:
     NKTC_TryLoadCore = "Không mở được Nhật ký TC: " & Err.Description
+End Function
+
+' Add-in (.xlam) đang mở không có trong danh sách khi duyệt Application.Workbooks -> tìm theo tên.
+Private Function IsCoreOpen() As Boolean
+    Dim wb As Workbook
+    On Error Resume Next
+    Set wb = Application.Workbooks(CORE_FILE)
+    IsCoreOpen = Not wb Is Nothing
 End Function
 
 ' Thay tệp lõi bằng bản cập nhật đã tải, nếu bản đó còn nguyên vẹn (SHA-256 khớp .pending.ok).

@@ -162,8 +162,8 @@ function Get-WorkbookModule($wb) {
 }
 
 function Find-Workbook($excel, [string]$name) {
-    foreach ($w in $excel.Workbooks) { if ([string]$w.Name -eq $name) { return $w } }
-    return $null
+    # Add-in (.xlam) đang mở không có trong danh sách khi duyệt Workbooks -> tìm theo tên.
+    try { return $excel.Workbooks.Item($name) } catch { return $null }
 }
 
 function Set-ModuleCode($module, [string]$path) {
