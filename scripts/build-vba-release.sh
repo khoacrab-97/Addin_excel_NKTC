@@ -34,8 +34,8 @@ for f in "$LOADER" "$CORE"; do [ "$(head -c 2 "$f")" = "PK" ] || fail "$f không
 
 mkdir -p "$OUT/vba" "$INSTALLER_DIR"
 cp "$CORE" "$MANIFEST" "$OUT/vba/"
-EXE="$INSTALLER_DIR/NhatKyTC_Setup_$VERSION.exe"
-makensis -V2 -DVERSION="$VERSION" -DLOADER="$PWD/$LOADER" -DCORE="$PWD/$CORE" -DOUTFILE="$PWD/$EXE" installer/NhatKyTC.nsi >&2
+EXE="$(realpath "$INSTALLER_DIR")/NhatKyTC_Setup_$VERSION.exe"
+makensis -V2 -DVERSION="$VERSION" -DLOADER="$(realpath "$LOADER")" -DCORE="$(realpath "$CORE")" -DOUTFILE="$EXE" installer/NhatKyTC.nsi >&2
 EXE_SHA=$(sha256sum "$EXE" | cut -d' ' -f1)
 echo "version=$VERSION"
 echo "sha256=$EXE_SHA"
