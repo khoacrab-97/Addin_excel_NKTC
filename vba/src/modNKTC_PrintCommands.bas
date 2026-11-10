@@ -51,6 +51,8 @@ Public Sub CmdInNhatKy()
         Exit Sub
     End If
     If LoadConfig(wb, cfg) Then sourceSheet = cfg.SourceSheet     ' sheet nguồn nhật ký: không cho chọn làm vùng in
+    ' Biểu mẫu đặt chung sheet với vùng nguồn: không chặn (nếu chặn thì không in được biểu mẫu).
+    If StrComp(sourceSheet, formSheet.Name, vbTextCompare) = 0 Then sourceSheet = ""
     ReDim dayNums(0 To dayCount - 1)
     For i = 0 To dayCount - 1
         dayNums(i) = days(i).DayNum
@@ -125,16 +127,26 @@ End Function
 ' bản sao tính lại trong workbook tạm có thể ra kết quả khác (INDIRECT, CELL("filename")…). Dán giá trị giữ nguyên kiểu
 ' dữ liệu, ô gộp, công thức mảng. Gọi ngay sau khi chép sheet.
 Private Sub FreezeValues(ByVal src As Worksheet, ByVal dst As Worksheet)
-    Dim used As Range, anyFormula As Variant
+    Dim used As Range, anyFormula As Variant, v As Variant, i As Long, j As Long
     Set used = src.UsedRange
     anyFormula = used.HasFormula          ' True / False / Null (chỉ một phần có công thức)
     If Not IsNull(anyFormula) Then
         If Not anyFormula Then Exit Sub
     End If
     If src.FilterMode Then
-        ' Sheet đang lọc (AutoFilter ẩn dòng): Copy chỉ chép dòng đang hiện -> ghi thẳng giá trị
-        ' (chấp nhận Excel đọc lại chữ, trường hợp hiếm).
-        dst.Range(used.Address).Value = used.Value
+        ' Sheet đang lọc (AutoFilter ẩn dòng): Copy chỉ chép dòng đang hiện -> ghi thẳng giá trị.
+        ' Chữ được thêm dấu ' ở đầu để Excel không đọc lại ("- ...", "= ..." thành công thức, "001" thành số).
+        v = used.Value2
+        If IsArray(v) Then
+            For i = LBound(v, 1) To UBound(v, 1)
+                For j = LBound(v, 2) To UBound(v, 2)
+                    If VarType(v(i, j)) = vbString Then v(i, j) = "'" & v(i, j)
+                Next j
+            Next i
+        ElseIf VarType(v) = vbString Then
+            v = "'" & v
+        End If
+        dst.Range(used.Address).Value2 = v
     Else
         used.Copy
         dst.Range(used.Address).PasteSpecial Paste:=XL_PASTE_VALUES
@@ -186,6 +198,8 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
         Application.DisplayAlerts = False
         If tmp Is Nothing Then
             ' Ngày đầu: chép sheet ra workbook mới -> workbook tạm giữ theme / style của file nhật ký.
+            ' Không cho Esc ngắt giữa lúc workbook mới đã có mà chưa gán vào tmp (sẽ bị bỏ lại không đóng).
+            Application.EnableCancelKey = XL_DISABLED
             ws.Copy
             Application.DisplayAlerts = oldAlerts
             Set newBook = ActiveWorkbook
@@ -198,6 +212,7 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
                 GoTo Cleanup
             End If
             Set tmp = newBook
+            Application.EnableCancelKey = XL_ERROR_HANDLER
             tmp.Date1904 = wb.Date1904
         Else
             ws.Copy After:=tmp.Sheets(tmp.Sheets.Count)

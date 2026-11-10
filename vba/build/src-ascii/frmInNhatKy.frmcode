@@ -9,6 +9,7 @@ Private Const MAX_COPIES As Long = 99
 Private Const XL_DIALOG_PRINTER_SETUP As Long = 9
 Private Const COLOR_TEXT As Long = &H80000012
 Private Const COLOR_ERROR As Long = &HC0&
+Private Const XL_SHEET_VISIBLE As Long = -1
 
 Private mAccepted As Boolean
 Private mPick As String
@@ -136,6 +137,8 @@ Private Sub LoadRange()
         msg = U("V\u00f9ng in ph\u1ea3i n\u1eb1m trong file \u0111ang in (") & mWorkbook.Name & ")."
     ElseIf Len(mSourceSheet) > 0 And StrComp(r.Worksheet.Name, mSourceSheet, vbTextCompare) = 0 Then
         msg = U("Kh\u00f4ng in sheet ngu\u1ed3n nh\u1eadt k\u00fd \u2014 ch\u1ecdn v\u00f9ng tr\u00ean bi\u1ec3u m\u1eabu.")
+    ElseIf r.Worksheet.Visible <> XL_SHEET_VISIBLE Then
+        msg = U("Sheet ch\u1ee9a v\u00f9ng in \u0111ang \u1ea9n \u2014 b\u1ecf \u1ea9n sheet r\u1ed3i ch\u1ecdn l\u1ea1i.")
     End If
     If Len(msg) > 0 Then
         lblVungTT.ForeColor = COLOR_ERROR

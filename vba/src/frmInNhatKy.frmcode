@@ -9,6 +9,7 @@ Private Const MAX_COPIES As Long = 99
 Private Const XL_DIALOG_PRINTER_SETUP As Long = 9
 Private Const COLOR_TEXT As Long = &H80000012
 Private Const COLOR_ERROR As Long = &HC0&
+Private Const XL_SHEET_VISIBLE As Long = -1
 
 Private mAccepted As Boolean
 Private mPick As String
@@ -136,6 +137,8 @@ Private Sub LoadRange()
         msg = "Vùng in phải nằm trong file đang in (" & mWorkbook.Name & ")."
     ElseIf Len(mSourceSheet) > 0 And StrComp(r.Worksheet.Name, mSourceSheet, vbTextCompare) = 0 Then
         msg = "Không in sheet nguồn nhật ký — chọn vùng trên biểu mẫu."
+    ElseIf r.Worksheet.Visible <> XL_SHEET_VISIBLE Then
+        msg = "Sheet chứa vùng in đang ẩn — bỏ ẩn sheet rồi chọn lại."
     End If
     If Len(msg) > 0 Then
         lblVungTT.ForeColor = COLOR_ERROR

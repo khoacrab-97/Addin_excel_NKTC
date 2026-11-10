@@ -51,6 +51,8 @@ Public Sub CmdInNhatKy()
         Exit Sub
     End If
     If LoadConfig(wb, cfg) Then sourceSheet = cfg.SourceSheet     ' sheet nguon nhat ky: khong cho chon lam vung in
+    ' Bieu mau dat chung sheet voi vung nguon: khong chan (neu chan thi khong in duoc bieu mau).
+    If StrComp(sourceSheet, formSheet.Name, vbTextCompare) = 0 Then sourceSheet = ""
     ReDim dayNums(0 To dayCount - 1)
     For i = 0 To dayCount - 1
         dayNums(i) = days(i).DayNum
@@ -125,16 +127,26 @@ End Function
 ' ban sao tinh lai trong workbook tam co the ra ket qua khac (INDIRECT, CELL("filename")?). Dan gia tri giu nguyen kieu
 ' du lieu, o gop, cong thuc mang. Goi ngay sau khi chep sheet.
 Private Sub FreezeValues(ByVal src As Worksheet, ByVal dst As Worksheet)
-    Dim used As Range, anyFormula As Variant
+    Dim used As Range, anyFormula As Variant, v As Variant, i As Long, j As Long
     Set used = src.UsedRange
     anyFormula = used.HasFormula          ' True / False / Null (chi mot phan co cong thuc)
     If Not IsNull(anyFormula) Then
         If Not anyFormula Then Exit Sub
     End If
     If src.FilterMode Then
-        ' Sheet dang loc (AutoFilter an dong): Copy chi chep dong dang hien -> ghi thang gia tri
-        ' (chap nhan Excel doc lai chu, truong hop hiem).
-        dst.Range(used.Address).Value = used.Value
+        ' Sheet dang loc (AutoFilter an dong): Copy chi chep dong dang hien -> ghi thang gia tri.
+        ' Chu duoc them dau ' o dau de Excel khong doc lai ("- ...", "= ..." thanh cong thuc, "001" thanh so).
+        v = used.Value2
+        If IsArray(v) Then
+            For i = LBound(v, 1) To UBound(v, 1)
+                For j = LBound(v, 2) To UBound(v, 2)
+                    If VarType(v(i, j)) = vbString Then v(i, j) = "'" & v(i, j)
+                Next j
+            Next i
+        ElseIf VarType(v) = vbString Then
+            v = "'" & v
+        End If
+        dst.Range(used.Address).Value2 = v
     Else
         used.Copy
         dst.Range(used.Address).PasteSpecial Paste:=XL_PASTE_VALUES
@@ -186,6 +198,8 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
         Application.DisplayAlerts = False
         If tmp Is Nothing Then
             ' Ngay dau: chep sheet ra workbook moi -> workbook tam giu theme / style cua file nhat ky.
+            ' Khong cho Esc ngat giua luc workbook moi da co ma chua gan vao tmp (se bi bo lai khong dong).
+            Application.EnableCancelKey = XL_DISABLED
             ws.Copy
             Application.DisplayAlerts = oldAlerts
             Set newBook = ActiveWorkbook
@@ -198,6 +212,7 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
                 GoTo Cleanup
             End If
             Set tmp = newBook
+            Application.EnableCancelKey = XL_ERROR_HANDLER
             tmp.Date1904 = wb.Date1904
         Else
             ws.Copy After:=tmp.Sheets(tmp.Sheets.Count)

@@ -158,7 +158,7 @@ Nút **In nhật ký** (nhóm In) in biểu mẫu F2 cho một hoặc nhiều ng
 | R5.3 | **Đầu ra**: máy in (số bản, nút Chọn máy in…) hoặc **một file PDF gộp** (hỏi nơi lưu; tên gợi ý `NKTC_dd-mm-yyyy.pdf` hoặc `NKTC_<từ>_den_<đến>.pdf`). Mỗi ngày in một hoặc nhiều trang tùy thiết lập trang của sheet. |
 | R5.4 | In qua **workbook tạm** (mỗi ngày một sheet `Ngay_dd-mm-yyyy`, giá trị lấy từ sheet nguồn và đóng băng), bảo toàn thiết lập trang. Sau khi in, form trở về ngày đã hiển thị trước đó; add-in **không thêm sheet** vào file của người dùng. Bộ nhớ tạm (Clipboard) được dùng khi đóng băng giá trị. Nếu trước khi in form chưa hiển thị ngày nào, form ở lại ngày in cuối cùng (thông báo kết quả ghi rõ ngày). Chỉ giá trị ô được đóng băng — các đối tượng "sống" (biểu đồ, ảnh liên kết, đầu/chân trang `&[File]`/`&[Tab]`, số trang liên tục qua các ngày) **không** được đóng băng. Workbook khóa cấu trúc → báo, không in; sheet chứa vùng in khóa không mật khẩu → bản sao tạm được bỏ khóa (sheet gốc giữ nguyên), có mật khẩu → báo, không in. |
 | R5.5 | In **hơn 50 ngày** → hỏi xác nhận trước khi in. Bấm **Esc** để dừng giữa chừng (Esc chỉ bị vô hiệu trong lúc đang ghi một ngày lên form). |
-| R5.6 | Không in sheet NK_TheoNgay: **không cho chọn vùng in trên sheet nguồn** nhật ký; chưa gán nguồn/form → báo lỗi, không in. |
+| R5.6 | Không in sheet NK_TheoNgay: **không cho chọn vùng in trên sheet nguồn** nhật ký; ngoại lệ: biểu mẫu đặt chung sheet với vùng nguồn thì không chặn. Không chọn được vùng trên sheet đang ẩn. Chưa gán nguồn/form → báo lỗi, không in. |
 
 ---
 
