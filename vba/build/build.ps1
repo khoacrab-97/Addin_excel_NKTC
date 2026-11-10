@@ -161,6 +161,11 @@ function Get-WorkbookModule($wb) {
     throw 'Không tìm thấy module ThisWorkbook.'
 }
 
+function Find-Workbook($excel, [string]$name) {
+    foreach ($w in $excel.Workbooks) { if ([string]$w.Name -eq $name) { return $w } }
+    return $null
+}
+
 function Set-ModuleCode($module, [string]$path) {
     $count = [int]$module.CountOfLines
     if ($count -gt 0) { $module.DeleteLines(1, $count) }
@@ -209,8 +214,9 @@ try {
         Add-UserForm $project $_.FullName
         Log ('  + ' + $_.BaseName + ' (UserForm)')
     }
-    Set-ModuleCode (Get-WorkbookModule $wb) (Join-Path $srcDir 'ThisWorkbook.doccode')
-    Log '  + ThisWorkbook'
+    $module = Get-WorkbookModule $wb
+    Set-ModuleCode $module (Join-Path $srcDir 'ThisWorkbook.doccode')
+    Log ('  + ThisWorkbook (module ' + [string]$module.Parent.Name + ')')
 
     # Biểu mẫu "Mẫu NKTC": chép vào add-in để nút Chèn form mẫu dùng được khi không có Internet.
     $template = $excel.Workbooks.Open($templatePath, 0, $true)
@@ -236,8 +242,9 @@ try {
     $loaderWb = $excel.Workbooks.Add()
     Log 'Nạp mã nguồn bộ nạp:'
     Import-Modules $loaderWb.VBProject $loaderSrcDir
-    Set-ModuleCode (Get-WorkbookModule $loaderWb) (Join-Path $loaderSrcDir 'ThisWorkbook.doccode')
-    Log '  + ThisWorkbook'
+    $module = Get-WorkbookModule $loaderWb
+    Set-ModuleCode $module (Join-Path $loaderSrcDir 'ThisWorkbook.doccode')
+    Log ('  + ThisWorkbook (module ' + [string]$module.Parent.Name + ')')
     Invoke-Compile $excel $loaderWb.VBProject 'bộ nạp'
     $loaderWb.SaveAs($loaderPath, $xlOpenXMLAddIn)
     $loaderWb.Close($false)
@@ -248,10 +255,17 @@ try {
     } else {
         # Mở bộ nạp như khi Excel khởi động: bộ nạp phải tự mở lõi.
         $loader = $excel.Workbooks.Open($loaderPath)
-        $core = $null
-        foreach ($w in $excel.Workbooks) { if ([string]$w.Name -eq $coreName) { $core = $w } }
-        if ($null -eq $core) { throw 'Bộ nạp không mở được lõi NhatKyThiCong_Core.xlam.' }
-        Log 'Bộ nạp mở lõi: OK'
+        $core = Find-Workbook $excel $coreName
+        if ($null -ne $core) {
+            Log 'Bộ nạp mở lõi (Workbook_Open): OK'
+        } else {
+            # Excel do script điều khiển có thể không chạy Workbook_Open -> gọi thẳng thủ tục nạp lõi của bộ nạp.
+            Log 'Bộ nạp: Workbook_Open không mở lõi khi Excel do script điều khiển; gọi trực tiếp NKTC_TryLoadCore.'
+            $why = [string]$excel.Run("'" + $loaderName + "'!modNKTC_Loader.NKTC_TryLoadCore")
+            $core = Find-Workbook $excel $coreName
+            if ($null -eq $core) { throw ('Bộ nạp không mở được lõi: ' + $why) }
+            Log 'Bộ nạp mở lõi (gọi trực tiếp): OK'
+        }
         $result = [string]$excel.Run("'" + $coreName + "'!modNKTC_Tests.NKTC_RunTests")
         $version = [string]$excel.Run("'" + $coreName + "'!modNKTC_Ribbon.NKTC_Version")
         $core.Close($false)

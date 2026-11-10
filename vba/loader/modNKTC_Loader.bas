@@ -43,23 +43,30 @@ Private Declare Function CryptReleaseContext Lib "advapi32" (ByVal hProv As Long
 #End If
 
 Public Sub NKTC_LoadCore()
+    Dim msg As String
+    msg = NKTC_TryLoadCore()
+    If Len(msg) > 0 Then Notify msg
+End Sub
+
+' Mở lõi; trả về lý do nếu không mở được (rỗng = đã mở). Build gọi trực tiếp qua Application.Run để kiểm thử.
+Public Function NKTC_TryLoadCore() As String
     Dim folder As String, wb As Workbook
     On Error GoTo Loi
     For Each wb In Application.Workbooks
-        If LCase$(wb.Name) = LCase$(CORE_FILE) Then Exit Sub
+        If LCase$(wb.Name) = LCase$(CORE_FILE) Then Exit Function
     Next wb
     folder = ThisWorkbook.Path & Application.PathSeparator
     ApplyPendingUpdate folder
     If Len(Dir$(folder & CORE_FILE)) = 0 Then
-        Notify "Không tìm thấy tệp " & CORE_FILE & " trong " & ThisWorkbook.Path & "." & vbLf & _
+        NKTC_TryLoadCore = "Không tìm thấy tệp " & CORE_FILE & " trong " & ThisWorkbook.Path & "." & vbLf & _
             "Hãy chạy lại bộ cài Nhật ký TC."
-        Exit Sub
+        Exit Function
     End If
     Application.Workbooks.Open Filename:=folder & CORE_FILE, UpdateLinks:=0, ReadOnly:=True, AddToMru:=False
-    Exit Sub
+    Exit Function
 Loi:
-    Notify "Không mở được Nhật ký TC: " & Err.Description
-End Sub
+    NKTC_TryLoadCore = "Không mở được Nhật ký TC: " & Err.Description
+End Function
 
 ' Thay tệp lõi bằng bản cập nhật đã tải, nếu bản đó còn nguyên vẹn (SHA-256 khớp .pending.ok).
 Private Sub ApplyPendingUpdate(ByVal folder As String)

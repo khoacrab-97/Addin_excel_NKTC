@@ -43,23 +43,30 @@ Private Declare Function CryptReleaseContext Lib "advapi32" (ByVal hProv As Long
 #End If
 
 Public Sub NKTC_LoadCore()
+    Dim msg As String
+    msg = NKTC_TryLoadCore()
+    If Len(msg) > 0 Then Notify msg
+End Sub
+
+' Mo loi; tra ve ly do neu khong mo duoc (rong = da mo). Build goi truc tiep qua Application.Run de kiem thu.
+Public Function NKTC_TryLoadCore() As String
     Dim folder As String, wb As Workbook
     On Error GoTo Loi
     For Each wb In Application.Workbooks
-        If LCase$(wb.Name) = LCase$(CORE_FILE) Then Exit Sub
+        If LCase$(wb.Name) = LCase$(CORE_FILE) Then Exit Function
     Next wb
     folder = ThisWorkbook.Path & Application.PathSeparator
     ApplyPendingUpdate folder
     If Len(Dir$(folder & CORE_FILE)) = 0 Then
-        Notify U("Kh\u00f4ng t\u00ecm th\u1ea5y t\u1ec7p ") & CORE_FILE & " trong " & ThisWorkbook.Path & "." & vbLf & _
+        NKTC_TryLoadCore = U("Kh\u00f4ng t\u00ecm th\u1ea5y t\u1ec7p ") & CORE_FILE & " trong " & ThisWorkbook.Path & "." & vbLf & _
             U("H\u00e3y ch\u1ea1y l\u1ea1i b\u1ed9 c\u00e0i Nh\u1eadt k\u00fd TC.")
-        Exit Sub
+        Exit Function
     End If
     Application.Workbooks.Open Filename:=folder & CORE_FILE, UpdateLinks:=0, ReadOnly:=True, AddToMru:=False
-    Exit Sub
+    Exit Function
 Loi:
-    Notify U("Kh\u00f4ng m\u1edf \u0111\u01b0\u1ee3c Nh\u1eadt k\u00fd TC: ") & Err.Description
-End Sub
+    NKTC_TryLoadCore = U("Kh\u00f4ng m\u1edf \u0111\u01b0\u1ee3c Nh\u1eadt k\u00fd TC: ") & Err.Description
+End Function
 
 ' Thay tep loi bang ban cap nhat da tai, neu ban do con nguyen ven (SHA-256 khop .pending.ok).
 Private Sub ApplyPendingUpdate(ByVal folder As String)
