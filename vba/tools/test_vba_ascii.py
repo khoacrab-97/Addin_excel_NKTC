@@ -54,9 +54,9 @@ class ConvertTests(unittest.TestCase):
         import tempfile
         from pathlib import Path
 
-        from vba_ascii import main
+        from vba_ascii import VBA_DIR, main
 
-        with tempfile.TemporaryDirectory() as tmp:
+        with tempfile.TemporaryDirectory(dir=VBA_DIR) as tmp:
             src, dst = Path(tmp, "src"), Path(tmp, "dst")
             src.mkdir()
             Path(src, "frmA.frmcode").write_text('x = "Hủy"\n', encoding="utf-8")
@@ -64,6 +64,19 @@ class ConvertTests(unittest.TestCase):
             self.assertEqual(main(["vba_ascii.py", str(src), str(dst)]), 0)
             self.assertEqual(Path(dst, "frmA.frmcode").read_bytes(), b'x = U("H\\u1ee7y")\r\n')
             self.assertFalse(Path(dst, "ghi-chu.txt").exists())
+
+    def test_main_rejects_directories_outside_vba(self):
+        import tempfile
+
+        from vba_ascii import VBA_DIR, main
+
+        with tempfile.TemporaryDirectory() as outside:
+            with self.assertRaises(ConvertError):
+                main(["vba_ascii.py", str(VBA_DIR / "src"), outside])
+            with self.assertRaises(ConvertError):
+                main(["vba_ascii.py", outside, str(VBA_DIR / "build" / "src-ascii")])
+            with self.assertRaises(ConvertError):
+                main(["vba_ascii.py", str(VBA_DIR / "src" / ".." / ".." / "src"), str(VBA_DIR / "build" / "x")])
 
     def test_strip_diacritics(self):
         self.assertEqual(strip_diacritics("Đường đi Nhật ký"), "Duong di Nhat ky")

@@ -97,11 +97,22 @@ def convert_text(text: str, name: str = "<src>") -> str:
     return "\r\n".join(out)
 
 
+# Thư mục vba/ của repo: thư mục nguồn và đích phải nằm trong đây (không đọc/ghi ra ngoài repo).
+VBA_DIR = Path(__file__).resolve().parent.parent
+
+
+def inside_vba_dir(arg: str) -> Path:
+    path = Path(arg).resolve()
+    if not path.is_relative_to(VBA_DIR):
+        raise ConvertError("%s nằm ngoài thư mục %s" % (arg, VBA_DIR))
+    return path
+
+
 def main(argv: list) -> int:
     if len(argv) != 3:
         print(__doc__)
         return 2
-    src, dst = Path(argv[1]), Path(argv[2])
+    src, dst = inside_vba_dir(argv[1]), inside_vba_dir(argv[2])
     dst.mkdir(parents=True, exist_ok=True)
     count = 0
     for path in sorted(src.iterdir()):
