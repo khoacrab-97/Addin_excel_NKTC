@@ -348,6 +348,11 @@ End Function
 ' Huong dan su dung.
 '------------------------------------------------------------------------------
 Public Sub ShowHelp()
+    Dim printHelp As String
+    printHelp = U("3. In nh\u1eadt k\u00fd (nh\u00f3m In)") & vbLf & _
+        U("   \u2022 ""In nh\u1eadt k\u00fd"" \u2192 ch\u1ecdn V\u00f9ng in (m\u1eb7c \u0111\u1ecbnh l\u00e0 v\u00f9ng in c\u1ee7a form; n\u00fat ""Ch\u1ecdn"" \u0111\u1ec3 d\u00f9ng v\u00f9ng kh\u00e1c, k\u1ec3 c\u1ea3 tr\u00ean sheet kh\u00e1c),") & vbLf & _
+        U("     Ng\u00e0y in (\u0111ang hi\u1ec3n th\u1ecb / m\u1ed9t ng\u00e0y / kho\u1ea3ng ng\u00e0y / t\u1ea5t c\u1ea3) v\u00e0 \u0110\u1ea7u ra (m\u00e1y in ho\u1eb7c m\u1ed9t file PDF g\u1ed9p).") & vbLf & _
+        U("   \u2022 In nhi\u1ec1u h\u01a1n 50 ng\u00e0y s\u1ebd h\u1ecfi x\u00e1c nh\u1eadn; b\u1ea5m Esc \u0111\u1ec3 d\u1eebng. Sau khi in, form tr\u1edf v\u1ec1 ng\u00e0y \u0111ang xem.")
     ShowInfo U("M\u1ecdi ch\u1ee9c n\u0103ng n\u1eb1m tr\u00ean tab ""Nh\u1eadt k\u00fd TC"" c\u1ee7a thanh Ribbon.") & vbLf & vbLf & _
         U("0. T\u1ea1o b\u1ea3ng nh\u1eadp ti\u1ebfn \u0111\u1ed9 (nh\u00f3m Ti\u1ebfn \u0111\u1ed9)") & vbLf & _
         U("   \u2022 B\u1ea5m ""T\u1ea1o b\u1ea3ng"" \u2192 ch\u1ecdn sheet m\u1edbi ho\u1eb7c sheet hi\u1ec7n t\u1ea1i (\u00f4 b\u1eaft \u0111\u1ea7u), s\u1ed1 d\u00f2ng \u2192 ""T\u1ea1o b\u1ea3ng"".") & vbLf & _
@@ -363,5 +368,6 @@ Public Sub ShowHelp()
         U("     ch\u1ecdn C\u1ed9t ngu\u1ed3n + \u00d4 tr\u00ean form (n\u00fat ""Ch\u1ecdn"") \u2192 ""Th\u00eam""; l\u1eb7p l\u1ea1i cho t\u1eebng c\u1ed9t \u2192 ""G\u00e1n"".") & vbLf & _
         U("   \u2022 C\u1ed9t \u0111\u00e3 g\u00e1n \u0111\u01b0\u1ee3c nh\u1edb theo t\u00ean ti\u00eau \u0111\u1ec1: th\u00eam/ch\u00e8n c\u1ed9t, th\u00eam ng\u00e0y kh\u00f4ng c\u1ea7n g\u00e1n l\u1ea1i.") & vbLf & _
         U("   \u2022 Sau khi g\u00e1n: Ng\u00e0y \u0111\u1ea7u / Ng\u00e0y tr\u01b0\u1edbc / Ng\u00e0y sau / Ng\u00e0y cu\u1ed1i \u0111\u1ec3 chuy\u1ec3n ng\u00e0y. G\u00e1n c\u1ed9t Ng\u00e0y v\u00e0o") & vbLf & _
-        U("     d\u00f2ng ""Ng\u00e0y \u2026 th\u00e1ng \u2026 n\u0103m \u2026"" c\u1ee7a bi\u1ec3u m\u1eabu: add-in t\u1ef1 \u0111i\u1ec1n ng\u00e0y, th\u00e1ng, n\u0103m.")
+        U("     d\u00f2ng ""Ng\u00e0y \u2026 th\u00e1ng \u2026 n\u0103m \u2026"" c\u1ee7a bi\u1ec3u m\u1eabu: add-in t\u1ef1 \u0111i\u1ec1n ng\u00e0y, th\u00e1ng, n\u0103m.") & vbLf & vbLf & _
+        printHelp
 End Sub

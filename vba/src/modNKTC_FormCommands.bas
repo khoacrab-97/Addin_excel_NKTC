@@ -348,6 +348,11 @@ End Function
 ' Hướng dẫn sử dụng.
 '------------------------------------------------------------------------------
 Public Sub ShowHelp()
+    Dim printHelp As String
+    printHelp = "3. In nhật ký (nhóm In)" & vbLf & _
+        "   • ""In nhật ký"" → chọn Vùng in (mặc định là vùng in của form; nút ""Chọn"" để dùng vùng khác, kể cả trên sheet khác)," & vbLf & _
+        "     Ngày in (đang hiển thị / một ngày / khoảng ngày / tất cả) và Đầu ra (máy in hoặc một file PDF gộp)." & vbLf & _
+        "   • In nhiều hơn 50 ngày sẽ hỏi xác nhận; bấm Esc để dừng. Sau khi in, form trở về ngày đang xem."
     ShowInfo "Mọi chức năng nằm trên tab ""Nhật ký TC"" của thanh Ribbon." & vbLf & vbLf & _
         "0. Tạo bảng nhập tiến độ (nhóm Tiến độ)" & vbLf & _
         "   • Bấm ""Tạo bảng"" → chọn sheet mới hoặc sheet hiện tại (ô bắt đầu), số dòng → ""Tạo bảng""." & vbLf & _
@@ -363,5 +368,6 @@ Public Sub ShowHelp()
         "     chọn Cột nguồn + Ô trên form (nút ""Chọn"") → ""Thêm""; lặp lại cho từng cột → ""Gán""." & vbLf & _
         "   • Cột đã gán được nhớ theo tên tiêu đề: thêm/chèn cột, thêm ngày không cần gán lại." & vbLf & _
         "   • Sau khi gán: Ngày đầu / Ngày trước / Ngày sau / Ngày cuối để chuyển ngày. Gán cột Ngày vào" & vbLf & _
-        "     dòng ""Ngày … tháng … năm …"" của biểu mẫu: add-in tự điền ngày, tháng, năm."
+        "     dòng ""Ngày … tháng … năm …"" của biểu mẫu: add-in tự điền ngày, tháng, năm." & vbLf & vbLf & _
+        printHelp
 End Sub

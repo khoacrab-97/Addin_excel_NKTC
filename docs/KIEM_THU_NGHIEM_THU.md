@@ -17,7 +17,7 @@
 | # | Bước | Kết quả mong đợi | Kết quả |
 |---|---|---|---|
 | A1 | Đóng Excel → chạy `NhatKyTC_Setup_<phiên bản>.exe` → Next đến hết | Cài xong không cần quyền quản trị | |
-| A2 | Mở Excel; đóng rồi mở lại với một file bất kỳ | Tab **Nhật ký TC** luôn hiện, 4 nhóm: Tiến độ / Form mẫu / Chuyển ngày / Tiện ích | |
+| A2 | Mở Excel; đóng rồi mở lại với một file bất kỳ | Tab **Nhật ký TC** luôn hiện, 5 nhóm: Tiến độ / Form mẫu / Chuyển ngày / In / Tiện ích | |
 | A3 | **Tiện ích ▾ → Phiên bản** | Hiện phiên bản, Excel, thư mục `%LOCALAPPDATA%\NhatKyTC`, kiểm thử phần lõi `PASS …` | |
 | A4 | **Tiện ích ▾ → Kiểm tra cập nhật** | "Bạn đang dùng phiên bản mới nhất (…)" | |
 | A5 | Khi có bản mới: mở Excel, đợi ~30 giây (hoặc bấm Kiểm tra cập nhật) → đóng, mở lại Excel | Thông báo đã tải bản mới; mở lại → **Phiên bản** hiện số mới | |
@@ -60,6 +60,19 @@
 | C9 | Đổi tên tiêu đề "Thời tiết" → **Ngày trước** | Báo không tìm thấy cột "Thời tiết" (kèm ô đích), biểu mẫu không đổi; đổi lại tên (khác hoa/thường vẫn được) → chạy bình thường | |
 | C10 | **File → Print** (xem trước) | A4 đứng, 2 trang | |
 
+## P. F5 – In nhật ký
+
+Chuẩn bị: file đã gán F2 (ví dụ `demo_f2.xlsx`), có máy in hoặc "Microsoft Print to PDF".
+
+| # | Bước | Kết quả mong đợi | Kết quả |
+|---|---|---|---|
+| P1 | **In nhật ký** → Ngày in "đang hiển thị", Đầu ra "Máy in" (1 bản) | Máy in nhận đúng biểu mẫu của ngày đang hiển thị; Vùng in mặc định = Print Area (hoặc UsedRange) của sheet form | |
+| P2 | Ngày in "một ngày" (chọn 1 ngày) → Đầu ra PDF | Hỏi nơi lưu; file `NKTC_dd-mm-yyyy.pdf` đúng ngày, nội dung đúng | |
+| P3 | Ngày in "khoảng ngày" 5 ngày → PDF | File `NKTC_<từ>_den_<đến>.pdf` có đúng 5 trang/ngày theo thiết lập trang (ví dụ 2 trang/ngày = 10 trang), đúng thứ tự ngày | |
+| P4 | Ngày in "tất cả" khi có hơn 50 ngày | Hỏi xác nhận; chọn đồng ý rồi bấm **Esc** giữa chừng → dừng, form trở về ngày cũ | |
+| P5 | Dựng biểu mẫu riêng trên sheet khác (có công thức tham chiếu form) → **Chọn** làm Vùng in | In đúng vùng đã chọn, công thức ra giá trị đúng của từng ngày | |
+| P6 | Sau khi in từ ngày cuối trở về: kiểm tra danh sách sheet và ngày đang hiển thị | Form về đúng ngày cũ; file không có thêm sheet nào (kể cả sheet tạm) | |
+
 ## D. Kết luận
 
 | Hạng mục | Kết quả |
@@ -68,3 +81,4 @@
 | F4 Tạo bảng (T) | |
 | F1 Xuất theo ngày (B) | |
 | F2 Xuất vào form + Chuyển ngày (C) | |
+| F5 In nhật ký (P) | |

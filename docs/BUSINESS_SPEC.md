@@ -147,6 +147,21 @@ Sinh lại biểu mẫu: `python3 -I scripts/fixtures/make_nktc_workbooks.py tes
 
 ---
 
+## F5. In nhật ký (từ 3.1.0)
+
+Nút **In nhật ký** (nhóm In) in biểu mẫu F2 cho một hoặc nhiều ngày. Chỉ in sheet biểu mẫu; sheet NK_TheoNgay (dùng để ghi tay) không được in.
+
+| Mã | Quy tắc |
+|---|---|
+| R5.1 | **Vùng in** tùy chọn: mặc định là vùng in (Print Area) của sheet biểu mẫu, nếu chưa đặt thì vùng đã dùng (UsedRange). Nút **Chọn** cho phép chọn vùng khác, kể cả trên sheet khác (biểu mẫu do người dùng tự dựng). |
+| R5.2 | **Phạm vi ngày** có 4 chế độ: ngày đang hiển thị trên form; một ngày; khoảng ngày (từ – đến); tất cả các ngày của nguồn. Ngày chọn phải có trong nguồn dữ liệu; thứ tự in theo thứ tự ngày. |
+| R5.3 | **Đầu ra**: máy in (số bản, nút Chọn máy in…) hoặc **một file PDF gộp** (hỏi nơi lưu; tên gợi ý `NKTC_dd-mm-yyyy.pdf` hoặc `NKTC_<từ>_den_<đến>.pdf`). Mỗi ngày in một hoặc nhiều trang tùy thiết lập trang của sheet. |
+| R5.4 | In qua **workbook tạm** (mỗi ngày một sheet `Ngay_dd-mm-yyyy`, giá trị lấy từ sheet nguồn và đóng băng), bảo toàn thiết lập trang. Sau khi in, form trở về ngày đã hiển thị trước đó; add-in **không thêm sheet** vào file của người dùng. Bộ nhớ tạm (Clipboard) được dùng khi đóng băng giá trị. |
+| R5.5 | In **hơn 50 ngày** → hỏi xác nhận trước khi in. Bấm **Esc** để dừng giữa chừng (Esc chỉ bị vô hiệu trong lúc đang ghi một ngày lên form). |
+| R5.6 | Không in sheet NK_TheoNgay; chưa gán nguồn/form → báo lỗi, không in. |
+
+---
+
 ## F3. Tiện ích
 
 | Mã | Chức năng | Mô tả |

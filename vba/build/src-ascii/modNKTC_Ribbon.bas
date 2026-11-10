@@ -6,7 +6,7 @@ Attribute VB_Name = "modNKTC_Ribbon"
 '==============================================================================
 Option Explicit
 
-Public Const APP_VERSION As String = "3.0.0"
+Public Const APP_VERSION As String = "3.1.0"
 
 Private mRibbon As Object
 
