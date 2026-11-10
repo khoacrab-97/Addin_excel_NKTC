@@ -1,0 +1,8 @@
+'==============================================================================
+' NHAT KY TC ? ma cua ThisWorkbook trong NhatKyThiCong_Core.xlam (build.ps1 chep vao).
+'==============================================================================
+Option Explicit
+
+Private Sub Workbook_Open()
+    ScheduleUpdateCheck
+End Sub

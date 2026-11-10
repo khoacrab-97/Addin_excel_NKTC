@@ -26,6 +26,8 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       sha256: ${{ steps.version.outputs.sha256 }}
+      vba_version: ${{ steps.vba.outputs.version }}
+      vba_sha256: ${{ steps.vba.outputs.sha256 }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
@@ -59,6 +61,23 @@ jobs:
         with:
           name: installer
           path: NhatKyThiCong_Setup_${{ steps.version.outputs.version }}.exe
+          if-no-files-found: error
+          retention-days: 7
+      # Bản VBA (vba/release, dựng trên Windows bằng vba/build/build.cmd): kênh tự cập nhật dist/vba/ trên Pages
+      # và bộ cài NhatKyTC_Setup_<phiên bản>.exe. Chưa có bản dựng thì bỏ qua.
+      - name: VBA release files and installer
+        id: vba
+        run: |
+          if [ -f vba/release/version.txt ]; then
+            scripts/build-vba-release.sh dist vba-installer >> "$GITHUB_OUTPUT"
+          else
+            echo "vba/release chưa có bản dựng — bỏ qua."
+          fi
+      - if: steps.vba.outputs.version != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: vba-installer
+          path: vba-installer/NhatKyTC_Setup_${{ steps.vba.outputs.version }}.exe
           if-no-files-found: error
           retention-days: 7
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
@@ -140,3 +159,64 @@ jobs:
           } >> notes.md
           gh release create "v$VERSION" "NhatKyThiCong_Setup_$VERSION.exe" \
             --target "$GITHUB_SHA" --title "Nhật ký thi công $VERSION" --notes-file notes.md --latest
+
+  # GitHub Release vba-v<phiên bản VBA> kèm bộ cài NhatKyTC_Setup_<phiên bản>.exe của bản add-in VBA
+  # (tiền tố "vba-" tách khỏi tag v<phiên bản> của bản Office.js).
+  # Chỉ tạo khi vba/release có bản dựng mới (phiên bản chưa có Release); kênh tự cập nhật đã lên Pages ở job deploy.
+  release-vba:
+    needs: [build, deploy]
+    if: github.ref == 'refs/heads/main' && needs.build.outputs.vba_version != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: vba-installer
+      - name: Create GitHub Release (skip if this version already exists)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.build.outputs.vba_version }}
+          SHA256: ${{ needs.build.outputs.vba_sha256 }}
+        run: |
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          [[ "$SHA256" =~ ^[0-9a-f]{64}$ ]]
+          if gh release view "vba-v$VERSION" > /dev/null 2>&1; then
+            echo "Release vba-v$VERSION đã tồn tại — bỏ qua (dựng bản mới với APP_VERSION mới để phát hành)."
+            exit 0
+          fi
+          EXE=$(find . -name "NhatKyTC_Setup_$VERSION.exe" | head -n 1)
+          [ -n "$EXE" ]
+          cat > notes.md << 'NOTES'
+          **Nhật ký TC** — add-in Excel (VBA) lập nhật ký thi công theo ngày từ bảng tiến độ và xuất dữ liệu từng ngày vào biểu mẫu. Tab **Nhật ký TC** luôn hiện mỗi lần mở Excel; dùng không cần Internet.
+
+          - **Tạo bảng** tiến độ, **Xuất theo ngày** (sheet NK_TheoNgay).
+          - **Chèn form mẫu**, **Xuất vào form**: gán cột vào ô biểu mẫu; cột được nhớ theo tên tiêu đề; dòng "Ngày … tháng … năm …" tự điền.
+          - Chuyển ngày: **Ngày đầu · Ngày trước · Ngày sau · Ngày cuối**.
+          - Tự kiểm tra bản mới mỗi ngày (kiểm tra SHA-256 trước khi dùng); mở lại Excel là dùng bản mới.
+
+          ## Cài đặt
+
+          1. Lưu và **đóng Excel**.
+          2. Tải `NhatKyTC_Setup_<phiên bản>.exe` bên dưới và chạy. Không cần quyền quản trị. Nếu Windows hiện *"Windows protected your PC"*: bấm **More info → Run anyway**.
+          3. Mở Excel: trên Ribbon có tab **Nhật ký TC**.
+
+          Yêu cầu: Excel 2016, 2019, 2021 hoặc Microsoft 365 trên Windows.
+
+          ## Gỡ cài đặt
+
+          Đóng Excel → **Settings → Apps → Installed apps** → **Nhật ký TC (Excel add-in)** → **Uninstall**.
+          NOTES
+          {
+            echo
+            echo "## Kiểm tra tính toàn vẹn"
+            echo
+            echo "SHA-256 của \`NhatKyTC_Setup_$VERSION.exe\`:"
+            echo
+            echo "\`$SHA256\`"
+            echo
+            echo "Đối chiếu trên Windows (PowerShell): \`Get-FileHash .\\NhatKyTC_Setup_$VERSION.exe -Algorithm SHA256\`"
+          } >> notes.md
+          gh release create "vba-v$VERSION" "$EXE" \
+            --target "$GITHUB_SHA" --title "Nhật ký TC $VERSION" --notes-file notes.md --latest

@@ -1,0 +1,8 @@
+'==============================================================================
+' NHẬT KÝ TC – mã của ThisWorkbook trong bộ nạp NhatKyThiCong.xlam (build.ps1 chép vào).
+'==============================================================================
+Option Explicit
+
+Private Sub Workbook_Open()
+    NKTC_LoadCore
+End Sub

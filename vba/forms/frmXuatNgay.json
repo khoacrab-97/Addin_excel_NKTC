@@ -1,0 +1,129 @@
+{
+  "name": "frmXuatNgay",
+  "caption": "Xuất nhật ký theo ngày",
+  "width": 360,
+  "height": 232,
+  "controls": [
+    {
+      "type": "Label",
+      "name": "lblVung",
+      "left": 12,
+      "top": 10,
+      "width": 330,
+      "height": 14,
+      "Caption": "Vùng dữ liệu (gồm dòng tiêu đề)"
+    },
+    {
+      "type": "TextBox",
+      "name": "txtVung",
+      "left": 12,
+      "top": 24,
+      "width": 282,
+      "height": 18
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdChonVung",
+      "left": 298,
+      "top": 23,
+      "width": 44,
+      "height": 20,
+      "Caption": "Chọn"
+    },
+    {
+      "type": "Label",
+      "name": "lblLoi",
+      "left": 12,
+      "top": 46,
+      "width": 330,
+      "height": 26,
+      "WordWrap": true,
+      "ForeColor": 192,
+      "Caption": ""
+    },
+    {
+      "type": "Label",
+      "name": "lblNoiDung",
+      "left": 12,
+      "top": 78,
+      "width": 110,
+      "height": 14,
+      "Caption": "Nội dung công việc"
+    },
+    {
+      "type": "ComboBox",
+      "name": "cboNoiDung",
+      "left": 126,
+      "top": 75,
+      "width": 216,
+      "height": 18,
+      "Style": 2
+    },
+    {
+      "type": "Label",
+      "name": "lblBatDau",
+      "left": 12,
+      "top": 102,
+      "width": 110,
+      "height": 14,
+      "Caption": "Ngày bắt đầu"
+    },
+    {
+      "type": "ComboBox",
+      "name": "cboBatDau",
+      "left": 126,
+      "top": 99,
+      "width": 216,
+      "height": 18,
+      "Style": 2
+    },
+    {
+      "type": "Label",
+      "name": "lblKetThuc",
+      "left": 12,
+      "top": 126,
+      "width": 110,
+      "height": 14,
+      "Caption": "Ngày kết thúc"
+    },
+    {
+      "type": "ComboBox",
+      "name": "cboKetThuc",
+      "left": 126,
+      "top": 123,
+      "width": 216,
+      "height": 18,
+      "Style": 2
+    },
+    {
+      "type": "Label",
+      "name": "lblCanhBao",
+      "left": 12,
+      "top": 148,
+      "width": 330,
+      "height": 14,
+      "ForeColor": 192,
+      "Caption": ""
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdXuat",
+      "left": 170,
+      "top": 176,
+      "width": 84,
+      "height": 24,
+      "Caption": "Xuất nhật ký",
+      "Default": true
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdHuy",
+      "left": 258,
+      "top": 176,
+      "width": 84,
+      "height": 24,
+      "Caption": "Hủy",
+      "Cancel": true
+    }
+  ]
+}

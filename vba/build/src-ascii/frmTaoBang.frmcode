@@ -1,0 +1,130 @@
+'==============================================================================
+' NHAT KY TC ? hop thoai Tao bang nhap tien do (F4). Bo cuc: vba/forms/frmTaoBang.json.
+'==============================================================================
+Option Explicit
+
+Private mAccepted As Boolean
+Private mStartCell As Range
+Private mRows As Long
+Private mPick As String
+
+Public Sub Init(ByVal sheetName As String, ByVal cellAddress As String)
+    optHienTai.Caption = U("Sheet hi\u1ec7n t\u1ea1i (") & sheetName & ")"
+    txtO.Text = cellAddress
+    txtDong.Text = CStr(DEFAULT_TABLE_ROWS)
+    optMoi.Value = True
+    UpdateState
+End Sub
+
+Public Property Get Accepted() As Boolean
+    Accepted = mAccepted
+End Property
+
+Public Property Get OnNewSheet() As Boolean
+    OnNewSheet = optMoi.Value
+End Property
+
+Public Property Get StartCell() As Range
+    Set StartCell = mStartCell
+End Property
+
+Public Property Get RowCount() As Long
+    RowCount = mRows
+End Property
+
+' Nut "Chon": an hop thoai de lenh goi mo hop chon vung cua Excel (Application.InputBox), roi hien lai.
+Public Property Get PickRequest() As String
+    PickRequest = mPick
+End Property
+
+Public Property Get PickCurrent() As String
+    PickCurrent = txtO.Text
+End Property
+
+' Ket qua chon vung (rong = nguoi dung bam Cancel, giu gia tri cu).
+Public Sub ApplyPick(ByVal text As String)
+    mPick = ""
+    If Len(text) > 0 Then txtO.Text = text
+End Sub
+
+Private Sub cmdChonO_Click()
+    mPick = "O"
+    Me.Hide
+End Sub
+
+' Kiem tra du lieu nhap, hien vung bang se chiem; bat/tat nut Tao bang.
+Private Sub UpdateState()
+    Dim ok As Boolean, cell As Range, area As String
+    mRows = ParseRowCount(txtDong.Text)
+    txtO.Enabled = optHienTai.Value
+    cmdChonO.Enabled = optHienTai.Value
+    lblO.Enabled = optHienTai.Value
+    Set mStartCell = Nothing
+    lblVung.ForeColor = &H80000012
+    If mRows = 0 Then
+        lblVung.Caption = U("Nh\u1eadp s\u1ed1 d\u00f2ng l\u00e0 s\u1ed1 nguy\u00ean t\u1eeb 1 \u0111\u1ebfn ") & MAX_TABLE_ROWS & "."
+        lblVung.ForeColor = &HC0&
+    ElseIf optMoi.Value Then
+        lblVung.Caption = U("B\u1ea3ng s\u1ebd chi\u1ebfm v\u00f9ng A1:D") & (mRows + 1) & U(" c\u1ee7a sheet m\u1edbi.")
+        ok = True
+    Else
+        Set cell = TryRange(txtO.Text)
+        If cell Is Nothing Then
+            lblVung.Caption = U("\u0110\u1ecba ch\u1ec9 \u00f4 kh\u00f4ng h\u1ee3p l\u1ec7 (v\u00ed d\u1ee5 B3).")
+            lblVung.ForeColor = &HC0&
+        Else
+            Set mStartCell = cell.Cells(1, 1)
+            optHienTai.Caption = U("Sheet hi\u1ec7n t\u1ea1i (") & mStartCell.Worksheet.Name & ")"
+            If mStartCell.Row + mRows > mStartCell.Worksheet.Rows.Count Or _
+               mStartCell.Column + 3 > mStartCell.Worksheet.Columns.Count Then
+                lblVung.Caption = U("B\u1ea3ng v\u01b0\u1ee3t qu\u00e1 gi\u1edbi h\u1ea1n sheet c\u1ee7a Excel. Ch\u1ecdn \u00f4 b\u1eaft \u0111\u1ea7u kh\u00e1c ho\u1eb7c gi\u1ea3m s\u1ed1 d\u00f2ng.")
+                lblVung.ForeColor = &HC0&
+            Else
+                area = mStartCell.Resize(mRows + 1, 4).Address(False, False)
+                lblVung.Caption = U("B\u1ea3ng s\u1ebd chi\u1ebfm v\u00f9ng ") & area & U(" \u2014 v\u00f9ng n\u00e0y ph\u1ea3i \u0111ang tr\u1ed1ng (add-in kh\u00f4ng ghi \u0111\u00e8 d\u1eef li\u1ec7u).")
+                ok = True
+            End If
+        End If
+    End If
+    cmdTao.Enabled = ok
+End Sub
+
+Private Sub optMoi_Click()
+    UpdateState
+End Sub
+
+Private Sub optHienTai_Click()
+    UpdateState
+End Sub
+
+Private Sub txtO_Change()
+    UpdateState
+End Sub
+
+Private Sub txtDong_Change()
+    UpdateState
+End Sub
+
+Private Sub cmdTao_Click()
+    UpdateState
+    If Not cmdTao.Enabled Then Exit Sub
+    mAccepted = True
+    Me.Hide
+End Sub
+
+Private Sub cmdHuy_Click()
+    Me.Hide
+End Sub
+
+' Tieu de tieng Viet (moi lan hien lai, ke ca sau khi chon vung).
+Private Sub UserForm_Activate()
+    SetUnicodeTitle Me
+End Sub
+
+' Nut X: an thay vi huy form de lenh goi con doc duoc ket qua (Accepted = False).
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+    If CloseMode = vbFormControlMenu Then
+        Cancel = True
+        Me.Hide
+    End If
+End Sub

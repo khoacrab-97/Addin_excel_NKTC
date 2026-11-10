@@ -175,3 +175,21 @@
 
 > P11.2–P11.3 chỉ kiểm chứng được khi workflow phát hành chạy trên `main` (Release v2.0.0 có file `.exe` và mã SHA-256 khớp file tải về).
 
+---
+
+## Phase 12 — Chuyển sang add-in VBA (`.xlam`, bản 3.0.0)
+
+Lý do: bản Office.js cài kiểu nhà phát triển (sideload) mất tab sau khi khởi động lại Excel; bản VBA (giống TienBangChu) có tab luôn hiện, chọn vùng bằng hộp chọn vùng gốc của Excel, không cần Internet khi dùng. Bản Office.js giữ nguyên cho tới khi chủ dự án nghiệm thu bản VBA. Mã nguồn: `vba/` (xem `vba/README.md`).
+
+| ID | Hạng mục | Trạng thái |
+|---|---|---|
+| P12.1 | Quy trình build trên Windows: đổi mã sang ASCII (`vba/tools/vba_ascii.py`), nạp vào Excel, biên dịch, lưu `.xlam`, gắn tab Ribbon "Nhật ký TC" | Tested |
+| P12.2 | Chuyển phần lõi (chữ, ngày, F1 nhận diện cột/trải theo ngày, F2 gán cột/chuyển ngày/khớp tên cột) + bộ kiểm thử VBA: 104/104 PASS trên Excel Windows của chủ dự án (09/11/2026) | Tested |
+| P12.3 | UserForm tạo khi build từ `vba/forms/*.json` + `.frmcode`; nút **Tạo bảng** (F4) và **Xuất theo ngày** (F1) với ô chọn vùng = ô nhập + nút **Chọn** (`Application.InputBox`; RefEdit/ActiveX bị Microsoft 365 chặn khi build — 09/11/2026); thông báo tiếng Việt qua `MessageBoxW`. Build PASS 119, chủ dự án chạy thử trên Excel Windows và báo OK (09/11/2026) | Verified |
+| P12.4 | Nút Chèn form mẫu (sheet mẫu nằm sẵn trong add-in, không cần Internet), Xuất vào form (danh sách dòng gán + Thêm / Cập nhật / Xóa dòng; cấu hình lưu trong file bằng CustomXMLPart), 4 nút Chuyển ngày (khớp cột theo tên, hỏi trước khi ghi đè), Hướng dẫn. Build PASS 157; chủ dự án chạy thử trên Excel Windows và báo OK (09/11/2026); tiêu đề hộp thoại có dấu sửa sau đó (`SetUnicodeTitle`) | Verified |
+| P12.5 | Bộ nạp `NhatKyThiCong.xlam` + tự cập nhật hằng ngày của lõi (version.txt trên GitHub Pages `/vba/`; kiểm tra kích thước, chữ ký ZIP, SHA-256; bộ nạp kiểm lại SHA-256 trước khi thay lõi) | Implemented |
+| P12.6a | Bộ cài `NhatKyTC_Setup_<phiên bản>.exe` (NSIS, cho từng người dùng, đăng ký khóa OPEN của Excel; gỡ cài đặt dồn lại các khóa OPEN). Chạy thử trên Wine: cài, cài lại, gỡ khi có add-in khác | Tested |
+| P12.6b | Quy trình phát hành: 3 tệp dựng trên Windows → `vba/release/` → CI kiểm tra SHA-256, đăng kênh cập nhật, dựng bộ cài, tạo Release. Bản dựng 3.0.0 (PASS 168) đã lên `vba/release/`, CI dựng bộ cài thử thành công | Tested |
+| P12.6c | Hướng dẫn cài đặt bản VBA (`docs/HUONG_DAN_CAI_DAT_VBA.md`); kiểm tra bảo mật run-3 (quick, theo phạm vi VBA: 0 lỗ hổng, 9/9 hạng mục covered); củng cố phát hành: CI so `version.txt` với `APP_VERSION`, tag riêng `vba-v<phiên bản>`, bộ cài thử chỉ từ push | Tested |
+| P12.6d | Phát hành chính thức 3.0.0 (merge vào `main` → kênh cập nhật Pages `/vba/`, Release `vba-v3.0.0`) | Not Started |
+| P12.7 | Nghiệm thu bản VBA trên Excel Desktop Windows: bộ cài thử 3.0.0 (artifact CI) — chủ dự án cài, tab luôn hiện, các chức năng chạy OK (10/11/2026); còn kiểm tra tự cập nhật sau khi phát hành; sau đó gỡ bản Office.js theo yêu cầu chủ dự án | In Progress |

@@ -1,0 +1,8 @@
+'==============================================================================
+' NHẬT KÝ TC – mã của ThisWorkbook trong NhatKyThiCong_Core.xlam (build.ps1 chép vào).
+'==============================================================================
+Option Explicit
+
+Private Sub Workbook_Open()
+    ScheduleUpdateCheck
+End Sub

@@ -1,0 +1,7 @@
+# Bản VBA: script Windows giữ CRLF; mã nguồn ASCII sinh ra cho VBE giữ nguyên byte.
+vba/build/*.cmd text eol=crlf
+vba/build/*.ps1 text eol=crlf
+vba/build/src-ascii/** -text
+vba/build/loader-ascii/** -text
+# Bản dựng add-in VBA (tải lên từ Windows) và version.txt giữ nguyên byte: SHA-256 trong version.txt phải khớp.
+vba/release/** -text

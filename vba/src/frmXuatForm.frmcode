@@ -1,0 +1,436 @@
+'==============================================================================
+' NHẬT KÝ TC – hộp thoại Xuất vào form (F2). Bố cục: vba/forms/frmXuatForm.json.
+' Vùng nguồn (dòng đầu là tiêu đề, tự mở rộng tới hết dữ liệu), cột Ngày, các dòng gán "cột nguồn -> ô trên form".
+' Kiểm tra xong thì Accepted = True; lệnh gọi (CmdXuatForm) lưu cấu hình và ghi ngày đầu tiên.
+'==============================================================================
+Option Explicit
+
+Private mAccepted As Boolean
+Private mPick As String
+Private mLoading As Boolean
+Private mSource As Range
+Private mHeaders() As String
+Private mHeaderCount As Long
+Private mCols() As Long
+Private mTargets() As String
+Private mRowCount As Long
+Private mDateColumn As Long
+Private mDayCount As Long
+Private mNotes As String
+
+Public Sub Init(ByVal sourceText As String, ByVal dateColumn As Long, ByRef cols() As Long, ByRef targets() As String, _
+                ByVal rowCount As Long, ByRef headers() As String, ByVal headerCount As Long)
+    Dim i As Long
+    mRowCount = rowCount
+    If rowCount > 0 Then
+        ReDim mCols(0 To rowCount - 1)
+        ReDim mTargets(0 To rowCount - 1)
+        For i = 0 To rowCount - 1
+            mCols(i) = cols(i)
+            mTargets(i) = targets(i)
+        Next i
+    Else
+        ReDim mCols(0 To 0)
+        ReDim mTargets(0 To 0)
+    End If
+    mHeaderCount = headerCount
+    If headerCount > 0 Then
+        ReDim mHeaders(0 To headerCount - 1)
+        For i = 0 To headerCount - 1
+            mHeaders(i) = headers(i)
+        Next i
+    Else
+        ReDim mHeaders(0 To 0)
+    End If
+    mDateColumn = dateColumn
+    mLoading = True
+    txtNguon.Text = sourceText
+    mLoading = False
+    LoadSource
+End Sub
+
+'------------------------------------------------------------------------------
+' Kết quả cho lệnh gọi.
+'------------------------------------------------------------------------------
+Public Property Get Accepted() As Boolean
+    Accepted = mAccepted
+End Property
+
+Public Property Get Source() As Range
+    Set Source = mSource
+End Property
+
+Public Property Get DateColumn() As Long
+    DateColumn = mDateColumn
+End Property
+
+Public Property Get RowCount() As Long
+    RowCount = mRowCount
+End Property
+
+Public Property Get RowColumn(ByVal i As Long) As Long
+    RowColumn = mCols(i)
+End Property
+
+Public Property Get RowTarget(ByVal i As Long) As String
+    RowTarget = mTargets(i)
+End Property
+
+' Nút "Chọn": ẩn hộp thoại để lệnh gọi mở hộp chọn vùng của Excel (Application.InputBox), rồi hiện lại.
+Public Property Get PickRequest() As String
+    PickRequest = mPick
+End Property
+
+Public Property Get PickCurrent() As String
+    Dim sheet As String, address As String
+    If mPick = "Nguon" Then
+        PickCurrent = txtNguon.Text
+    ElseIf ParseCellReference(txtO.Text, sheet, address) Then
+        If Len(sheet) = 0 Then sheet = DefaultFormSheet()
+        PickCurrent = QuotedReference(sheet, address)
+    End If
+End Property
+
+' Kết quả chọn vùng (rỗng = người dùng bấm Cancel, giữ giá trị cũ).
+Public Sub ApplyPick(ByVal text As String)
+    Dim kind As String, sheet As String, address As String
+    kind = mPick
+    mPick = ""
+    If Len(text) = 0 Then Exit Sub
+    If kind = "Nguon" Then
+        txtNguon.Text = text
+    ElseIf ParseCellReference(text, sheet, address) Then
+        If Len(sheet) = 0 Then sheet = DefaultFormSheet()
+        txtO.Text = FormatReference(sheet, address)
+    End If
+End Sub
+
+'------------------------------------------------------------------------------
+' Vùng nguồn
+'------------------------------------------------------------------------------
+Private Sub LoadSource()
+    Dim r As Range, msg As String, newH() As String, n As Long, merged As Variant, blanks As String
+    Dim oldH() As String, pos() As Long, i As Long, c As Long, values As Variant
+    Set mSource = Nothing
+    mDayCount = 0
+    mNotes = ""
+    Set r = TryRange(txtNguon.Text)
+    If r Is Nothing Then
+        If Len(Trim$(txtNguon.Text)) = 0 Then msg = "Chưa có vùng nguồn." Else msg = "Địa chỉ vùng không hợp lệ."
+    ElseIf r.Areas.Count > 1 Then
+        msg = "Vui lòng chỉ chọn một vùng dữ liệu liên tục."
+    Else
+        Set r = ExpandSource(r)
+        If r.Rows.Count < 2 Then
+            msg = "Vùng nguồn cần có dòng tiêu đề và ít nhất một ngày."
+        Else
+            newH = HeaderTexts(r)
+            n = UBound(newH) + 1
+            merged = r.Rows(1).MergeCells
+            If IsNull(merged) Then merged = True
+            blanks = BlankHeaderList(newH, n)
+            If merged Then
+                msg = "Dòng đầu tiên của vùng có ô bị gộp (merge)."
+            ElseIf Len(blanks) > 0 Then
+                msg = "Dòng đầu tiên có ô tiêu đề trống (cột thứ " & blanks & ") — thường do ô bị gộp (merge)."
+            End If
+            If Len(msg) > 0 Then msg = msg & " Không chọn được vùng này: gỡ merge (Merge & Center → Unmerge Cells), " & _
+                "đặt tên cho từng cột rồi chọn lại."
+        End If
+    End If
+
+    If Len(msg) > 0 Then
+        lblNguonTT.ForeColor = &HC0&
+        lblNguonTT.Caption = msg
+        FillColumnLists
+        UpdateDayCount Empty
+        RefreshList
+        Exit Sub
+    End If
+
+    ' Tiêu đề khác lúc gán (thêm / chèn / đổi chỗ cột) -> giữ dòng gán theo tên tiêu đề (R2.17).
+    If mHeaderCount > 0 And Not SameHeaders(newH, n) Then
+        ReDim oldH(0 To mHeaderCount - 1)
+        For i = 0 To mHeaderCount - 1
+            oldH(i) = mHeaders(i)
+        Next i
+        pos = MatchHeaders(oldH, newH)
+        For i = 0 To mRowCount - 1
+            c = mCols(i)
+            If c >= 0 Then
+                If c <= UBound(pos) Then mCols(i) = pos(c) Else mCols(i) = -1
+                If mCols(i) < 0 And c < mHeaderCount Then
+                    mNotes = mNotes & "Dòng " & (i + 1) & ": cột """ & oldH(c) & """ không còn trong vùng nguồn — chọn lại cột." & vbLf
+                End If
+            End If
+        Next i
+        c = mDateColumn
+        If c >= 0 Then
+            If c <= UBound(pos) Then mDateColumn = pos(c) Else mDateColumn = -1
+            If mDateColumn < 0 And c < mHeaderCount Then
+                mNotes = mNotes & "Cột Ngày """ & oldH(c) & """ không còn trong vùng nguồn — chọn lại." & vbLf
+            End If
+        End If
+    End If
+    ReDim mHeaders(0 To n - 1)
+    For i = 0 To n - 1
+        mHeaders(i) = newH(i)
+    Next i
+    mHeaderCount = n
+    For i = 0 To mRowCount - 1
+        If mCols(i) >= n Then mCols(i) = -1
+    Next i
+    If mDateColumn >= n Then mDateColumn = -1
+
+    Set mSource = r
+    lblNguonTT.ForeColor = &H80000012
+    lblNguonTT.Caption = "Vùng sử dụng: " & RefText(r) & " (" & (r.Rows.Count - 1) & " dòng dữ liệu, " & n & " cột)."
+    values = RangeGrid(r)
+    If mDateColumn < 0 Then mDateColumn = DetectDateColumn(values)
+    FillColumnLists
+    UpdateDayCount values
+    RefreshList
+    lblLoi.Caption = mNotes
+End Sub
+
+Private Function SameHeaders(ByRef newH() As String, ByVal n As Long) As Boolean
+    Dim i As Long
+    If n <> mHeaderCount Then Exit Function
+    For i = 0 To n - 1
+        If newH(i) <> mHeaders(i) Then Exit Function
+    Next i
+    SameHeaders = True
+End Function
+
+Private Sub FillColumnLists()
+    Dim i As Long, label As String
+    mLoading = True
+    cboNgay.Clear
+    cboCot.Clear
+    If Not mSource Is Nothing Then
+        For i = 0 To mHeaderCount - 1
+            label = ColumnOptionLabel(mHeaders(i), mSource.Column - 1 + i)
+            cboNgay.AddItem label
+            cboCot.AddItem label
+        Next i
+        If mDateColumn >= 0 And mDateColumn < cboNgay.ListCount Then cboNgay.ListIndex = mDateColumn
+    End If
+    mLoading = False
+End Sub
+
+Private Sub UpdateDayCount(ByVal values As Variant)
+    Dim days() As NKTC_SourceDay, issues As Collection
+    mDayCount = 0
+    lblSoNgay.ForeColor = &H80000012
+    If mSource Is Nothing Then
+        lblSoNgay.Caption = ""
+    ElseIf mDateColumn < 0 Then
+        lblSoNgay.Caption = "Chưa chọn cột Ngày."
+        lblSoNgay.ForeColor = &HC0&
+    Else
+        BuildDayIndex values, mDateColumn, mSource.Row, mSource.Worksheet.Parent.Date1904, days, mDayCount, issues
+        If mDayCount > 0 Then
+            lblSoNgay.Caption = "Có " & mDayCount & " ngày (" & FormatDay(days(0).DayNum) & " – " & _
+                FormatDay(days(mDayCount - 1).DayNum) & ")."
+        Else
+            lblSoNgay.Caption = "Cột Ngày đã chọn không có ngày hợp lệ."
+            lblSoNgay.ForeColor = &HC0&
+        End If
+    End If
+End Sub
+
+Private Sub cboNgay_Change()
+    If mLoading Or mSource Is Nothing Then Exit Sub
+    mDateColumn = cboNgay.ListIndex
+    UpdateDayCount RangeGrid(mSource)
+End Sub
+
+Private Sub txtNguon_Change()
+    If Not mLoading Then LoadSource
+End Sub
+
+Private Sub cmdChonNguon_Click()
+    mPick = "Nguon"
+    Me.Hide
+End Sub
+
+'------------------------------------------------------------------------------
+' Dòng gán
+'------------------------------------------------------------------------------
+Private Function RowLabel(ByVal i As Long) As String
+    Dim c As Long
+    c = mCols(i)
+    If c < 0 Or c >= mHeaderCount Then
+        RowLabel = "(chưa chọn cột)"
+    ElseIf mSource Is Nothing Then
+        RowLabel = "Cột thứ " & (c + 1) & " – " & ShortLabel(mHeaders(c))
+    Else
+        RowLabel = ColumnOptionLabel(mHeaders(c), mSource.Column - 1 + c)
+    End If
+End Function
+
+Private Sub RefreshList()
+    Dim i As Long
+    lstGan.Clear
+    For i = 0 To mRowCount - 1
+        lstGan.AddItem RowLabel(i)
+        If Len(mTargets(i)) > 0 Then
+            lstGan.List(lstGan.ListCount - 1, 1) = mTargets(i)
+        Else
+            lstGan.List(lstGan.ListCount - 1, 1) = "(chưa chọn ô)"
+        End If
+    Next i
+End Sub
+
+' Sheet cho ô đích không ghi tên sheet: sheet của dòng gán đã có -> "Mẫu NKTC" -> sheet đang mở.
+Private Function DefaultFormSheet() As String
+    Dim i As Long, sheet As String, address As String, wb As Workbook
+    For i = 0 To mRowCount - 1
+        If ParseCellReference(mTargets(i), sheet, address) Then
+            If Len(sheet) > 0 Then DefaultFormSheet = sheet: Exit Function
+        End If
+    Next i
+    If mSource Is Nothing Then Set wb = ActiveWorkbook Else Set wb = mSource.Worksheet.Parent
+    If Not FindSheet(wb, FormSheetName()) Is Nothing Then
+        DefaultFormSheet = FormSheetName()
+    Else
+        DefaultFormSheet = ActiveSheet.Name
+    End If
+End Function
+
+' Ô trên form của dòng đang soạn -> "Sheet!E2" (rỗng nếu để trống). False nếu không hợp lệ (đã báo lỗi).
+Private Function EditorTarget(ByRef text As String) As Boolean
+    Dim t As String, sheet As String, address As String
+    t = Trim$(txtO.Text)
+    text = ""
+    If Len(t) = 0 Then EditorTarget = True: Exit Function
+    If Not ParseCellReference(t, sheet, address) Then
+        lblLoi.Caption = """" & t & """ không phải một ô hợp lệ (ví dụ Mẫu NKTC!E2)."
+        Exit Function
+    End If
+    If Len(sheet) = 0 Then sheet = DefaultFormSheet()
+    text = FormatReference(sheet, address)
+    EditorTarget = True
+End Function
+
+Private Sub ClearEditor()
+    mLoading = True
+    lstGan.ListIndex = -1
+    cboCot.ListIndex = -1
+    txtO.Text = ""
+    mLoading = False
+End Sub
+
+Private Sub lstGan_Click()
+    Dim i As Long
+    If mLoading Then Exit Sub
+    i = lstGan.ListIndex
+    If i < 0 Or i >= mRowCount Then Exit Sub
+    mLoading = True
+    If mCols(i) >= 0 And mCols(i) < cboCot.ListCount Then cboCot.ListIndex = mCols(i) Else cboCot.ListIndex = -1
+    txtO.Text = mTargets(i)
+    mLoading = False
+End Sub
+
+Private Sub cmdThem_Click()
+    Dim t As String
+    lblLoi.Caption = ""
+    If Not EditorTarget(t) Then Exit Sub
+    If cboCot.ListIndex < 0 Or Len(t) = 0 Then
+        lblLoi.Caption = "Chọn Cột nguồn và Ô trên form (gõ địa chỉ hoặc bấm Chọn) rồi bấm Thêm."
+        Exit Sub
+    End If
+    If mRowCount >= MAX_FORM_ROWS Then lblLoi.Caption = "Tối đa " & MAX_FORM_ROWS & " dòng gán.": Exit Sub
+    ReDim Preserve mCols(0 To mRowCount)
+    ReDim Preserve mTargets(0 To mRowCount)
+    mCols(mRowCount) = cboCot.ListIndex
+    mTargets(mRowCount) = t
+    mRowCount = mRowCount + 1
+    RefreshList
+    ClearEditor
+End Sub
+
+Private Sub cmdSua_Click()
+    Dim i As Long, t As String
+    lblLoi.Caption = ""
+    i = lstGan.ListIndex
+    If i < 0 Or i >= mRowCount Then lblLoi.Caption = "Chọn một dòng trong danh sách để cập nhật.": Exit Sub
+    If Not EditorTarget(t) Then Exit Sub
+    mCols(i) = cboCot.ListIndex
+    mTargets(i) = t
+    RefreshList
+    ClearEditor
+End Sub
+
+Private Sub cmdXoa_Click()
+    Dim i As Long, k As Long
+    lblLoi.Caption = ""
+    i = lstGan.ListIndex
+    If i < 0 Or i >= mRowCount Then lblLoi.Caption = "Chọn một dòng trong danh sách để xóa.": Exit Sub
+    For k = i To mRowCount - 2
+        mCols(k) = mCols(k + 1)
+        mTargets(k) = mTargets(k + 1)
+    Next k
+    mRowCount = mRowCount - 1
+    RefreshList
+    ClearEditor
+End Sub
+
+Private Sub cmdChonO_Click()
+    mPick = "O"
+    Me.Hide
+End Sub
+
+'------------------------------------------------------------------------------
+' Gán / Hủy
+'------------------------------------------------------------------------------
+Private Sub cmdGan_Click()
+    Dim errors As Collection, maps() As NKTC_Mapping, mapCount As Long, v As Variant, msg As String
+    Dim i As Long, missing As String, wb As Workbook
+    lblLoi.Caption = ""
+    If mSource Is Nothing Then lblLoi.Caption = "Vùng nguồn chưa hợp lệ — chọn lại vùng nguồn.": Exit Sub
+    If mDateColumn < 0 Then lblLoi.Caption = "Chưa chọn cột Ngày (dùng để chuyển ngày).": Exit Sub
+    ' Đã chọn cột + ô nhưng quên bấm Thêm -> tự thêm.
+    If cboCot.ListIndex >= 0 And Len(Trim$(txtO.Text)) > 0 And lstGan.ListIndex < 0 Then
+        cmdThem_Click
+        If Len(lblLoi.Caption) > 0 Then Exit Sub
+    End If
+    Set errors = BuildMappingsFromRows(mCols, mTargets, mRowCount, mHeaderCount, DefaultFormSheet(), maps, mapCount)
+    If errors.Count > 0 Then
+        For Each v In errors
+            msg = msg & v & vbLf
+        Next v
+        lblLoi.Caption = msg
+        Exit Sub
+    End If
+    Set wb = mSource.Worksheet.Parent
+    For i = 0 To mapCount - 1
+        If FindSheet(wb, maps(i).SheetName) Is Nothing Then
+            If InStr(1, missing, """" & maps(i).SheetName & """", vbTextCompare) = 0 Then
+                If Len(missing) > 0 Then missing = missing & ", "
+                missing = missing & """" & maps(i).SheetName & """"
+            End If
+        End If
+    Next i
+    If Len(missing) > 0 Then lblLoi.Caption = "Không có sheet " & missing & " trong file.": Exit Sub
+    If mDayCount = 0 Then lblLoi.Caption = "Cột Ngày đã chọn không có ngày hợp lệ.": Exit Sub
+    mAccepted = True
+    Me.Hide
+End Sub
+
+Private Sub cmdHuy_Click()
+    Me.Hide
+End Sub
+
+' Tiêu đề tiếng Việt (mỗi lần hiện lại, kể cả sau khi chọn vùng).
+Private Sub UserForm_Activate()
+    SetUnicodeTitle Me
+End Sub
+
+' Nút X: ẩn thay vì hủy form để lệnh gọi còn đọc được kết quả (Accepted = False).
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+    If CloseMode = vbFormControlMenu Then
+        Cancel = True
+        Me.Hide
+    End If
+End Sub

@@ -1,0 +1,436 @@
+'==============================================================================
+' NHAT KY TC ? hop thoai Xuat vao form (F2). Bo cuc: vba/forms/frmXuatForm.json.
+' Vung nguon (dong dau la tieu de, tu mo rong toi het du lieu), cot Ngay, cac dong gan "cot nguon -> o tren form".
+' Kiem tra xong thi Accepted = True; lenh goi (CmdXuatForm) luu cau hinh va ghi ngay dau tien.
+'==============================================================================
+Option Explicit
+
+Private mAccepted As Boolean
+Private mPick As String
+Private mLoading As Boolean
+Private mSource As Range
+Private mHeaders() As String
+Private mHeaderCount As Long
+Private mCols() As Long
+Private mTargets() As String
+Private mRowCount As Long
+Private mDateColumn As Long
+Private mDayCount As Long
+Private mNotes As String
+
+Public Sub Init(ByVal sourceText As String, ByVal dateColumn As Long, ByRef cols() As Long, ByRef targets() As String, _
+                ByVal rowCount As Long, ByRef headers() As String, ByVal headerCount As Long)
+    Dim i As Long
+    mRowCount = rowCount
+    If rowCount > 0 Then
+        ReDim mCols(0 To rowCount - 1)
+        ReDim mTargets(0 To rowCount - 1)
+        For i = 0 To rowCount - 1
+            mCols(i) = cols(i)
+            mTargets(i) = targets(i)
+        Next i
+    Else
+        ReDim mCols(0 To 0)
+        ReDim mTargets(0 To 0)
+    End If
+    mHeaderCount = headerCount
+    If headerCount > 0 Then
+        ReDim mHeaders(0 To headerCount - 1)
+        For i = 0 To headerCount - 1
+            mHeaders(i) = headers(i)
+        Next i
+    Else
+        ReDim mHeaders(0 To 0)
+    End If
+    mDateColumn = dateColumn
+    mLoading = True
+    txtNguon.Text = sourceText
+    mLoading = False
+    LoadSource
+End Sub
+
+'------------------------------------------------------------------------------
+' Ket qua cho lenh goi.
+'------------------------------------------------------------------------------
+Public Property Get Accepted() As Boolean
+    Accepted = mAccepted
+End Property
+
+Public Property Get Source() As Range
+    Set Source = mSource
+End Property
+
+Public Property Get DateColumn() As Long
+    DateColumn = mDateColumn
+End Property
+
+Public Property Get RowCount() As Long
+    RowCount = mRowCount
+End Property
+
+Public Property Get RowColumn(ByVal i As Long) As Long
+    RowColumn = mCols(i)
+End Property
+
+Public Property Get RowTarget(ByVal i As Long) As String
+    RowTarget = mTargets(i)
+End Property
+
+' Nut "Chon": an hop thoai de lenh goi mo hop chon vung cua Excel (Application.InputBox), roi hien lai.
+Public Property Get PickRequest() As String
+    PickRequest = mPick
+End Property
+
+Public Property Get PickCurrent() As String
+    Dim sheet As String, address As String
+    If mPick = "Nguon" Then
+        PickCurrent = txtNguon.Text
+    ElseIf ParseCellReference(txtO.Text, sheet, address) Then
+        If Len(sheet) = 0 Then sheet = DefaultFormSheet()
+        PickCurrent = QuotedReference(sheet, address)
+    End If
+End Property
+
+' Ket qua chon vung (rong = nguoi dung bam Cancel, giu gia tri cu).
+Public Sub ApplyPick(ByVal text As String)
+    Dim kind As String, sheet As String, address As String
+    kind = mPick
+    mPick = ""
+    If Len(text) = 0 Then Exit Sub
+    If kind = "Nguon" Then
+        txtNguon.Text = text
+    ElseIf ParseCellReference(text, sheet, address) Then
+        If Len(sheet) = 0 Then sheet = DefaultFormSheet()
+        txtO.Text = FormatReference(sheet, address)
+    End If
+End Sub
+
+'------------------------------------------------------------------------------
+' Vung nguon
+'------------------------------------------------------------------------------
+Private Sub LoadSource()
+    Dim r As Range, msg As String, newH() As String, n As Long, merged As Variant, blanks As String
+    Dim oldH() As String, pos() As Long, i As Long, c As Long, values As Variant
+    Set mSource = Nothing
+    mDayCount = 0
+    mNotes = ""
+    Set r = TryRange(txtNguon.Text)
+    If r Is Nothing Then
+        If Len(Trim$(txtNguon.Text)) = 0 Then msg = U("Ch\u01b0a c\u00f3 v\u00f9ng ngu\u1ed3n.") Else msg = U("\u0110\u1ecba ch\u1ec9 v\u00f9ng kh\u00f4ng h\u1ee3p l\u1ec7.")
+    ElseIf r.Areas.Count > 1 Then
+        msg = U("Vui l\u00f2ng ch\u1ec9 ch\u1ecdn m\u1ed9t v\u00f9ng d\u1eef li\u1ec7u li\u00ean t\u1ee5c.")
+    Else
+        Set r = ExpandSource(r)
+        If r.Rows.Count < 2 Then
+            msg = U("V\u00f9ng ngu\u1ed3n c\u1ea7n c\u00f3 d\u00f2ng ti\u00eau \u0111\u1ec1 v\u00e0 \u00edt nh\u1ea5t m\u1ed9t ng\u00e0y.")
+        Else
+            newH = HeaderTexts(r)
+            n = UBound(newH) + 1
+            merged = r.Rows(1).MergeCells
+            If IsNull(merged) Then merged = True
+            blanks = BlankHeaderList(newH, n)
+            If merged Then
+                msg = U("D\u00f2ng \u0111\u1ea7u ti\u00ean c\u1ee7a v\u00f9ng c\u00f3 \u00f4 b\u1ecb g\u1ed9p (merge).")
+            ElseIf Len(blanks) > 0 Then
+                msg = U("D\u00f2ng \u0111\u1ea7u ti\u00ean c\u00f3 \u00f4 ti\u00eau \u0111\u1ec1 tr\u1ed1ng (c\u1ed9t th\u1ee9 ") & blanks & U(") \u2014 th\u01b0\u1eddng do \u00f4 b\u1ecb g\u1ed9p (merge).")
+            End If
+            If Len(msg) > 0 Then msg = msg & U(" Kh\u00f4ng ch\u1ecdn \u0111\u01b0\u1ee3c v\u00f9ng n\u00e0y: g\u1ee1 merge (Merge & Center \u2192 Unmerge Cells), ") & _
+                U("\u0111\u1eb7t t\u00ean cho t\u1eebng c\u1ed9t r\u1ed3i ch\u1ecdn l\u1ea1i.")
+        End If
+    End If
+
+    If Len(msg) > 0 Then
+        lblNguonTT.ForeColor = &HC0&
+        lblNguonTT.Caption = msg
+        FillColumnLists
+        UpdateDayCount Empty
+        RefreshList
+        Exit Sub
+    End If
+
+    ' Tieu de khac luc gan (them / chen / doi cho cot) -> giu dong gan theo ten tieu de (R2.17).
+    If mHeaderCount > 0 And Not SameHeaders(newH, n) Then
+        ReDim oldH(0 To mHeaderCount - 1)
+        For i = 0 To mHeaderCount - 1
+            oldH(i) = mHeaders(i)
+        Next i
+        pos = MatchHeaders(oldH, newH)
+        For i = 0 To mRowCount - 1
+            c = mCols(i)
+            If c >= 0 Then
+                If c <= UBound(pos) Then mCols(i) = pos(c) Else mCols(i) = -1
+                If mCols(i) < 0 And c < mHeaderCount Then
+                    mNotes = mNotes & U("D\u00f2ng ") & (i + 1) & U(": c\u1ed9t """) & oldH(c) & U(""" kh\u00f4ng c\u00f2n trong v\u00f9ng ngu\u1ed3n \u2014 ch\u1ecdn l\u1ea1i c\u1ed9t.") & vbLf
+                End If
+            End If
+        Next i
+        c = mDateColumn
+        If c >= 0 Then
+            If c <= UBound(pos) Then mDateColumn = pos(c) Else mDateColumn = -1
+            If mDateColumn < 0 And c < mHeaderCount Then
+                mNotes = mNotes & U("C\u1ed9t Ng\u00e0y """) & oldH(c) & U(""" kh\u00f4ng c\u00f2n trong v\u00f9ng ngu\u1ed3n \u2014 ch\u1ecdn l\u1ea1i.") & vbLf
+            End If
+        End If
+    End If
+    ReDim mHeaders(0 To n - 1)
+    For i = 0 To n - 1
+        mHeaders(i) = newH(i)
+    Next i
+    mHeaderCount = n
+    For i = 0 To mRowCount - 1
+        If mCols(i) >= n Then mCols(i) = -1
+    Next i
+    If mDateColumn >= n Then mDateColumn = -1
+
+    Set mSource = r
+    lblNguonTT.ForeColor = &H80000012
+    lblNguonTT.Caption = U("V\u00f9ng s\u1eed d\u1ee5ng: ") & RefText(r) & " (" & (r.Rows.Count - 1) & U(" d\u00f2ng d\u1eef li\u1ec7u, ") & n & U(" c\u1ed9t).")
+    values = RangeGrid(r)
+    If mDateColumn < 0 Then mDateColumn = DetectDateColumn(values)
+    FillColumnLists
+    UpdateDayCount values
+    RefreshList
+    lblLoi.Caption = mNotes
+End Sub
+
+Private Function SameHeaders(ByRef newH() As String, ByVal n As Long) As Boolean
+    Dim i As Long
+    If n <> mHeaderCount Then Exit Function
+    For i = 0 To n - 1
+        If newH(i) <> mHeaders(i) Then Exit Function
+    Next i
+    SameHeaders = True
+End Function
+
+Private Sub FillColumnLists()
+    Dim i As Long, label As String
+    mLoading = True
+    cboNgay.Clear
+    cboCot.Clear
+    If Not mSource Is Nothing Then
+        For i = 0 To mHeaderCount - 1
+            label = ColumnOptionLabel(mHeaders(i), mSource.Column - 1 + i)
+            cboNgay.AddItem label
+            cboCot.AddItem label
+        Next i
+        If mDateColumn >= 0 And mDateColumn < cboNgay.ListCount Then cboNgay.ListIndex = mDateColumn
+    End If
+    mLoading = False
+End Sub
+
+Private Sub UpdateDayCount(ByVal values As Variant)
+    Dim days() As NKTC_SourceDay, issues As Collection
+    mDayCount = 0
+    lblSoNgay.ForeColor = &H80000012
+    If mSource Is Nothing Then
+        lblSoNgay.Caption = ""
+    ElseIf mDateColumn < 0 Then
+        lblSoNgay.Caption = U("Ch\u01b0a ch\u1ecdn c\u1ed9t Ng\u00e0y.")
+        lblSoNgay.ForeColor = &HC0&
+    Else
+        BuildDayIndex values, mDateColumn, mSource.Row, mSource.Worksheet.Parent.Date1904, days, mDayCount, issues
+        If mDayCount > 0 Then
+            lblSoNgay.Caption = U("C\u00f3 ") & mDayCount & U(" ng\u00e0y (") & FormatDay(days(0).DayNum) & U(" \u2013 ") & _
+                FormatDay(days(mDayCount - 1).DayNum) & ")."
+        Else
+            lblSoNgay.Caption = U("C\u1ed9t Ng\u00e0y \u0111\u00e3 ch\u1ecdn kh\u00f4ng c\u00f3 ng\u00e0y h\u1ee3p l\u1ec7.")
+            lblSoNgay.ForeColor = &HC0&
+        End If
+    End If
+End Sub
+
+Private Sub cboNgay_Change()
+    If mLoading Or mSource Is Nothing Then Exit Sub
+    mDateColumn = cboNgay.ListIndex
+    UpdateDayCount RangeGrid(mSource)
+End Sub
+
+Private Sub txtNguon_Change()
+    If Not mLoading Then LoadSource
+End Sub
+
+Private Sub cmdChonNguon_Click()
+    mPick = "Nguon"
+    Me.Hide
+End Sub
+
+'------------------------------------------------------------------------------
+' Dong gan
+'------------------------------------------------------------------------------
+Private Function RowLabel(ByVal i As Long) As String
+    Dim c As Long
+    c = mCols(i)
+    If c < 0 Or c >= mHeaderCount Then
+        RowLabel = U("(ch\u01b0a ch\u1ecdn c\u1ed9t)")
+    ElseIf mSource Is Nothing Then
+        RowLabel = U("C\u1ed9t th\u1ee9 ") & (c + 1) & U(" \u2013 ") & ShortLabel(mHeaders(c))
+    Else
+        RowLabel = ColumnOptionLabel(mHeaders(c), mSource.Column - 1 + c)
+    End If
+End Function
+
+Private Sub RefreshList()
+    Dim i As Long
+    lstGan.Clear
+    For i = 0 To mRowCount - 1
+        lstGan.AddItem RowLabel(i)
+        If Len(mTargets(i)) > 0 Then
+            lstGan.List(lstGan.ListCount - 1, 1) = mTargets(i)
+        Else
+            lstGan.List(lstGan.ListCount - 1, 1) = U("(ch\u01b0a ch\u1ecdn \u00f4)")
+        End If
+    Next i
+End Sub
+
+' Sheet cho o dich khong ghi ten sheet: sheet cua dong gan da co -> "Mau NKTC" -> sheet dang mo.
+Private Function DefaultFormSheet() As String
+    Dim i As Long, sheet As String, address As String, wb As Workbook
+    For i = 0 To mRowCount - 1
+        If ParseCellReference(mTargets(i), sheet, address) Then
+            If Len(sheet) > 0 Then DefaultFormSheet = sheet: Exit Function
+        End If
+    Next i
+    If mSource Is Nothing Then Set wb = ActiveWorkbook Else Set wb = mSource.Worksheet.Parent
+    If Not FindSheet(wb, FormSheetName()) Is Nothing Then
+        DefaultFormSheet = FormSheetName()
+    Else
+        DefaultFormSheet = ActiveSheet.Name
+    End If
+End Function
+
+' O tren form cua dong dang soan -> "Sheet!E2" (rong neu de trong). False neu khong hop le (da bao loi).
+Private Function EditorTarget(ByRef text As String) As Boolean
+    Dim t As String, sheet As String, address As String
+    t = Trim$(txtO.Text)
+    text = ""
+    If Len(t) = 0 Then EditorTarget = True: Exit Function
+    If Not ParseCellReference(t, sheet, address) Then
+        lblLoi.Caption = """" & t & U(""" kh\u00f4ng ph\u1ea3i m\u1ed9t \u00f4 h\u1ee3p l\u1ec7 (v\u00ed d\u1ee5 M\u1eabu NKTC!E2).")
+        Exit Function
+    End If
+    If Len(sheet) = 0 Then sheet = DefaultFormSheet()
+    text = FormatReference(sheet, address)
+    EditorTarget = True
+End Function
+
+Private Sub ClearEditor()
+    mLoading = True
+    lstGan.ListIndex = -1
+    cboCot.ListIndex = -1
+    txtO.Text = ""
+    mLoading = False
+End Sub
+
+Private Sub lstGan_Click()
+    Dim i As Long
+    If mLoading Then Exit Sub
+    i = lstGan.ListIndex
+    If i < 0 Or i >= mRowCount Then Exit Sub
+    mLoading = True
+    If mCols(i) >= 0 And mCols(i) < cboCot.ListCount Then cboCot.ListIndex = mCols(i) Else cboCot.ListIndex = -1
+    txtO.Text = mTargets(i)
+    mLoading = False
+End Sub
+
+Private Sub cmdThem_Click()
+    Dim t As String
+    lblLoi.Caption = ""
+    If Not EditorTarget(t) Then Exit Sub
+    If cboCot.ListIndex < 0 Or Len(t) = 0 Then
+        lblLoi.Caption = U("Ch\u1ecdn C\u1ed9t ngu\u1ed3n v\u00e0 \u00d4 tr\u00ean form (g\u00f5 \u0111\u1ecba ch\u1ec9 ho\u1eb7c b\u1ea5m Ch\u1ecdn) r\u1ed3i b\u1ea5m Th\u00eam.")
+        Exit Sub
+    End If
+    If mRowCount >= MAX_FORM_ROWS Then lblLoi.Caption = U("T\u1ed1i \u0111a ") & MAX_FORM_ROWS & U(" d\u00f2ng g\u00e1n."): Exit Sub
+    ReDim Preserve mCols(0 To mRowCount)
+    ReDim Preserve mTargets(0 To mRowCount)
+    mCols(mRowCount) = cboCot.ListIndex
+    mTargets(mRowCount) = t
+    mRowCount = mRowCount + 1
+    RefreshList
+    ClearEditor
+End Sub
+
+Private Sub cmdSua_Click()
+    Dim i As Long, t As String
+    lblLoi.Caption = ""
+    i = lstGan.ListIndex
+    If i < 0 Or i >= mRowCount Then lblLoi.Caption = U("Ch\u1ecdn m\u1ed9t d\u00f2ng trong danh s\u00e1ch \u0111\u1ec3 c\u1eadp nh\u1eadt."): Exit Sub
+    If Not EditorTarget(t) Then Exit Sub
+    mCols(i) = cboCot.ListIndex
+    mTargets(i) = t
+    RefreshList
+    ClearEditor
+End Sub
+
+Private Sub cmdXoa_Click()
+    Dim i As Long, k As Long
+    lblLoi.Caption = ""
+    i = lstGan.ListIndex
+    If i < 0 Or i >= mRowCount Then lblLoi.Caption = U("Ch\u1ecdn m\u1ed9t d\u00f2ng trong danh s\u00e1ch \u0111\u1ec3 x\u00f3a."): Exit Sub
+    For k = i To mRowCount - 2
+        mCols(k) = mCols(k + 1)
+        mTargets(k) = mTargets(k + 1)
+    Next k
+    mRowCount = mRowCount - 1
+    RefreshList
+    ClearEditor
+End Sub
+
+Private Sub cmdChonO_Click()
+    mPick = "O"
+    Me.Hide
+End Sub
+
+'------------------------------------------------------------------------------
+' Gan / Huy
+'------------------------------------------------------------------------------
+Private Sub cmdGan_Click()
+    Dim errors As Collection, maps() As NKTC_Mapping, mapCount As Long, v As Variant, msg As String
+    Dim i As Long, missing As String, wb As Workbook
+    lblLoi.Caption = ""
+    If mSource Is Nothing Then lblLoi.Caption = U("V\u00f9ng ngu\u1ed3n ch\u01b0a h\u1ee3p l\u1ec7 \u2014 ch\u1ecdn l\u1ea1i v\u00f9ng ngu\u1ed3n."): Exit Sub
+    If mDateColumn < 0 Then lblLoi.Caption = U("Ch\u01b0a ch\u1ecdn c\u1ed9t Ng\u00e0y (d\u00f9ng \u0111\u1ec3 chuy\u1ec3n ng\u00e0y)."): Exit Sub
+    ' Da chon cot + o nhung quen bam Them -> tu them.
+    If cboCot.ListIndex >= 0 And Len(Trim$(txtO.Text)) > 0 And lstGan.ListIndex < 0 Then
+        cmdThem_Click
+        If Len(lblLoi.Caption) > 0 Then Exit Sub
+    End If
+    Set errors = BuildMappingsFromRows(mCols, mTargets, mRowCount, mHeaderCount, DefaultFormSheet(), maps, mapCount)
+    If errors.Count > 0 Then
+        For Each v In errors
+            msg = msg & v & vbLf
+        Next v
+        lblLoi.Caption = msg
+        Exit Sub
+    End If
+    Set wb = mSource.Worksheet.Parent
+    For i = 0 To mapCount - 1
+        If FindSheet(wb, maps(i).SheetName) Is Nothing Then
+            If InStr(1, missing, """" & maps(i).SheetName & """", vbTextCompare) = 0 Then
+                If Len(missing) > 0 Then missing = missing & ", "
+                missing = missing & """" & maps(i).SheetName & """"
+            End If
+        End If
+    Next i
+    If Len(missing) > 0 Then lblLoi.Caption = U("Kh\u00f4ng c\u00f3 sheet ") & missing & " trong file.": Exit Sub
+    If mDayCount = 0 Then lblLoi.Caption = U("C\u1ed9t Ng\u00e0y \u0111\u00e3 ch\u1ecdn kh\u00f4ng c\u00f3 ng\u00e0y h\u1ee3p l\u1ec7."): Exit Sub
+    mAccepted = True
+    Me.Hide
+End Sub
+
+Private Sub cmdHuy_Click()
+    Me.Hide
+End Sub
+
+' Tieu de tieng Viet (moi lan hien lai, ke ca sau khi chon vung).
+Private Sub UserForm_Activate()
+    SetUnicodeTitle Me
+End Sub
+
+' Nut X: an thay vi huy form de lenh goi con doc duoc ket qua (Accepted = False).
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+    If CloseMode = vbFormControlMenu Then
+        Cancel = True
+        Me.Hide
+    End If
+End Sub

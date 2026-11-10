@@ -7,3 +7,7 @@ coverage/
 test/fixtures/local/
 smoke-output/
 installer/.build/
+__pycache__/
+
+# Bản VBA: file build (.xlam, kết quả) sinh trên máy Windows
+vba/dist/
