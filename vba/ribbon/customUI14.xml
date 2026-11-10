@@ -31,6 +31,11 @@
           <button id="btnNgayCuoi" label="Ngày cuối" size="large" image="imgLast" onAction="RB_Action"
                   screentip="Ngày cuối" supertip="Ghi dữ liệu ngày cuối cùng lên biểu mẫu."/>
         </group>
+        <group id="grpIn" label="In">
+          <button id="btnInNhatKy" label="In nhật ký" size="large" imageMso="FilePrint" onAction="RB_Action"
+                  screentip="In nhật ký"
+                  supertip="In biểu mẫu theo ngày đang hiển thị, một ngày, khoảng ngày hoặc tất cả — ra máy in hoặc một file PDF."/>
+        </group>
         <group id="grpTienIch" label="Tiện ích">
           <menu id="mnuTienIch" label="Tiện ích" size="large" image="imgHelp"
                 screentip="Tiện ích" supertip="Hướng dẫn sử dụng, phiên bản add-in và kiểm tra cập nhật.">

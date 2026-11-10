@@ -1,0 +1,343 @@
+'==============================================================================
+' NHAT KY TC ? hop thoai In nhat ky (F5). Bo cuc: vba/forms/frmInNhatKy.json.
+' Vung in (mot vung lien tuc trong file dang in), cac ngay can in (SelectPrintDays), dau ra may in hoac mot file PDF.
+' Kiem tra xong thi Accepted = True; lenh goi (CmdInNhatKy) doc ket qua roi in qua workbook tam.
+'==============================================================================
+Option Explicit
+
+Private Const MAX_COPIES As Long = 99
+Private Const XL_DIALOG_PRINTER_SETUP As Long = 9
+Private Const COLOR_TEXT As Long = &H80000012
+Private Const COLOR_ERROR As Long = &HC0&
+
+Private mAccepted As Boolean
+Private mPick As String
+Private mLoading As Boolean
+Private mWorkbook As Workbook
+Private mRange As Range
+Private mDayNums() As Long
+Private mDayCount As Long
+Private mCurrentDay As Long
+Private mMode As Long
+Private mFromDay As Long
+Private mToDay As Long
+Private mDaysOk As Boolean
+Private mCopies As Long
+
+' wb: file dang in; rangeText: vung in goi y; dayNums(0..dayCount-1): cac ngay cua vung nguon (tang dan);
+' currentDay: ngay dang hien thi tren bieu mau (0 neu chua co).
+Public Sub Init(ByVal wb As Workbook, ByVal rangeText As String, ByRef dayNums() As Long, ByVal dayCount As Long, _
+                ByVal currentDay As Long)
+    Dim i As Long
+    Set mWorkbook = wb
+    mDayCount = dayCount
+    If dayCount > 0 Then
+        ReDim mDayNums(0 To dayCount - 1)
+        For i = 0 To dayCount - 1
+            mDayNums(i) = dayNums(i)
+        Next i
+    Else
+        ReDim mDayNums(0 To 0)
+    End If
+    mCurrentDay = currentDay
+
+    mLoading = True
+    If currentDay > 0 Then
+        optHienTai.Caption = U("Ng\u00e0y \u0111ang hi\u1ec3n th\u1ecb (") & FormatDay(currentDay) & ")"
+        txtNgay.Text = FormatDay(currentDay)
+    Else
+        optHienTai.Caption = U("Ng\u00e0y \u0111ang hi\u1ec3n th\u1ecb (ch\u01b0a c\u00f3)")
+    End If
+    optTatCa.Caption = U("T\u1ea5t c\u1ea3 (") & dayCount & U(" ng\u00e0y)")
+    If dayCount > 0 Then
+        If currentDay <= 0 Then txtNgay.Text = FormatDay(mDayNums(0))
+        txtTu.Text = FormatDay(mDayNums(0))
+        txtDen.Text = FormatDay(mDayNums(dayCount - 1))
+    End If
+    txtVung.Text = rangeText
+    txtSoBan.Text = "1"
+    If currentDay > 0 Then optHienTai.Value = True Else optTatCa.Value = True
+    optMayIn.Value = True
+    mLoading = False
+
+    ShowPrinter
+    LoadRange
+    UpdateDays
+    UpdateOutput
+End Sub
+
+'------------------------------------------------------------------------------
+' Ket qua cho lenh goi.
+'------------------------------------------------------------------------------
+Public Property Get Accepted() As Boolean
+    Accepted = mAccepted
+End Property
+
+Public Property Get PrintRange() As Range
+    Set PrintRange = mRange
+End Property
+
+' PRINT_CURRENT / PRINT_ONE / PRINT_RANGE / PRINT_ALL (modNKTC_Print).
+Public Property Get Mode() As Long
+    Mode = mMode
+End Property
+
+Public Property Get FromDay() As Long
+    FromDay = mFromDay
+End Property
+
+Public Property Get ToDay() As Long
+    ToDay = mToDay
+End Property
+
+Public Property Get ToPdf() As Boolean
+    ToPdf = optPdf.Value
+End Property
+
+Public Property Get Copies() As Long
+    Copies = mCopies
+End Property
+
+' Nut "Chon": an hop thoai de lenh goi mo hop chon vung cua Excel (Application.InputBox), roi hien lai.
+Public Property Get PickRequest() As String
+    PickRequest = mPick
+End Property
+
+Public Property Get PickCurrent() As String
+    PickCurrent = txtVung.Text
+End Property
+
+' Ket qua chon vung (rong = nguoi dung bam Cancel, giu gia tri cu).
+Public Sub ApplyPick(ByVal text As String)
+    mPick = ""
+    If Len(text) > 0 Then txtVung.Text = text
+End Sub
+
+'------------------------------------------------------------------------------
+' Vung in
+'------------------------------------------------------------------------------
+Private Sub LoadRange()
+    Dim r As Range, msg As String
+    Set mRange = Nothing
+    Set r = TryRange(txtVung.Text)
+    If r Is Nothing Then
+        If Len(Trim$(txtVung.Text)) = 0 Then
+            msg = U("Ch\u01b0a c\u00f3 v\u00f9ng in \u2014 g\u00f5 \u0111\u1ecba ch\u1ec9 ho\u1eb7c b\u1ea5m Ch\u1ecdn.")
+        Else
+            msg = U("\u0110\u1ecba ch\u1ec9 v\u00f9ng in kh\u00f4ng h\u1ee3p l\u1ec7.")
+        End If
+    ElseIf r.Areas.Count > 1 Then
+        msg = U("V\u00f9ng in ph\u1ea3i l\u00e0 m\u1ed9t v\u00f9ng li\u00ean t\u1ee5c (ch\u1ec9 ch\u1ecdn m\u1ed9t v\u00f9ng).")
+    ElseIf Not r.Worksheet.Parent Is mWorkbook Then
+        msg = U("V\u00f9ng in ph\u1ea3i n\u1eb1m trong file \u0111ang in (") & mWorkbook.Name & ")."
+    End If
+    If Len(msg) > 0 Then
+        lblVungTT.ForeColor = COLOR_ERROR
+        lblVungTT.Caption = msg
+    Else
+        Set mRange = r
+        lblVungTT.ForeColor = COLOR_TEXT
+        lblVungTT.Caption = U("V\u00f9ng in: ") & RefText(r)
+    End If
+    UpdateButton
+End Sub
+
+Private Sub txtVung_Change()
+    If Not mLoading Then LoadRange
+End Sub
+
+Private Sub cmdChonVung_Click()
+    mPick = "Vung"
+    Me.Hide
+End Sub
+
+'------------------------------------------------------------------------------
+' Ngay in
+'------------------------------------------------------------------------------
+Private Function SelectedMode() As Long
+    If optHienTai.Value Then
+        SelectedMode = PRINT_CURRENT
+    ElseIf optMotNgay.Value Then
+        SelectedMode = PRINT_ONE
+    ElseIf optKhoang.Value Then
+        SelectedMode = PRINT_RANGE
+    Else
+        SelectedMode = PRINT_ALL
+    End If
+End Function
+
+' Ngay go trong o: rong -> 0 (SelectPrintDays bao thieu ngay); khong doc duoc -> tra ve loi.
+Private Function ReadDay(ByVal text As String, ByRef dayNum As Long) As String
+    dayNum = 0
+    If Len(Trim$(text)) = 0 Then Exit Function
+    dayNum = ParseDateText(text)
+    If dayNum = 0 Then ReadDay = """" & Trim$(text) & U(""" kh\u00f4ng ph\u1ea3i ng\u00e0y h\u1ee3p l\u1ec7 (dd/mm/yyyy).")
+End Function
+
+' Tinh lai cac ngay se in theo lua chon hien tai; hien "Se in N ngay." hoac loi (chu do).
+Private Sub UpdateDays()
+    Dim days() As NKTC_SourceDay, picked() As Long, pickedCount As Long, i As Long, msg As String
+    mDaysOk = False
+    mMode = SelectedMode()
+    mFromDay = 0
+    mToDay = 0
+    If mMode = PRINT_ONE Then
+        msg = ReadDay(txtNgay.Text, mFromDay)
+    ElseIf mMode = PRINT_RANGE Then
+        msg = ReadDay(txtTu.Text, mFromDay)
+        If Len(msg) = 0 Then msg = ReadDay(txtDen.Text, mToDay)
+    End If
+    If Len(msg) = 0 Then
+        If mDayCount > 0 Then
+            ReDim days(0 To mDayCount - 1)
+            For i = 0 To mDayCount - 1
+                days(i).DayNum = mDayNums(i)
+            Next i
+        Else
+            ReDim days(0 To 0)
+        End If
+        msg = SelectPrintDays(days, mDayCount, mMode, mFromDay, mToDay, mCurrentDay, picked, pickedCount)
+    End If
+    If Len(msg) > 0 Then
+        lblSoNgay.ForeColor = COLOR_ERROR
+        lblSoNgay.Caption = msg
+    Else
+        mDaysOk = True
+        lblSoNgay.ForeColor = COLOR_TEXT
+        lblSoNgay.Caption = U("S\u1ebd in ") & pickedCount & U(" ng\u00e0y.")
+    End If
+    UpdateButton
+End Sub
+
+' Go ngay vao o -> tu chon lua chon tuong ung.
+Private Sub SelectDayOption(ByVal opt As Object)
+    If Not opt.Value Then
+        mLoading = True
+        opt.Value = True
+        mLoading = False
+    End If
+    UpdateDays
+End Sub
+
+Private Sub optHienTai_Click()
+    If Not mLoading Then UpdateDays
+End Sub
+
+Private Sub optMotNgay_Click()
+    If Not mLoading Then UpdateDays
+End Sub
+
+Private Sub optKhoang_Click()
+    If Not mLoading Then UpdateDays
+End Sub
+
+Private Sub optTatCa_Click()
+    If Not mLoading Then UpdateDays
+End Sub
+
+Private Sub txtNgay_Change()
+    If Not mLoading Then SelectDayOption optMotNgay
+End Sub
+
+Private Sub txtTu_Change()
+    If Not mLoading Then SelectDayOption optKhoang
+End Sub
+
+Private Sub txtDen_Change()
+    If Not mLoading Then SelectDayOption optKhoang
+End Sub
+
+'------------------------------------------------------------------------------
+' Dau ra
+'------------------------------------------------------------------------------
+' So ban in: so nguyen 1..MAX_COPIES; 0 neu khong hop le.
+Private Function ParseCopies(ByVal text As String) As Long
+    Dim i As Long
+    text = Trim$(text)
+    If Len(text) = 0 Or Len(text) > Len(CStr(MAX_COPIES)) Then Exit Function
+    For i = 1 To Len(text)
+        If Mid$(text, i, 1) < "0" Or Mid$(text, i, 1) > "9" Then Exit Function
+    Next i
+    If CLng(text) >= 1 And CLng(text) <= MAX_COPIES Then ParseCopies = CLng(text)
+End Function
+
+Private Sub ShowPrinter()
+    Dim printer As String
+    printer = ActivePrinterName()
+    If Len(printer) = 0 Then
+        lblMayIn.Caption = U("M\u00e1y in: (ch\u01b0a c\u00f3 m\u00e1y in)")
+    Else
+        lblMayIn.Caption = U("M\u00e1y in: ") & printer
+    End If
+End Sub
+
+Private Sub UpdateOutput()
+    Dim toPrinter As Boolean
+    toPrinter = optMayIn.Value
+    lblSoBan.Enabled = toPrinter
+    txtSoBan.Enabled = toPrinter
+    cmdMayIn.Enabled = toPrinter
+    lblMayIn.Enabled = toPrinter
+    If toPrinter Then cmdIn.Caption = "In" Else cmdIn.Caption = U("Xu\u1ea5t PDF")
+    UpdateButton
+End Sub
+
+' Bat nut In khi vung in, ngay in va so ban deu hop le.
+Private Sub UpdateButton()
+    Dim msg As String
+    mCopies = 1
+    If optMayIn.Value Then
+        mCopies = ParseCopies(txtSoBan.Text)
+        If mCopies = 0 Then msg = U("S\u1ed1 b\u1ea3n ph\u1ea3i l\u00e0 s\u1ed1 nguy\u00ean t\u1eeb 1 \u0111\u1ebfn ") & MAX_COPIES & "."
+    End If
+    lblLoi.Caption = msg
+    cmdIn.Enabled = (Not mRange Is Nothing) And mDaysOk And Len(msg) = 0
+End Sub
+
+Private Sub optMayIn_Click()
+    If Not mLoading Then UpdateOutput
+End Sub
+
+Private Sub optPdf_Click()
+    If Not mLoading Then UpdateOutput
+End Sub
+
+Private Sub txtSoBan_Change()
+    If Not mLoading Then UpdateButton
+End Sub
+
+' Hop thoai chon may in cua Excel (doi may in hien hanh).
+Private Sub cmdMayIn_Click()
+    On Error Resume Next
+    Application.Dialogs(XL_DIALOG_PRINTER_SETUP).Show
+    On Error GoTo 0
+    ShowPrinter
+End Sub
+
+'------------------------------------------------------------------------------
+' In / Huy
+'------------------------------------------------------------------------------
+Private Sub cmdIn_Click()
+    LoadRange
+    UpdateDays
+    If Not cmdIn.Enabled Then Exit Sub
+    mAccepted = True
+    Me.Hide
+End Sub
+
+Private Sub cmdHuy_Click()
+    Me.Hide
+End Sub
+
+' Tieu de tieng Viet (moi lan hien lai, ke ca sau khi chon vung).
+Private Sub UserForm_Activate()
+    SetUnicodeTitle Me
+End Sub
+
+' Nut X: an thay vi huy form de lenh goi con doc duoc ket qua (Accepted = False).
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+    If CloseMode = vbFormControlMenu Then
+        Cancel = True
+        Me.Hide
+    End If
+End Sub
