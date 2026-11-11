@@ -13,7 +13,7 @@ Private Const XL_TYPE_PDF As Long = 0
 Private Const XL_ERROR_HANDLER As Long = 2
 Private Const XL_DISABLED As Long = 0
 Private Const XL_SHEET_VISIBLE As Long = -1
-Private Const XL_PASTE_VALUES As Long = -4163
+Private Const XL_CELL_TYPE_FORMULAS As Long = -4123
 Private Const ERR_USER_BREAK As Long = 18
 
 ' Ten may in hien hanh cua Excel; rong neu may chua cai may in.
@@ -124,34 +124,49 @@ Private Function AskPdfPath(ByVal wb As Workbook, ByVal firstDay As Long, ByVal 
 End Function
 
 ' Doi cong thuc cua ban sao (dst, trong workbook tam) thanh gia tri lay tu sheet goc (src, da tinh trong file nhat ky):
-' ban sao tinh lai trong workbook tam co the ra ket qua khac (INDIRECT, CELL("filename")?). Dan gia tri giu nguyen kieu
-' du lieu, o gop, cong thuc mang. Goi ngay sau khi chep sheet.
+' ban sao tinh lai trong workbook tam co the ra ket qua khac (INDIRECT, CELL("filename")?). Chi ghi vao o co cong thuc
+' (khong dan ca vung: Excel tu choi dan de vung co o gop), khong dung Clipboard, khong dung cac o khac. Goi ngay sau
+' khi chep sheet.
 Private Sub FreezeValues(ByVal src As Worksheet, ByVal dst As Worksheet)
-    Dim used As Range, anyFormula As Variant, v As Variant, i As Long, j As Long
-    Set used = src.UsedRange
-    anyFormula = used.HasFormula          ' True / False / Null (chi mot phan co cong thuc)
-    If Not IsNull(anyFormula) Then
-        If Not anyFormula Then Exit Sub
-    End If
-    If src.FilterMode Then
-        ' Sheet dang loc (AutoFilter an dong): Copy chi chep dong dang hien -> ghi thang gia tri.
-        ' Chu duoc them dau ' o dau de Excel khong doc lai ("- ...", "= ..." thanh cong thuc, "001" thanh so).
-        v = used.Value2
-        If IsArray(v) Then
-            For i = LBound(v, 1) To UBound(v, 1)
-                For j = LBound(v, 2) To UBound(v, 2)
-                    If VarType(v(i, j)) = vbString Then v(i, j) = "'" & v(i, j)
-                Next j
-            Next i
-        ElseIf VarType(v) = vbString Then
-            v = "'" & v
+    Dim formulas As Range, c As Range, block As Range, probe As Object, spills As Boolean
+    On Error Resume Next
+    Set formulas = src.UsedRange.SpecialCells(XL_CELL_TYPE_FORMULAS)   ' loi khi khong co o cong thuc nao
+    On Error GoTo 0
+    If formulas Is Nothing Then Exit Sub
+    For Each c In formulas.Cells
+        Set block = Nothing
+        If c.HasArray Then
+            ' Cong thuc mang Ctrl+Shift+Enter: ghi ca mang mot lan, tai o dau cua mang.
+            If c.Address = c.CurrentArray.Cells(1, 1).Address Then Set block = c.CurrentArray
+        Else
+            ' Cong thuc mang dong (spill, Excel 365): ghi ca vung tran. Excel cu khong co HasSpill -> chi ghi o do.
+            Set probe = c
+            spills = False
+            On Error Resume Next
+            spills = probe.HasSpill
+            If spills Then Set block = probe.SpillingToRange
+            On Error GoTo 0
+            If block Is Nothing Then Set block = c
         End If
-        dst.Range(used.Address).Value2 = v
-    Else
-        used.Copy
-        dst.Range(used.Address).PasteSpecial Paste:=XL_PASTE_VALUES
-        Application.CutCopyMode = False
+        If Not block Is Nothing Then WriteFrozen dst.Range(block.Address), block.Value2
+    Next c
+End Sub
+
+' Ghi gia tri da tinh vao ban sao. Chu duoc them dau ' o dau de Excel khong doc lai ("- ...", "= ..." thanh cong thuc,
+' "001" thanh so, "05/06" thanh ngay).
+Private Sub WriteFrozen(ByVal target As Range, ByVal values As Variant)
+    Dim i As Long, j As Long
+    If IsArray(values) Then
+        For i = LBound(values, 1) To UBound(values, 1)
+            For j = LBound(values, 2) To UBound(values, 2)
+                If VarType(values(i, j)) = vbString Then values(i, j) = "'" & values(i, j)
+            Next j
+        Next i
+    ElseIf VarType(values) = vbString Then
+        values = "'" & values
     End If
+    If target.Cells(1, 1).HasArray Then target.ClearContents     ' mang Ctrl+Shift+Enter: xoa ca mang roi moi ghi duoc
+    target.Value2 = values
 End Sub
 
 ' In cac ngay picked(0..pickedCount-1) (chi so trong days()) qua workbook tam roi bao ket qua.
@@ -253,7 +268,6 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
 Cleanup:
     On Error Resume Next
     Application.EnableCancelKey = XL_DISABLED
-    Application.CutCopyMode = False
     Application.DisplayAlerts = False
     If Not tmp Is Nothing Then tmp.Close SaveChanges:=False
     Application.DisplayAlerts = oldAlerts

@@ -13,7 +13,7 @@ Private Const XL_TYPE_PDF As Long = 0
 Private Const XL_ERROR_HANDLER As Long = 2
 Private Const XL_DISABLED As Long = 0
 Private Const XL_SHEET_VISIBLE As Long = -1
-Private Const XL_PASTE_VALUES As Long = -4163
+Private Const XL_CELL_TYPE_FORMULAS As Long = -4123
 Private Const ERR_USER_BREAK As Long = 18
 
 ' Tên máy in hiện hành của Excel; rỗng nếu máy chưa cài máy in.
@@ -124,34 +124,49 @@ Private Function AskPdfPath(ByVal wb As Workbook, ByVal firstDay As Long, ByVal 
 End Function
 
 ' Đổi công thức của bản sao (dst, trong workbook tạm) thành giá trị lấy từ sheet gốc (src, đã tính trong file nhật ký):
-' bản sao tính lại trong workbook tạm có thể ra kết quả khác (INDIRECT, CELL("filename")…). Dán giá trị giữ nguyên kiểu
-' dữ liệu, ô gộp, công thức mảng. Gọi ngay sau khi chép sheet.
+' bản sao tính lại trong workbook tạm có thể ra kết quả khác (INDIRECT, CELL("filename")…). Chỉ ghi vào ô có công thức
+' (không dán cả vùng: Excel từ chối dán đè vùng có ô gộp), không dùng Clipboard, không đụng các ô khác. Gọi ngay sau
+' khi chép sheet.
 Private Sub FreezeValues(ByVal src As Worksheet, ByVal dst As Worksheet)
-    Dim used As Range, anyFormula As Variant, v As Variant, i As Long, j As Long
-    Set used = src.UsedRange
-    anyFormula = used.HasFormula          ' True / False / Null (chỉ một phần có công thức)
-    If Not IsNull(anyFormula) Then
-        If Not anyFormula Then Exit Sub
-    End If
-    If src.FilterMode Then
-        ' Sheet đang lọc (AutoFilter ẩn dòng): Copy chỉ chép dòng đang hiện -> ghi thẳng giá trị.
-        ' Chữ được thêm dấu ' ở đầu để Excel không đọc lại ("- ...", "= ..." thành công thức, "001" thành số).
-        v = used.Value2
-        If IsArray(v) Then
-            For i = LBound(v, 1) To UBound(v, 1)
-                For j = LBound(v, 2) To UBound(v, 2)
-                    If VarType(v(i, j)) = vbString Then v(i, j) = "'" & v(i, j)
-                Next j
-            Next i
-        ElseIf VarType(v) = vbString Then
-            v = "'" & v
+    Dim formulas As Range, c As Range, block As Range, probe As Object, spills As Boolean
+    On Error Resume Next
+    Set formulas = src.UsedRange.SpecialCells(XL_CELL_TYPE_FORMULAS)   ' lỗi khi không có ô công thức nào
+    On Error GoTo 0
+    If formulas Is Nothing Then Exit Sub
+    For Each c In formulas.Cells
+        Set block = Nothing
+        If c.HasArray Then
+            ' Công thức mảng Ctrl+Shift+Enter: ghi cả mảng một lần, tại ô đầu của mảng.
+            If c.Address = c.CurrentArray.Cells(1, 1).Address Then Set block = c.CurrentArray
+        Else
+            ' Công thức mảng động (spill, Excel 365): ghi cả vùng tràn. Excel cũ không có HasSpill -> chỉ ghi ô đó.
+            Set probe = c
+            spills = False
+            On Error Resume Next
+            spills = probe.HasSpill
+            If spills Then Set block = probe.SpillingToRange
+            On Error GoTo 0
+            If block Is Nothing Then Set block = c
         End If
-        dst.Range(used.Address).Value2 = v
-    Else
-        used.Copy
-        dst.Range(used.Address).PasteSpecial Paste:=XL_PASTE_VALUES
-        Application.CutCopyMode = False
+        If Not block Is Nothing Then WriteFrozen dst.Range(block.Address), block.Value2
+    Next c
+End Sub
+
+' Ghi giá trị đã tính vào bản sao. Chữ được thêm dấu ' ở đầu để Excel không đọc lại ("- ...", "= ..." thành công thức,
+' "001" thành số, "05/06" thành ngày).
+Private Sub WriteFrozen(ByVal target As Range, ByVal values As Variant)
+    Dim i As Long, j As Long
+    If IsArray(values) Then
+        For i = LBound(values, 1) To UBound(values, 1)
+            For j = LBound(values, 2) To UBound(values, 2)
+                If VarType(values(i, j)) = vbString Then values(i, j) = "'" & values(i, j)
+            Next j
+        Next i
+    ElseIf VarType(values) = vbString Then
+        values = "'" & values
     End If
+    If target.Cells(1, 1).HasArray Then target.ClearContents     ' mảng Ctrl+Shift+Enter: xóa cả mảng rồi mới ghi được
+    target.Value2 = values
 End Sub
 
 ' In các ngày picked(0..pickedCount-1) (chỉ số trong days()) qua workbook tạm rồi báo kết quả.
@@ -253,7 +268,6 @@ Private Sub RunPrint(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef
 Cleanup:
     On Error Resume Next
     Application.EnableCancelKey = XL_DISABLED
-    Application.CutCopyMode = False
     Application.DisplayAlerts = False
     If Not tmp Is Nothing Then tmp.Close SaveChanges:=False
     Application.DisplayAlerts = oldAlerts
