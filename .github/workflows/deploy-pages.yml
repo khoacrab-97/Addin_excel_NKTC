@@ -111,6 +111,7 @@ jobs:
           - **Tạo bảng** tiến độ, **Xuất theo ngày** (sheet NK_TheoNgay).
           - **Chèn form mẫu**, **Xuất vào form**: gán cột vào ô biểu mẫu; cột được nhớ theo tên tiêu đề; dòng "Ngày … tháng … năm …" tự điền.
           - Chuyển ngày: **Ngày đầu · Ngày trước · Ngày sau · Ngày cuối**.
+          - **In nhật ký**: in biểu mẫu cho ngày đang hiển thị / một ngày / khoảng ngày / tất cả, ra máy in hoặc gộp một file PDF; vùng in tùy chọn (mẫu in tự dựng).
           - Tự kiểm tra bản mới mỗi ngày (kiểm tra SHA-256 trước khi dùng); mở lại Excel là dùng bản mới.
 
           ## Cài đặt
