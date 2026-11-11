@@ -58,6 +58,7 @@ Bộ cài thực hiện (chỉ trong phạm vi tài khoản người dùng):
 | Không thấy tab **Nhật ký TC** | Excel → **File → Options → Add-ins** → ô *Manage* chọn **Excel Add-ins** → **Go…** → tích **NhatKyThiCong** (nếu không có: **Browse…** → `%LOCALAPPDATA%\NhatKyTC\NhatKyThiCong.xlam`). Nếu nằm ở **Disabled Items** (ô *Manage* → *Disabled Items* → **Go…**) thì chọn và **Enable**. |
 | Thông báo *"Không tìm thấy tệp NhatKyThiCong_Core.xlam"* | Chạy lại bộ cài. |
 | **Kiểm tra cập nhật** báo lỗi mạng / HTTP | Kiểm tra Internet; add-in vẫn dùng bình thường với bản hiện có. |
+| **Kiểm tra cập nhật** báo *HTTP 404 … /vba/version.txt* | Lỗi phía máy chủ phát hành (không phải máy người dùng) — báo người bảo trì xử lý theo mục 8. Add-in vẫn dùng bình thường với bản hiện có. |
 | Còn tab "Nhật ký thi công" (bản cũ) | Gỡ bản cũ theo mục 7. |
 
 ## 6. Ghi chú bảo mật
@@ -72,3 +73,14 @@ Bản cũ tải mã từ Internet mỗi lần mở và đã ngừng hỗ trợ t
 1. Đóng Excel → **Settings → Apps → Installed apps** → **Nhật ký thi công (Excel add-in)** → **Uninstall** (lưu ý: không gỡ nhầm **Nhật ký TC**).
 2. Nếu còn thấy tab cũ: Excel → **Insert → My Add-ins** (Phần bổ trợ của tôi) → thẻ **Developer Add-ins** → chuột phải **Nhật ký thi công** → **Remove**.
 3. Cấu hình gán của bản cũ lưu theo cách khác, nên với file nhật ký cũ hãy bấm **Xuất vào form** để gán lại một lần.
+
+## 8. Dành cho người bảo trì: kênh phát hành (GitHub Pages)
+
+Kênh tự cập nhật `https://khoacrab-97.github.io/Addin_excel_NKTC/vba/` (`version.txt` + `NhatKyThiCong_Core.xlam`), trang tải về và GitHub Release `vba-v<phiên bản>` đều do workflow **Deploy GitHub Pages** (`.github/workflows/deploy-pages.yml`) tạo mỗi khi có thay đổi vào `main`.
+
+**Cài đặt bắt buộc:** repo → **Settings → Pages → Build and deployment → Source = "GitHub Actions"**.
+
+- **Không** để *"Deploy from a branch"*: khi đó mỗi lần merge, GitHub chạy thêm quy trình *pages build and deployment* đăng nguyên thư mục repo (không có `vba/version.txt`). Quy trình nào xong sau sẽ ghi đè quy trình kia → kênh cập nhật có lúc trả **HTTP 404**, tất cả máy người dùng báo *"Không kiểm tra được bản cập nhật"* (sự cố ngày 11/11/2026 khi phát hành 3.1.0).
+- Kiểm tra sau mỗi lần phát hành: mở `https://khoacrab-97.github.io/Addin_excel_NKTC/vba/version.txt` (Ctrl+F5) → dòng đầu phải là `version=<phiên bản mới>`; trang **Settings → Pages** ghi *"last deployed … by the Deploy GitHub Pages workflow"*.
+- Nếu `version.txt` báo 404: kiểm tra lại Source như trên, rồi **Actions → Deploy GitHub Pages → Run workflow** (nhánh `main`) để đăng lại. Chạy lại không tạo Release trùng (phiên bản đã có Release sẽ được bỏ qua).
+
