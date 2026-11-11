@@ -211,12 +211,12 @@ Chủ dự án nghiệm thu bản VBA 3.0.0 (cài đặt, chức năng, kênh c�
 
 ## Phase 14 — F5 In nhật ký (bản 3.1.0)
 
-Nút **In nhật ký** (nhóm In): in biểu mẫu cho ngày đang hiển thị / một ngày / khoảng ngày / tất cả, ra máy in hoặc một file PDF gộp. Đã build trên Windows (biên dịch OK, kiểm thử phần lõi PASS 211); hộp thoại và lệnh in chờ nghiệm thu P1–P9.
+Nút **In nhật ký** (nhóm In): in biểu mẫu cho ngày đang hiển thị / một ngày / khoảng ngày / tất cả, ra máy in hoặc một file PDF gộp. Đã build trên Windows (biên dịch OK, kiểm thử phần lõi PASS 211) và nghiệm thu P1–P9 đạt trên Excel Desktop Windows (2026-11-11).
 
 | ID | Hạng mục | Trạng thái |
 |---|---|---|
-| P14.1 | Lõi chọn ngày in (`modNKTC_Print`: 4 chế độ, ngưỡng xác nhận 50 ngày, tên file PDF, tên sheet tạm) + kiểm thử `TestPrint` | Tested |
-| P14.2 | Chuyển tới ngày cụ thể (`CMD_GOTO`, `ShowDayOnForm`, `LoadPrintDays`) | Tested |
-| P14.3 | Hộp thoại `frmInNhatKy` + lệnh `CmdInNhatKy` + nhóm Ribbon "In" | Implemented |
-| P14.4 | Tài liệu (BUSINESS_SPEC F5, MASTER_CONTEXT, README, hướng dẫn cài đặt, kiểm thử nghiệm thu mục P, `vba/README.md`, Hướng dẫn trong add-in) + phiên bản 3.1.0 | Implemented |
-| P14.5 | Build trên Windows, chạy `NKTC_RunTests`, nghiệm thu P1–P9 trên Excel Desktop Windows | In Progress — build 3.1.0 đạt (biên dịch OK, `NKTC_RunTests` PASS 211, 2026-11-10); chờ nghiệm thu P1–P9 |
+| P14.1 | Lõi chọn ngày in (`modNKTC_Print`: 4 chế độ, ngưỡng xác nhận 50 ngày, tên file PDF, tên sheet tạm) + kiểm thử `TestPrint` | Verified |
+| P14.2 | Chuyển tới ngày cụ thể (`CMD_GOTO`, `ShowDayOnForm`, `LoadPrintDays`) | Verified |
+| P14.3 | Hộp thoại `frmInNhatKy` + lệnh `CmdInNhatKy` + nhóm Ribbon "In" | Verified |
+| P14.4 | Tài liệu (BUSINESS_SPEC F5, MASTER_CONTEXT, README, hướng dẫn cài đặt, kiểm thử nghiệm thu mục P, `vba/README.md`, Hướng dẫn trong add-in) + phiên bản 3.1.0 | Verified |
+| P14.5 | Build trên Windows, chạy `NKTC_RunTests`, nghiệm thu P1–P9 trên Excel Desktop Windows | Verified — build 3.1.0 đạt (biên dịch OK, `NKTC_RunTests` PASS 211); nghiệm thu P1–P9 đạt (2026-11-11; lần đầu P1–P3 lỗi ô gộp, đã sửa và build lại) |
