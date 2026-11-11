@@ -53,6 +53,9 @@ Bản chuyển đổi từ add-in Office.js sang add-in VBA, cùng kiểu với 
 | `modNKTC_Loader` (bộ nạp) | Thay lõi bằng bản đã tải (kiểm lại SHA-256), mở lõi | — |
 | `modNKTC_Ribbon` | Nhận lệnh từ nút Ribbon (`RB_Action`), Phiên bản | `manifest.xml` + `commands.ts` |
 | `frmTaoBang`, `frmXuatNgay`, `frmXuatForm` | Hộp thoại Tạo bảng, Xuất nhật ký theo ngày, Xuất vào form (ô chọn vùng: ô nhập + nút **Chọn**) | `src/dialog/views/*` |
+| `modNKTC_Print` | F5: chọn ngày cần in (4 chế độ, ngưỡng xác nhận 50 ngày), tên file PDF `NKTC_dd-mm-yyyy.pdf`, tên sheet tạm `Ngay_dd-mm-yyyy` (phần lõi, không gọi Excel) | — |
+| `modNKTC_PrintCommands` | Lệnh Ribbon F5: **In nhật ký** — in qua workbook tạm (mỗi ngày một sheet, giá trị đã đóng băng), khôi phục ngày đang xem, ra máy in hoặc PDF gộp | — |
+| `frmInNhatKy` | Hộp thoại In nhật ký: Vùng in (ô nhập + nút **Chọn**), Ngày in, Đầu ra (máy in + số bản + **Chọn máy in…** / PDF) | — |
 | `modNKTC_Tests` | Kiểm thử phần lõi: `NKTC_RunTests()` → `PASS n` hoặc danh sách lỗi | `src/core/**/*.test.ts` |
 
 ## Quy ước

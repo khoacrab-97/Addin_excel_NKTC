@@ -32,6 +32,7 @@ Public Const CMD_FIRST As Long = 1
 Public Const CMD_PREV As Long = 2
 Public Const CMD_NEXT As Long = 3
 Public Const CMD_LAST As Long = 4
+Public Const CMD_GOTO As Long = 5      ' một ngày cụ thể (targetDay)
 
 '------------------------------------------------------------------------------
 ' Khóa ô đích
@@ -157,7 +158,7 @@ End Function
 
 ' Ngày cần hiển thị cho một lệnh chuyển ngày. currentDay = 0 nếu chưa hiển thị ngày nào.
 Public Function ResolveDay(ByRef days() As NKTC_SourceDay, ByVal dayCount As Long, ByVal currentDay As Long, _
-                           ByVal command As Long) As NKTC_DayResolution
+                           ByVal command As Long, Optional ByVal targetDay As Long = 0) As NKTC_DayResolution
     Dim res As NKTC_DayResolution, idx As Long, nextIdx As Long
     If dayCount = 0 Then
         res.Message = "Vùng nguồn không có ngày hợp lệ ở cột Ngày đã chọn."
@@ -166,6 +167,13 @@ Public Function ResolveDay(ByRef days() As NKTC_SourceDay, ByVal dayCount As Lon
     Select Case command
         Case CMD_FIRST: res.Ok = True: res.TargetIndex = 0
         Case CMD_LAST: res.Ok = True: res.TargetIndex = dayCount - 1
+        Case CMD_GOTO
+            idx = IndexOfDay(days, dayCount, targetDay)
+            If idx >= 0 Then
+                res.Ok = True: res.TargetIndex = idx
+            Else
+                res.Message = "Không có ngày " & FormatDay(targetDay) & " trong vùng nguồn."
+            End If
         Case CMD_PREV, CMD_NEXT
             idx = -1
             If currentDay > 0 Then idx = IndexOfDay(days, dayCount, currentDay)

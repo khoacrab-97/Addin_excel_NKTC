@@ -206,3 +206,17 @@ Chủ dự án nghiệm thu bản VBA 3.0.0 (cài đặt, chức năng, kênh c�
 | P13.2 | GitHub Pages: trang tĩnh `site/` (thông báo bản cũ đã ngừng + link tải bản VBA + cách gỡ bản cũ), biểu mẫu tải về, kênh cập nhật `/vba/`. Máy còn cài bản Office.js: các nút không còn chạy; hướng dẫn gỡ ở `docs/HUONG_DAN_CAI_DAT.md` mục 7 | Implemented |
 | P13.3 | Workflow: CI chỉ còn kiểm tra VBA + dựng bộ cài thử; deploy chỉ còn trang tĩnh + kênh cập nhật + Release `vba-v<phiên bản>` (bỏ job phát hành Office.js) | Implemented |
 | P13.4 | Tài liệu: README, MASTER_CONTEXT §4, CLAUDE.md (môi trường, quy tắc mã), hướng dẫn cài đặt, kiểm thử nghiệm thu chuyển sang bản VBA; BUSINESS_SPEC, BAO_MAT ghi chú phần lịch sử Office.js | Implemented |
+
+---
+
+## Phase 14 — F5 In nhật ký (bản 3.1.0)
+
+Nút **In nhật ký** (nhóm In): in biểu mẫu cho ngày đang hiển thị / một ngày / khoảng ngày / tất cả, ra máy in hoặc một file PDF gộp. Đã build trên Windows (biên dịch OK, kiểm thử phần lõi PASS 211) và nghiệm thu P1–P9 đạt trên Excel Desktop Windows (2026-11-11).
+
+| ID | Hạng mục | Trạng thái |
+|---|---|---|
+| P14.1 | Lõi chọn ngày in (`modNKTC_Print`: 4 chế độ, ngưỡng xác nhận 50 ngày, tên file PDF, tên sheet tạm) + kiểm thử `TestPrint` | Verified |
+| P14.2 | Chuyển tới ngày cụ thể (`CMD_GOTO`, `ShowDayOnForm`, `LoadPrintDays`) | Verified |
+| P14.3 | Hộp thoại `frmInNhatKy` + lệnh `CmdInNhatKy` + nhóm Ribbon "In" | Verified |
+| P14.4 | Tài liệu (BUSINESS_SPEC F5, MASTER_CONTEXT, README, hướng dẫn cài đặt, kiểm thử nghiệm thu mục P, `vba/README.md`, Hướng dẫn trong add-in) + phiên bản 3.1.0 | Verified |
+| P14.5 | Build trên Windows, chạy `NKTC_RunTests`, nghiệm thu P1–P9 trên Excel Desktop Windows | Verified — build 3.1.0 đạt (biên dịch OK, `NKTC_RunTests` PASS 211); nghiệm thu P1–P9 đạt (2026-11-11; lần đầu P1–P3 lỗi ô gộp, đã sửa và build lại) |

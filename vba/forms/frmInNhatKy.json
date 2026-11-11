@@ -1,0 +1,239 @@
+{
+  "name": "frmInNhatKy",
+  "caption": "In nhật ký",
+  "width": 400,
+  "height": 376,
+  "controls": [
+    {
+      "type": "Label",
+      "name": "lblVung",
+      "left": 12,
+      "top": 10,
+      "width": 366,
+      "height": 14,
+      "Caption": "Vùng in (in vùng này cho mỗi ngày — gõ địa chỉ hoặc bấm Chọn)"
+    },
+    {
+      "type": "TextBox",
+      "name": "txtVung",
+      "left": 12,
+      "top": 24,
+      "width": 318,
+      "height": 18
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdChonVung",
+      "left": 334,
+      "top": 23,
+      "width": 44,
+      "height": 20,
+      "Caption": "Chọn"
+    },
+    {
+      "type": "Label",
+      "name": "lblVungTT",
+      "left": 12,
+      "top": 46,
+      "width": 366,
+      "height": 26,
+      "WordWrap": true,
+      "Caption": ""
+    },
+    {
+      "type": "Label",
+      "name": "lblNgayIn",
+      "left": 12,
+      "top": 78,
+      "width": 366,
+      "height": 14,
+      "Caption": "Ngày in"
+    },
+    {
+      "type": "OptionButton",
+      "name": "optHienTai",
+      "left": 12,
+      "top": 92,
+      "width": 366,
+      "height": 18,
+      "GroupName": "NgayIn",
+      "Caption": "Ngày đang hiển thị"
+    },
+    {
+      "type": "OptionButton",
+      "name": "optMotNgay",
+      "left": 12,
+      "top": 113,
+      "width": 100,
+      "height": 18,
+      "GroupName": "NgayIn",
+      "Caption": "Một ngày"
+    },
+    {
+      "type": "TextBox",
+      "name": "txtNgay",
+      "left": 136,
+      "top": 113,
+      "width": 80,
+      "height": 18
+    },
+    {
+      "type": "OptionButton",
+      "name": "optKhoang",
+      "left": 12,
+      "top": 135,
+      "width": 100,
+      "height": 18,
+      "GroupName": "NgayIn",
+      "Caption": "Khoảng ngày"
+    },
+    {
+      "type": "Label",
+      "name": "lblTu",
+      "left": 114,
+      "top": 138,
+      "width": 20,
+      "height": 14,
+      "Caption": "từ"
+    },
+    {
+      "type": "TextBox",
+      "name": "txtTu",
+      "left": 136,
+      "top": 135,
+      "width": 80,
+      "height": 18
+    },
+    {
+      "type": "Label",
+      "name": "lblDen",
+      "left": 222,
+      "top": 138,
+      "width": 22,
+      "height": 14,
+      "Caption": "đến"
+    },
+    {
+      "type": "TextBox",
+      "name": "txtDen",
+      "left": 246,
+      "top": 135,
+      "width": 80,
+      "height": 18
+    },
+    {
+      "type": "OptionButton",
+      "name": "optTatCa",
+      "left": 12,
+      "top": 157,
+      "width": 366,
+      "height": 18,
+      "GroupName": "NgayIn",
+      "Caption": "Tất cả"
+    },
+    {
+      "type": "Label",
+      "name": "lblSoNgay",
+      "left": 12,
+      "top": 178,
+      "width": 366,
+      "height": 26,
+      "WordWrap": true,
+      "Caption": ""
+    },
+    {
+      "type": "Label",
+      "name": "lblDauRa",
+      "left": 12,
+      "top": 208,
+      "width": 366,
+      "height": 14,
+      "Caption": "Đầu ra"
+    },
+    {
+      "type": "OptionButton",
+      "name": "optMayIn",
+      "left": 12,
+      "top": 223,
+      "width": 70,
+      "height": 18,
+      "GroupName": "DauRa",
+      "Caption": "Máy in"
+    },
+    {
+      "type": "Label",
+      "name": "lblSoBan",
+      "left": 88,
+      "top": 226,
+      "width": 36,
+      "height": 14,
+      "Caption": "Số bản"
+    },
+    {
+      "type": "TextBox",
+      "name": "txtSoBan",
+      "left": 126,
+      "top": 223,
+      "width": 34,
+      "height": 18
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdMayIn",
+      "left": 168,
+      "top": 222,
+      "width": 100,
+      "height": 20,
+      "Caption": "Chọn máy in…"
+    },
+    {
+      "type": "Label",
+      "name": "lblMayIn",
+      "left": 28,
+      "top": 245,
+      "width": 350,
+      "height": 14,
+      "Caption": ""
+    },
+    {
+      "type": "OptionButton",
+      "name": "optPdf",
+      "left": 12,
+      "top": 262,
+      "width": 366,
+      "height": 18,
+      "GroupName": "DauRa",
+      "Caption": "PDF (gộp một file)"
+    },
+    {
+      "type": "Label",
+      "name": "lblLoi",
+      "left": 12,
+      "top": 284,
+      "width": 366,
+      "height": 28,
+      "WordWrap": true,
+      "ForeColor": 192,
+      "Caption": ""
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdIn",
+      "left": 210,
+      "top": 318,
+      "width": 84,
+      "height": 24,
+      "Caption": "In"
+    },
+    {
+      "type": "CommandButton",
+      "name": "cmdHuy",
+      "left": 294,
+      "top": 318,
+      "width": 84,
+      "height": 24,
+      "Caption": "Hủy",
+      "Cancel": true
+    }
+  ]
+}

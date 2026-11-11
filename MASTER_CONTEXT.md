@@ -13,6 +13,7 @@ Excel Add-in (VBA, `.xlam`, tên tab **Nhật ký TC**) hỗ trợ lập **Nhậ
 | F2 | Xuất theo form mẫu (Template Mapping) | Chèn form mẫu dựng sẵn; hộp thoại "Xuất vào form": chọn vùng nguồn (sheet F1 đã thêm cột phụ, dòng đầu là tiêu đề), gán từng cột vào ô của form (+ Thêm / Delete), Gán → form hiện ngày đầu; điều hướng ngày để hiển thị nhật ký từng ngày lên form. |
 | F3 | Tiện ích | Hướng dẫn sử dụng, kiểm tra phiên bản, cập nhật. |
 | F4 | Tạo bảng nhập tiến độ | Tạo Excel Table **STT \| Nội dung công việc \| Bắt đầu \| Kết thúc** (sheet mới hoặc vị trí chọn trên sheet hiện tại, mặc định 10 dòng) để người dùng tự điền rồi xuất bằng F1. |
+| F5 | In nhật ký | Nút **In nhật ký** (nhóm In): in biểu mẫu (vùng in tùy chọn, mặc định vùng in của sheet form) cho ngày đang hiển thị / một ngày / khoảng ngày / tất cả, ra máy in hoặc một file PDF gộp. |
 
 ## 2. Người dùng
 

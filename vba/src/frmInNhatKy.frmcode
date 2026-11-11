@@ -1,0 +1,352 @@
+'==============================================================================
+' NHẬT KÝ TC – hộp thoại In nhật ký (F5). Bố cục: vba/forms/frmInNhatKy.json.
+' Vùng in (một vùng liên tục trong file đang in), các ngày cần in (SelectPrintDays), đầu ra máy in hoặc một file PDF.
+' Kiểm tra xong thì Accepted = True; lệnh gọi (CmdInNhatKy) đọc kết quả rồi in qua workbook tạm.
+'==============================================================================
+Option Explicit
+
+Private Const MAX_COPIES As Long = 99
+Private Const XL_DIALOG_PRINTER_SETUP As Long = 9
+Private Const COLOR_TEXT As Long = &H80000012
+Private Const COLOR_ERROR As Long = &HC0&
+Private Const XL_SHEET_VISIBLE As Long = -1
+
+Private mAccepted As Boolean
+Private mPick As String
+Private mLoading As Boolean
+Private mWorkbook As Workbook
+Private mSourceSheet As String
+Private mRange As Range
+Private mDayNums() As Long
+Private mDayCount As Long
+Private mCurrentDay As Long
+Private mMode As Long
+Private mFromDay As Long
+Private mToDay As Long
+Private mDaysOk As Boolean
+Private mCopies As Long
+
+' wb: file đang in; rangeText: vùng in gợi ý; dayNums(0..dayCount-1): các ngày của vùng nguồn (tăng dần);
+' currentDay: ngày đang hiển thị trên biểu mẫu (0 nếu chưa có); sourceSheet: tên sheet nguồn nhật ký (không cho in).
+Public Sub Init(ByVal wb As Workbook, ByVal rangeText As String, ByRef dayNums() As Long, ByVal dayCount As Long, _
+                ByVal currentDay As Long, ByVal sourceSheet As String)
+    Dim i As Long, currentListed As Boolean
+    Set mWorkbook = wb
+    mSourceSheet = sourceSheet
+    mDayCount = dayCount
+    If dayCount > 0 Then
+        ReDim mDayNums(0 To dayCount - 1)
+        For i = 0 To dayCount - 1
+            mDayNums(i) = dayNums(i)
+            If currentDay > 0 And dayNums(i) = currentDay Then currentListed = True
+        Next i
+    Else
+        ReDim mDayNums(0 To 0)
+    End If
+    mCurrentDay = currentDay
+
+    mLoading = True
+    If currentDay > 0 Then
+        optHienTai.Caption = "Ngày đang hiển thị (" & FormatDay(currentDay) & ")"
+        txtNgay.Text = FormatDay(currentDay)
+    Else
+        optHienTai.Caption = "Ngày đang hiển thị (chưa có)"
+    End If
+    optTatCa.Caption = "Tất cả (" & dayCount & " ngày)"
+    If dayCount > 0 Then
+        If currentDay <= 0 Then txtNgay.Text = FormatDay(mDayNums(0))
+        txtTu.Text = FormatDay(mDayNums(0))
+        txtDen.Text = FormatDay(mDayNums(dayCount - 1))
+    End If
+    txtVung.Text = rangeText
+    txtSoBan.Text = "1"
+    ' Ngày đang hiển thị không còn trong vùng nguồn -> mặc định Tất cả.
+    If currentListed Then optHienTai.Value = True Else optTatCa.Value = True
+    optMayIn.Value = True
+    mLoading = False
+
+    ShowPrinter
+    LoadRange
+    UpdateDays
+    UpdateOutput
+End Sub
+
+'------------------------------------------------------------------------------
+' Kết quả cho lệnh gọi.
+'------------------------------------------------------------------------------
+Public Property Get Accepted() As Boolean
+    Accepted = mAccepted
+End Property
+
+Public Property Get PrintRange() As Range
+    Set PrintRange = mRange
+End Property
+
+' PRINT_CURRENT / PRINT_ONE / PRINT_RANGE / PRINT_ALL (modNKTC_Print).
+Public Property Get Mode() As Long
+    Mode = mMode
+End Property
+
+Public Property Get FromDay() As Long
+    FromDay = mFromDay
+End Property
+
+Public Property Get ToDay() As Long
+    ToDay = mToDay
+End Property
+
+Public Property Get ToPdf() As Boolean
+    ToPdf = optPdf.Value
+End Property
+
+Public Property Get Copies() As Long
+    Copies = mCopies
+End Property
+
+' Nút "Chọn": ẩn hộp thoại để lệnh gọi mở hộp chọn vùng của Excel (Application.InputBox), rồi hiện lại.
+Public Property Get PickRequest() As String
+    PickRequest = mPick
+End Property
+
+Public Property Get PickCurrent() As String
+    PickCurrent = txtVung.Text
+End Property
+
+' Kết quả chọn vùng (rỗng = người dùng bấm Cancel, giữ giá trị cũ).
+Public Sub ApplyPick(ByVal text As String)
+    mPick = ""
+    If Len(text) > 0 Then txtVung.Text = text
+End Sub
+
+'------------------------------------------------------------------------------
+' Vùng in
+'------------------------------------------------------------------------------
+Private Sub LoadRange()
+    Dim r As Range, msg As String
+    Set mRange = Nothing
+    Set r = TryRange(txtVung.Text)
+    If r Is Nothing Then
+        If Len(Trim$(txtVung.Text)) = 0 Then
+            msg = "Chưa có vùng in — gõ địa chỉ hoặc bấm Chọn."
+        Else
+            msg = "Địa chỉ vùng in không hợp lệ."
+        End If
+    ElseIf r.Areas.Count > 1 Then
+        msg = "Vùng in phải là một vùng liên tục (chỉ chọn một vùng)."
+    ElseIf Not r.Worksheet.Parent Is mWorkbook Then
+        msg = "Vùng in phải nằm trong file đang in (" & mWorkbook.Name & ")."
+    ElseIf Len(mSourceSheet) > 0 And StrComp(r.Worksheet.Name, mSourceSheet, vbTextCompare) = 0 Then
+        msg = "Không in sheet nguồn nhật ký — chọn vùng trên biểu mẫu."
+    ElseIf r.Worksheet.Visible <> XL_SHEET_VISIBLE Then
+        msg = "Sheet chứa vùng in đang ẩn — bỏ ẩn sheet rồi chọn lại."
+    End If
+    If Len(msg) > 0 Then
+        lblVungTT.ForeColor = COLOR_ERROR
+        lblVungTT.Caption = msg
+    Else
+        Set mRange = r
+        lblVungTT.ForeColor = COLOR_TEXT
+        lblVungTT.Caption = "Vùng in: " & RefText(r)
+    End If
+    UpdateButton
+End Sub
+
+Private Sub txtVung_Change()
+    If Not mLoading Then LoadRange
+End Sub
+
+Private Sub cmdChonVung_Click()
+    mPick = "Vung"
+    Me.Hide
+End Sub
+
+'------------------------------------------------------------------------------
+' Ngày in
+'------------------------------------------------------------------------------
+Private Function SelectedMode() As Long
+    If optHienTai.Value Then
+        SelectedMode = PRINT_CURRENT
+    ElseIf optMotNgay.Value Then
+        SelectedMode = PRINT_ONE
+    ElseIf optKhoang.Value Then
+        SelectedMode = PRINT_RANGE
+    Else
+        SelectedMode = PRINT_ALL
+    End If
+End Function
+
+' Ngày gõ trong ô: rỗng -> 0 (SelectPrintDays báo thiếu ngày); không đọc được -> trả về lỗi.
+Private Function ReadDay(ByVal text As String, ByRef dayNum As Long) As String
+    dayNum = 0
+    If Len(Trim$(text)) = 0 Then Exit Function
+    dayNum = ParseDateText(text)
+    If dayNum = 0 Then ReadDay = """" & Trim$(text) & """ không phải ngày hợp lệ (dd/mm/yyyy)."
+End Function
+
+' Tính lại các ngày sẽ in theo lựa chọn hiện tại; hiện "Sẽ in N ngày." hoặc lỗi (chữ đỏ).
+Private Sub UpdateDays()
+    Dim days() As NKTC_SourceDay, picked() As Long, pickedCount As Long, i As Long, msg As String
+    mDaysOk = False
+    mMode = SelectedMode()
+    mFromDay = 0
+    mToDay = 0
+    If mMode = PRINT_ONE Then
+        msg = ReadDay(txtNgay.Text, mFromDay)
+    ElseIf mMode = PRINT_RANGE Then
+        msg = ReadDay(txtTu.Text, mFromDay)
+        If Len(msg) = 0 Then msg = ReadDay(txtDen.Text, mToDay)
+    End If
+    If Len(msg) = 0 Then
+        If mDayCount > 0 Then
+            ReDim days(0 To mDayCount - 1)
+            For i = 0 To mDayCount - 1
+                days(i).DayNum = mDayNums(i)
+            Next i
+        Else
+            ReDim days(0 To 0)
+        End If
+        msg = SelectPrintDays(days, mDayCount, mMode, mFromDay, mToDay, mCurrentDay, picked, pickedCount)
+    End If
+    If Len(msg) > 0 Then
+        lblSoNgay.ForeColor = COLOR_ERROR
+        lblSoNgay.Caption = msg
+    Else
+        mDaysOk = True
+        lblSoNgay.ForeColor = COLOR_TEXT
+        lblSoNgay.Caption = "Sẽ in " & pickedCount & " ngày."
+    End If
+    UpdateButton
+End Sub
+
+' Gõ ngày vào ô -> tự chọn lựa chọn tương ứng.
+Private Sub SelectDayOption(ByVal opt As Object)
+    If Not opt.Value Then
+        mLoading = True
+        opt.Value = True
+        mLoading = False
+    End If
+    UpdateDays
+End Sub
+
+Private Sub optHienTai_Click()
+    If Not mLoading Then UpdateDays
+End Sub
+
+Private Sub optMotNgay_Click()
+    If Not mLoading Then UpdateDays
+End Sub
+
+Private Sub optKhoang_Click()
+    If Not mLoading Then UpdateDays
+End Sub
+
+Private Sub optTatCa_Click()
+    If Not mLoading Then UpdateDays
+End Sub
+
+Private Sub txtNgay_Change()
+    If Not mLoading Then SelectDayOption optMotNgay
+End Sub
+
+Private Sub txtTu_Change()
+    If Not mLoading Then SelectDayOption optKhoang
+End Sub
+
+Private Sub txtDen_Change()
+    If Not mLoading Then SelectDayOption optKhoang
+End Sub
+
+'------------------------------------------------------------------------------
+' Đầu ra
+'------------------------------------------------------------------------------
+' Số bản in: số nguyên 1..MAX_COPIES; 0 nếu không hợp lệ.
+Private Function ParseCopies(ByVal text As String) As Long
+    Dim i As Long
+    text = Trim$(text)
+    If Len(text) = 0 Or Len(text) > Len(CStr(MAX_COPIES)) Then Exit Function
+    For i = 1 To Len(text)
+        If Mid$(text, i, 1) < "0" Or Mid$(text, i, 1) > "9" Then Exit Function
+    Next i
+    If CLng(text) >= 1 And CLng(text) <= MAX_COPIES Then ParseCopies = CLng(text)
+End Function
+
+Private Sub ShowPrinter()
+    Dim printer As String
+    printer = ActivePrinterName()
+    If Len(printer) = 0 Then
+        lblMayIn.Caption = "Máy in: (chưa có máy in)"
+    Else
+        lblMayIn.Caption = "Máy in: " & printer
+    End If
+End Sub
+
+Private Sub UpdateOutput()
+    Dim toPrinter As Boolean
+    toPrinter = optMayIn.Value
+    lblSoBan.Enabled = toPrinter
+    txtSoBan.Enabled = toPrinter
+    cmdMayIn.Enabled = toPrinter
+    lblMayIn.Enabled = toPrinter
+    If toPrinter Then cmdIn.Caption = "In" Else cmdIn.Caption = "Xuất PDF"
+    UpdateButton
+End Sub
+
+' Bật nút In khi vùng in, ngày in và số bản đều hợp lệ.
+Private Sub UpdateButton()
+    Dim msg As String
+    mCopies = 1
+    If optMayIn.Value Then
+        mCopies = ParseCopies(txtSoBan.Text)
+        If mCopies = 0 Then msg = "Số bản phải là số nguyên từ 1 đến " & MAX_COPIES & "."
+    End If
+    lblLoi.Caption = msg
+    cmdIn.Enabled = (Not mRange Is Nothing) And mDaysOk And Len(msg) = 0
+End Sub
+
+Private Sub optMayIn_Click()
+    If Not mLoading Then UpdateOutput
+End Sub
+
+Private Sub optPdf_Click()
+    If Not mLoading Then UpdateOutput
+End Sub
+
+Private Sub txtSoBan_Change()
+    If Not mLoading Then UpdateButton
+End Sub
+
+' Hộp thoại chọn máy in của Excel (đổi máy in hiện hành).
+Private Sub cmdMayIn_Click()
+    On Error Resume Next
+    Application.Dialogs(XL_DIALOG_PRINTER_SETUP).Show
+    On Error GoTo 0
+    ShowPrinter
+End Sub
+
+'------------------------------------------------------------------------------
+' In / Hủy
+'------------------------------------------------------------------------------
+Private Sub cmdIn_Click()
+    LoadRange
+    UpdateDays
+    If Not cmdIn.Enabled Then Exit Sub
+    mAccepted = True
+    Me.Hide
+End Sub
+
+Private Sub cmdHuy_Click()
+    Me.Hide
+End Sub
+
+' Tiêu đề tiếng Việt (mỗi lần hiện lại, kể cả sau khi chọn vùng).
+Private Sub UserForm_Activate()
+    SetUnicodeTitle Me
+End Sub
+
+' Nút X: ẩn thay vì hủy form để lệnh gọi còn đọc được kết quả (Accepted = False).
+Private Sub UserForm_QueryClose(Cancel As Integer, CloseMode As Integer)
+    If CloseMode = vbFormControlMenu Then
+        Cancel = True
+        Me.Hide
+    End If
+End Sub

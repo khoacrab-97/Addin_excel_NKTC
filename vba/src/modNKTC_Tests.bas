@@ -46,7 +46,7 @@ Public Function NKTC_RunTests() As String
     Dim names As Variant, k As Long
     mPass = 0: mFail = 0: mLog = ""
     names = Array("TestText", "TestDates", "TestDatePattern", "TestColumns", "TestDailyLog", "TestSheetName", _
-        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers", "TestReference", "TestFormRows", "TestConfig", "TestUpdate")
+        "TestDays", "TestNavigation", "TestHeaderMatch", "TestWriteValue", "TestValidate", "TestDialogHelpers", "TestReference", "TestFormRows", "TestConfig", "TestUpdate", "TestPrint")
     For k = 0 To UBound(names)
         RunOne k, CStr(names(k))
     Next k
@@ -79,6 +79,7 @@ Private Sub RunOne(ByVal idx As Long, ByVal testName As String)
         Case 13: TestFormRows
         Case 14: TestConfig
         Case 15: TestUpdate
+        Case 16: TestPrint
     End Select
     Exit Sub
 Loi:
@@ -233,6 +234,9 @@ Private Sub TestNavigation()
     r = ResolveDay(days, n, 0, CMD_NEXT): Check r.Ok And r.TargetIndex = 0 And r.Notice = "", "chưa hiển thị -> ngày đầu"
     r = ResolveDay(days, n, D + 9, CMD_PREV): Check r.Ok And r.TargetIndex = 0 And InStr(r.Notice, "Không còn ngày") > 0, "ngày cũ không còn"
     r = ResolveDay(days, 0, 0, CMD_FIRST): Check (Not r.Ok) And (Not r.IsInfo), "không có ngày"
+    r = ResolveDay(days, n, 0, CMD_GOTO, D + 1): Check r.Ok And r.TargetIndex = 1, "đi tới ngày có"
+    r = ResolveDay(days, n, D, CMD_GOTO, D + 9)
+    Check (Not r.Ok) And (Not r.IsInfo) And InStr(r.Message, "Không có ngày 24/06/2026 trong vùng nguồn") > 0, "đi tới ngày không có"
 End Sub
 
 Private Function Strs(ParamArray items() As Variant) As String()
@@ -411,4 +415,57 @@ Private Sub TestUpdate()
     b = StrConv("abc", vbFromUnicode)
     Eq Sha256Hex(b), "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", "SHA-256 (CryptoAPI) mẫu chuẩn ""abc"""
     Check IsSha256(Sha256Hex(b)) And Not IsSha256(String(63, "a")) And Not IsSha256(String(63, "a") & "g"), "kiểm tra dạng SHA-256"
+End Sub
+
+Private Sub TestPrint()
+    Dim days(0 To 3) As NKTC_SourceDay, picked() As Long, n As Long, msg As String, i As Long
+    Const D As Long = 46188
+    days(0).DayNum = D: days(0).ValueRow = 2: days(0).RowNumber = 2
+    days(1).DayNum = D + 1: days(1).ValueRow = 3: days(1).RowNumber = 3
+    days(2).DayNum = D + 3: days(2).ValueRow = 4: days(2).RowNumber = 4
+    days(3).DayNum = D + 7: days(3).ValueRow = 5: days(3).RowNumber = 5
+
+    msg = SelectPrintDays(days, 4, PRINT_ALL, 0, 0, 0, picked, n)
+    Check msg = "" And n = 4, "in tất cả: 4 ngày"
+    Check picked(0) = 0 And picked(3) = 3, "in tất cả: chỉ số tăng dần"
+
+    msg = SelectPrintDays(days, 4, PRINT_ONE, D + 3, 0, 0, picked, n)
+    Check msg = "" And n = 1, "một ngày có trong danh sách"
+    Eq picked(0), 2, "một ngày: chỉ số"
+    msg = SelectPrintDays(days, 4, PRINT_ONE, D + 2, 0, 0, picked, n)
+    Eq msg, "Không có ngày 17/06/2026 trong vùng nguồn.", "một ngày không có"
+    Eq n, 0, "một ngày không có: số ngày chọn"
+    Eq SelectPrintDays(days, 4, PRINT_ONE, 0, 0, 0, picked, n), "Nhập ngày cần in (dd/mm/yyyy).", "một ngày: chưa nhập"
+
+    msg = SelectPrintDays(days, 4, PRINT_RANGE, D + 1, D + 3, 0, picked, n)
+    Check msg = "" And n = 2, "khoảng ngày thường"
+    Check picked(0) = 1 And picked(1) = 2, "khoảng ngày: chỉ số"
+    msg = SelectPrintDays(days, 4, PRINT_RANGE, D + 7, D, 0, picked, n)
+    Check msg = "" And n = 4, "khoảng đảo ngược (from > to)"
+    msg = SelectPrintDays(days, 4, PRINT_RANGE, D + 4, D + 6, 0, picked, n)
+    Eq msg, "Không có ngày nào từ 19/06/2026 đến 21/06/2026 trong vùng nguồn.", "khoảng rỗng"
+    Eq n, 0, "khoảng rỗng: số ngày chọn"
+    Eq SelectPrintDays(days, 4, PRINT_RANGE, D, 0, 0, picked, n), "Nhập đủ Từ ngày và Đến ngày (dd/mm/yyyy).", "khoảng thiếu Đến ngày"
+    Eq SelectPrintDays(days, 4, PRINT_RANGE, 0, D, 0, picked, n), "Nhập đủ Từ ngày và Đến ngày (dd/mm/yyyy).", "khoảng thiếu Từ ngày"
+
+    msg = SelectPrintDays(days, 4, PRINT_CURRENT, 0, 0, D + 7, picked, n)
+    Check msg = "" And n = 1, "ngày đang hiển thị có"
+    Eq picked(0), 3, "ngày đang hiển thị: chỉ số"
+    Eq SelectPrintDays(days, 4, PRINT_CURRENT, 0, 0, 0, picked, n), _
+        "Biểu mẫu chưa hiển thị ngày nào. Bấm một nút Chuyển ngày trước, hoặc chọn ngày cần in.", "chưa hiển thị ngày nào"
+    Eq SelectPrintDays(days, 4, PRINT_CURRENT, 0, 0, D + 2, picked, n), _
+        "Ngày đang hiển thị 17/06/2026 không còn trong vùng nguồn.", "ngày đang hiển thị không còn trong danh sách"
+
+    Eq SelectPrintDays(days, 0, PRINT_ALL, 0, 0, 0, picked, n), "Vùng nguồn không có ngày hợp lệ để in.", "không có ngày nào"
+    Eq n, 0, "không có ngày nào: số ngày chọn"
+    Eq SelectPrintDays(days, 4, 9, 0, 0, 0, picked, n), "Chế độ in không hợp lệ.", "chế độ sai (9)"
+    Eq SelectPrintDays(days, 4, 0, 0, 0, 0, picked, n), "Chế độ in không hợp lệ.", "chế độ sai (0)"
+
+    Eq PrintPdfFileName(D, D), "NKTC_15-06-2026.pdf", "tên PDF một ngày"
+    Eq PrintPdfFileName(D, D + 199), "NKTC_15-06-2026_den_31-12-2026.pdf", "tên PDF nhiều ngày"
+    Eq PrintSheetName(D), "Ngay_15-06-2026", "tên sheet tạm"
+    Check Len(PrintSheetName(D)) <= 31, "tên sheet tạm <= 31 ký tự"
+    For i = 1 To Len(PrintSheetName(D))
+        Check InStr("\/?*[]:", Mid$(PrintSheetName(D), i, 1)) = 0, "tên sheet tạm không có ký tự cấm"
+    Next i
 End Sub

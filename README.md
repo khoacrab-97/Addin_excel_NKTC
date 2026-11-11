@@ -16,6 +16,7 @@ Tài liệu dự án: [`MASTER_CONTEXT.md`](MASTER_CONTEXT.md) · [`ROADMAP.md`]
 | Tiến độ | **Tạo bảng** (F4) · **Xuất theo ngày** (F1) |
 | Form mẫu | **Chèn form mẫu** · **Xuất vào form** (F2) |
 | Chuyển ngày | Ngày đầu · Ngày trước · Ngày sau · Ngày cuối |
+| In | **In nhật ký** (F5) |
 | Tiện ích | Hướng dẫn · Phiên bản · Kiểm tra cập nhật (F3) |
 
 ## Phát triển

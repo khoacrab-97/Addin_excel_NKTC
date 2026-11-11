@@ -96,35 +96,15 @@ End Sub
 ' Ghi dữ liệu một ngày lên form: đọc lại nguồn (mới nhất), khớp cột theo tên tiêu đề, chọn ngày, hỏi trước khi
 ' ghi đè ô có công thức/dữ liệu (một lần cho mỗi bộ ô đích), rồi ghi. True nếu đã ghi; message: thông báo kèm theo.
 Public Function NavigateDay(ByVal wb As Workbook, ByVal command As Long, ByRef message As String, _
-                            ByRef style As VbMsgBoxStyle) As Boolean
-    Dim cfg As NKTC_Config, source As Range, msg As String, headers() As String, errors As Collection, v As Variant
-    Dim values As Variant, days() As NKTC_SourceDay, dayCount As Long, issues As Collection, res As NKTC_DayResolution
+                            ByRef style As VbMsgBoxStyle, Optional ByVal targetDay As Long = 0) As Boolean
+    Dim cfg As NKTC_Config, source As Range, values As Variant, days() As NKTC_SourceDay, dayCount As Long
+    Dim res As NKTC_DayResolution
     Dim targets() As Range, texts() As String, i As Long, key As String, risky As String, riskyCount As Long
     Dim raw As Variant, isPattern As Boolean, maps() As NKTC_Mapping, valueRow As Long, c0 As Long, ws As Worksheet
 
-    message = "": style = vbInformation
-    If Not LoadConfig(wb, cfg) Then message = NotAssignedMessage(): Exit Function
-    If cfg.MapCount = 0 Then message = NotAssignedMessage(): Exit Function
-    style = vbExclamation
-
-    Set source = ConfigSource(wb, cfg, msg)
-    If source Is Nothing Then message = msg: Exit Function
-    headers = HeaderTexts(source)
-    msg = RemapConfig(cfg, headers, UBound(headers) + 1, RefText(source))
-    If Len(msg) > 0 Then message = msg: Exit Function
+    If Not PrepareSourceDays(wb, cfg, source, values, days, dayCount, message, style) Then Exit Function
     GetMaps cfg, maps
-    Set errors = ValidateMappings(maps, cfg.MapCount, cfg.HeaderCount)
-    If errors.Count > 0 Then
-        For Each v In errors
-            message = message & v & " "
-        Next v
-        message = message & "Bấm ""Xuất vào form"" để gán cột."
-        Exit Function
-    End If
-
-    values = RangeGrid(source)
-    BuildDayIndex values, cfg.DateColumn, source.Row, wb.Date1904, days, dayCount, issues
-    res = ResolveDay(days, dayCount, cfg.CurrentDay, command)
+    res = ResolveDay(days, dayCount, cfg.CurrentDay, command, targetDay)
     If Not res.Ok Then
         message = res.Message
         If res.IsInfo Then style = vbInformation
@@ -185,6 +165,60 @@ Public Function NavigateDay(ByVal wb As Workbook, ByVal command As Long, ByRef m
     SaveConfig wb, cfg
     message = res.Notice
     NavigateDay = True
+End Function
+
+' Dùng chung cho NavigateDay và LoadPrintDays: đọc cấu hình, vùng nguồn (khớp lại cột theo tiêu đề), kiểm tra ánh xạ,
+' đọc giá trị mới nhất và dựng danh sách ngày. False -> message/style cho biết lý do.
+Private Function PrepareSourceDays(ByVal wb As Workbook, ByRef cfg As NKTC_Config, ByRef source As Range, _
+                                   ByRef values As Variant, ByRef days() As NKTC_SourceDay, ByRef dayCount As Long, _
+                                   ByRef message As String, ByRef style As VbMsgBoxStyle) As Boolean
+    Dim msg As String, headers() As String, errors As Collection, v As Variant, maps() As NKTC_Mapping
+    Dim issues As Collection
+
+    message = "": style = vbInformation
+    If Not LoadConfig(wb, cfg) Then message = NotAssignedMessage(): Exit Function
+    If cfg.MapCount = 0 Then message = NotAssignedMessage(): Exit Function
+    style = vbExclamation
+
+    Set source = ConfigSource(wb, cfg, msg)
+    If source Is Nothing Then message = msg: Exit Function
+    headers = HeaderTexts(source)
+    msg = RemapConfig(cfg, headers, UBound(headers) + 1, RefText(source))
+    If Len(msg) > 0 Then message = msg: Exit Function
+    GetMaps cfg, maps
+    Set errors = ValidateMappings(maps, cfg.MapCount, cfg.HeaderCount)
+    If errors.Count > 0 Then
+        For Each v In errors
+            message = message & v & " "
+        Next v
+        message = message & "Bấm ""Xuất vào form"" để gán cột."
+        Exit Function
+    End If
+
+    values = RangeGrid(source)
+    BuildDayIndex values, cfg.DateColumn, source.Row, wb.Date1904, days, dayCount, issues
+    PrepareSourceDays = True
+End Function
+
+' Hiển thị một ngày cụ thể trên form (cùng cơ chế, cùng hỏi xác nhận ghi đè như NavigateDay).
+Public Function ShowDayOnForm(ByVal wb As Workbook, ByVal dayNum As Long, ByRef message As String, _
+                              ByRef style As VbMsgBoxStyle) As Boolean
+    ShowDayOnForm = NavigateDay(wb, CMD_GOTO, message, style, dayNum)
+End Function
+
+' Danh sách ngày của vùng nguồn cho chức năng In nhật ký. currentDay: ngày đang hiển thị (0 nếu chưa);
+' formSheet: sheet của ô đích đầu tiên (Nothing nếu sheet không còn).
+Public Function LoadPrintDays(ByVal wb As Workbook, ByRef days() As NKTC_SourceDay, ByRef dayCount As Long, _
+                              ByRef currentDay As Long, ByRef formSheet As Worksheet, ByRef message As String) As Boolean
+    Dim cfg As NKTC_Config, source As Range, values As Variant, style As VbMsgBoxStyle, maps() As NKTC_Mapping
+
+    Set formSheet = Nothing
+    currentDay = 0
+    If Not PrepareSourceDays(wb, cfg, source, values, days, dayCount, message, style) Then Exit Function
+    GetMaps cfg, maps
+    currentDay = cfg.CurrentDay
+    Set formSheet = FindSheet(wb, maps(0).SheetName)
+    LoadPrintDays = True
 End Function
 
 '------------------------------------------------------------------------------
@@ -314,6 +348,11 @@ End Function
 ' Hướng dẫn sử dụng.
 '------------------------------------------------------------------------------
 Public Sub ShowHelp()
+    Dim printHelp As String
+    printHelp = "3. In nhật ký (nhóm In)" & vbLf & _
+        "   • ""In nhật ký"" → chọn Vùng in (mặc định là vùng in của form; nút ""Chọn"" để dùng vùng khác, kể cả trên sheet khác)," & vbLf & _
+        "     Ngày in (đang hiển thị / một ngày / khoảng ngày / tất cả) và Đầu ra (máy in hoặc một file PDF gộp)." & vbLf & _
+        "   • In nhiều hơn 50 ngày sẽ hỏi xác nhận; bấm Esc để dừng. Sau khi in, form trở về ngày đang xem."
     ShowInfo "Mọi chức năng nằm trên tab ""Nhật ký TC"" của thanh Ribbon." & vbLf & vbLf & _
         "0. Tạo bảng nhập tiến độ (nhóm Tiến độ)" & vbLf & _
         "   • Bấm ""Tạo bảng"" → chọn sheet mới hoặc sheet hiện tại (ô bắt đầu), số dòng → ""Tạo bảng""." & vbLf & _
@@ -329,5 +368,6 @@ Public Sub ShowHelp()
         "     chọn Cột nguồn + Ô trên form (nút ""Chọn"") → ""Thêm""; lặp lại cho từng cột → ""Gán""." & vbLf & _
         "   • Cột đã gán được nhớ theo tên tiêu đề: thêm/chèn cột, thêm ngày không cần gán lại." & vbLf & _
         "   • Sau khi gán: Ngày đầu / Ngày trước / Ngày sau / Ngày cuối để chuyển ngày. Gán cột Ngày vào" & vbLf & _
-        "     dòng ""Ngày … tháng … năm …"" của biểu mẫu: add-in tự điền ngày, tháng, năm."
+        "     dòng ""Ngày … tháng … năm …"" của biểu mẫu: add-in tự điền ngày, tháng, năm." & vbLf & vbLf & _
+        printHelp
 End Sub

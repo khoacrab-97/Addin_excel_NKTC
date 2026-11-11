@@ -1,11 +1,12 @@
 Attribute VB_Name = "modNKTC_Ribbon"
 '==============================================================================
 ' NHAT KY TC ? tab Ribbon "Nhat ky TC": nhan lenh tu cac nut (vba/ribbon/customUI14.xml).
-' Moi nut cua tab goi RB_Action; xu ly trong modNKTC_Commands, modNKTC_FormCommands, modNKTC_Update.
+' Moi nut cua tab goi RB_Action; xu ly trong modNKTC_Commands, modNKTC_FormCommands, modNKTC_PrintCommands,
+' modNKTC_Update.
 '==============================================================================
 Option Explicit
 
-Public Const APP_VERSION As String = "3.0.0"
+Public Const APP_VERSION As String = "3.1.0"
 
 Private mRibbon As Object
 
@@ -24,6 +25,7 @@ Public Sub RB_Action(ByVal control As Object)
         Case "btnNgayTruoc": CmdChuyenNgay CMD_PREV
         Case "btnNgaySau": CmdChuyenNgay CMD_NEXT
         Case "btnNgayCuoi": CmdChuyenNgay CMD_LAST
+        Case "btnInNhatKy": CmdInNhatKy
         Case "btnHuongDan": ShowHelp
         Case "btnPhienBan": ShowAbout
         Case "btnCapNhat": CheckForUpdate True

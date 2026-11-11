@@ -29,6 +29,7 @@ Tab **Nhật ký TC**:
 | Tiến độ | Tạo bảng · Xuất theo ngày |
 | Form mẫu | Chèn form mẫu · Xuất vào form |
 | Chuyển ngày | Ngày đầu · Ngày trước · Ngày sau · Ngày cuối |
+| In | In nhật ký |
 | Tiện ích | Menu **Tiện ích ▾**: Hướng dẫn · Phiên bản · Kiểm tra cập nhật |
 
 Bộ cài thực hiện (chỉ trong phạm vi tài khoản người dùng):

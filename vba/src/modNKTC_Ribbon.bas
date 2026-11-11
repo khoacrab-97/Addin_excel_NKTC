@@ -1,11 +1,12 @@
 Attribute VB_Name = "modNKTC_Ribbon"
 '==============================================================================
 ' NHẬT KÝ TC – tab Ribbon "Nhật ký TC": nhận lệnh từ các nút (vba/ribbon/customUI14.xml).
-' Mọi nút của tab gọi RB_Action; xử lý trong modNKTC_Commands, modNKTC_FormCommands, modNKTC_Update.
+' Mọi nút của tab gọi RB_Action; xử lý trong modNKTC_Commands, modNKTC_FormCommands, modNKTC_PrintCommands,
+' modNKTC_Update.
 '==============================================================================
 Option Explicit
 
-Public Const APP_VERSION As String = "3.0.0"
+Public Const APP_VERSION As String = "3.1.0"
 
 Private mRibbon As Object
 
@@ -24,6 +25,7 @@ Public Sub RB_Action(ByVal control As Object)
         Case "btnNgayTruoc": CmdChuyenNgay CMD_PREV
         Case "btnNgaySau": CmdChuyenNgay CMD_NEXT
         Case "btnNgayCuoi": CmdChuyenNgay CMD_LAST
+        Case "btnInNhatKy": CmdInNhatKy
         Case "btnHuongDan": ShowHelp
         Case "btnPhienBan": ShowAbout
         Case "btnCapNhat": CheckForUpdate True
